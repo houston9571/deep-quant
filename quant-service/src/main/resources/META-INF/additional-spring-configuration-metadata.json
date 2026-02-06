@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "spring.devtools.additional-paths",
+      "type": "java.lang.String",
+      "description": "Description for spring.devtools.additional-paths."
+    }
+  ]
+}

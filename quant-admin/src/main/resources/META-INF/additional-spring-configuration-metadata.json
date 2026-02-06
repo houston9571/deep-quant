@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.devtools.jmx.enabled",
+      "type": "java.lang.String",
+      "description": "Description for spring.devtools.jmx.enabled."
+  }
+] }
