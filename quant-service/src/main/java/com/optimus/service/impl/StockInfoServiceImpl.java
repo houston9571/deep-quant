@@ -10,8 +10,6 @@ import com.optimus.base.Result;
 import com.optimus.client.EmPush2delayApi;
 import com.optimus.client.EastMoneyH5Api;
 import com.optimus.client.EmDatacenterApi;
-import com.optimus.core.MarketType;
-import com.optimus.core.StockCodeUtils;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.BoardInfo;
 import com.optimus.mysql.entity.StockBoard;
@@ -28,15 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import static cn.hutool.core.text.StrPool.COMMA;
-import static com.optimus.core.MarketType.codeMap;
-import static com.optimus.core.MarketType.getMarket;
-import static com.optimus.core.StockConstants.*;
+import static com.optimus.constants.MarketType.codeMap;
+import static com.optimus.constants.MarketType.getMarket;
 import static com.optimus.enums.ErrorCode.NOT_GET_PAGE_ERROR;
 
 @Slf4j

@@ -5,13 +5,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.optimus.ext.*;
-import io.swagger.annotations.ApiModelProperty;
+import com.optimus.ext.CountLotsWriter;
+import com.optimus.ext.CountUtilWriter;
+import com.optimus.ext.DivideBy100Reader;
+import com.optimus.ext.PercentageWriter;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static com.optimus.constant.Constants.ID;
 
@@ -24,7 +25,7 @@ import static com.optimus.constant.Constants.ID;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @TableName("stock_trade")
-public class StockTrade extends BaseEntity {
+public class StockTradeRealTime extends BaseEntity {
 
 
     @TableId(value = ID, type = IdType.AUTO)

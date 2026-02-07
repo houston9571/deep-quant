@@ -1,4 +1,4 @@
-package com.optimus.core;
+package com.optimus.constants;
 
 import java.util.HashMap;
 import java.util.Map;

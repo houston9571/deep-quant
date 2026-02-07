@@ -1,15 +1,9 @@
 package com.optimus.rest;
 
-import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson2.JSONObject;
 import com.optimus.base.Result;
-import com.optimus.constant.Constants;
-import com.optimus.mysql.entity.StockTrade;
 import com.optimus.service.StockInfoService;
-import com.optimus.service.StockTradeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

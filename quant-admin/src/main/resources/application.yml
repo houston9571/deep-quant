@@ -63,8 +63,8 @@ spring:
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1765000
-      maximum-pool-size: 20
-      minimum-idle: 5
+      maximum-pool-size: 200
+      minimum-idle: 50
 logging:
   config: classpath:log4j2-dev.xml
   file:

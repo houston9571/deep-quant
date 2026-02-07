@@ -4,7 +4,7 @@
 
     <properties>
         <property name="LOG_HOME">logs</property>
-        <property name="LOG_FILE_NAME">game-platform-api</property>
+        <property name="LOG_FILE_NAME">deep-quant-admin</property>
     </properties>
 
     <Appenders>

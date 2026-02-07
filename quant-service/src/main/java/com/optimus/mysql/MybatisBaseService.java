@@ -21,6 +21,8 @@ public interface MybatisBaseService<P extends BaseEntity> {
 
     Result<Integer> saveBatch(List<P> list);
 
+    Result<Integer> saveBatch(List<P> list, int batchSize);
+
 
     Result<Void> updateById(P entity);
 

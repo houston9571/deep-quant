@@ -1,4 +1,4 @@
-package com.optimus.core;
+package com.optimus.constants;
 
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static cn.hutool.core.text.StrPool.COMMA;
-import static com.optimus.core.StockConstants.FIELD_NAME;
+import static com.optimus.constants.StockConstants.FIELD_NAME;
 
 public class StockCodeUtils {
 

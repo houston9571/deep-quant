@@ -5,11 +5,8 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.optimus.base.Result;
-import com.optimus.client.EastMoneyH5Api;
-import com.optimus.client.EmDatacenterApi;
-import com.optimus.client.EmPush2Api;
 import com.optimus.client.EmPush2delayApi;
-import com.optimus.core.MarketType;
+import com.optimus.constants.MarketType;
 import com.optimus.enums.DateFormatEnum;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.StockFundsFlow;
@@ -24,7 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import static cn.hutool.core.text.StrPool.COMMA;
 import static com.optimus.constant.Constants.LABEL_DATA;
-import static com.optimus.core.StockConstants.KLINE_DAILY;
+import static com.optimus.constants.StockConstants.KLINE_DAILY;
 import static com.optimus.enums.ErrorCode.NOT_GET_PAGE_ERROR;
 
 @Slf4j
@@ -39,7 +36,11 @@ public class StockFundsFlowServiceImpl extends MybatisBaseServiceImpl<StockFunds
     EmPush2delayApi emPush2delayApi;
 
 
-
+    /**
+     * 获取实时资金流向
+     * @param code
+     * @return
+     */
     public Result<Void> getStockFundsFlow(String code) {
         JSONObject json = emPush2delayApi.getStockFundsFlow(code, MarketType.getMarketCode(code), KLINE_DAILY);
         JSONObject data = json.getJSONObject(LABEL_DATA);

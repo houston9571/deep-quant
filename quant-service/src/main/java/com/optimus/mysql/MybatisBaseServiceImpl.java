@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.google.common.base.CaseFormat;
 import com.optimus.base.PageInfo;
@@ -14,7 +15,9 @@ import com.optimus.mysql.entity.BaseEntity;
 import com.optimus.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,8 +43,11 @@ import static com.optimus.mysql.entity.BaseEntity.UPDATE_TIME;
 @Slf4j
 public class MybatisBaseServiceImpl<M extends BaseMapper<P>, P extends BaseEntity> implements MybatisBaseService<P>, InitializingBean {
 
+//    @Autowired
+//    protected SqlSession sqlSession;
+
     @Autowired
-    protected SqlSession sqlSession;
+    protected SqlSessionFactory sqlSessionFactory;
 
     protected M baseMapper;
 
@@ -54,7 +60,7 @@ public class MybatisBaseServiceImpl<M extends BaseMapper<P>, P extends BaseEntit
         Type[] types = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments();
         Class m = (Class) types[0];
 //        Class p = (Class) types[1];
-        baseMapper = (M) sqlSession.getMapper(m);
+        baseMapper = (M) sqlSessionFactory.openSession().getMapper(m);
     }
 
 
@@ -63,21 +69,43 @@ public class MybatisBaseServiceImpl<M extends BaseMapper<P>, P extends BaseEntit
         return Result.isSuccess(baseMapper.insert(entity), DATA_NOT_EXIST);
     }
 
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result<Integer> saveBatch(List<P> list) {
+        return saveBatch(list, 1000);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Integer> saveBatch(List<P> list, int batchSize) {
         if (CollectionUtils.isEmpty(list)) {
             return Result.success(0);
         }
-        int size = list.size();
         AtomicInteger at = new AtomicInteger();
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
         for (P p : list) {
-            baseMapper.insert(p);
+            try {
+                baseMapper.insert(p);
+            }catch (Exception e){
+                log.error(">>>>> saveBatch failed :{} \n {}", p, e.getMessage());
+            }
+            if(at.incrementAndGet() >= batchSize){
+                sqlSession.flushStatements();
+                log.info(">>>>> saveBatch flushStatements size:{} ", at.get());
+                at.set(0);
+            }
         }
+        if(at.get() > 0){
+            sqlSession.flushStatements();
+            log.info(">>>>> saveBatch flushStatements size:{} ", at.get());
+        }
+        sqlSession.commit();
         stopWatch.stop();
-        log.info(">>>>> saveBatch size:{} time:{}", size, DateUtils.formatDateTime(stopWatch.getTotalTimeMillis()));
+        int size = list.size();
+        log.info(">>>>> saveBatch finished size:{} time:{}", size, DateUtils.formatDateTime(stopWatch.getTotalTimeMillis()));
         return Result.success(size);
     }
 
