@@ -16,7 +16,7 @@ public class NumberCheckReader implements ObjectReader<Number> {
             return  jsonReader.readNumber();
         } catch (Exception e) {
             log.error(">>>>>{} 检查Number类型：{}={}", this.getClass().getSimpleName(), fieldName, jsonReader.readString());
-            return null;
+            return 0;
         }
 
     }

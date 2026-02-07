@@ -61,22 +61,16 @@ public class StockTradeDelayServiceImpl extends MybatisBaseServiceImpl<StockTrad
                     try {
                         StockTradeDelay d = JSONObject.parseObject(array.getString(i), StockTradeDelay.class);
                         if (MarketType.contains(d.getCode())) {
-                            if (ObjectUtil.isAllNotEmpty(d.getOpenPrice(), d.getOpenPrice(), d.getOpenPrice(), d.getOpenPrice())) {
-                                d.setLimitUp(d.getOpenPrice().add(d.getOpenPrice().multiply(MarketType.getChangeLimit(d.getCode()))));
-                                d.setLimitDown(d.getOpenPrice().subtract(d.getOpenPrice().multiply(MarketType.getChangeLimit(d.getCode()))));
-                            }
-                            if (ObjectUtil.isAllNotEmpty(d.getSuperLargeIn(), d.getLargeIn(), d.getSuperLargeOut(), d.getLargeOut(), d.getSuperLargeNetIn(), d.getLargeNetIn(), d.getSuperLargeNetRatio(), d.getLargeNetRatio())) {
-                                d.setMainIn(d.getSuperLargeIn() + d.getLargeIn());
-                                d.setMainOut(d.getSuperLargeOut() + d.getLargeOut());
-                                d.setMainNetIn(d.getSuperLargeNetIn() + d.getLargeNetIn());
-                                d.setMainNetRatio(d.getSuperLargeNetRatio().add(d.getLargeNetRatio()));
-                            }
-                            if (ObjectUtil.isAllNotEmpty(d.getMediumIn(), d.getSmallIn(), d.getMediumOut(), d.getSmallOut(), d.getMediumNetIn() + d.getSmallNetIn(), d.getMediumNetRatio(), d.getSmallNetRatio())) {
-                                d.setRetailIn(d.getMediumIn() + d.getSmallIn());
-                                d.setRetailOut(d.getMediumOut() + d.getSmallOut());
-                                d.setRetailNetIn(d.getMediumNetIn() + d.getSmallNetIn());
-                                d.setRetailNetRatio(d.getMediumNetRatio().add(d.getSmallNetRatio()));
-                            }
+                            d.setLimitUp(d.getOpenPrice().add(d.getOpenPrice().multiply(MarketType.getChangeLimit(d.getCode()))));
+                            d.setLimitDown(d.getOpenPrice().subtract(d.getOpenPrice().multiply(MarketType.getChangeLimit(d.getCode()))));
+                            d.setMainIn(d.getSuperLargeIn() + d.getLargeIn());
+                            d.setMainOut(d.getSuperLargeOut() + d.getLargeOut());
+                            d.setMainNetIn(d.getSuperLargeNetIn() + d.getLargeNetIn());
+                            d.setMainNetRatio(d.getSuperLargeNetRatio().add(d.getLargeNetRatio()));
+                            d.setRetailIn(d.getMediumIn() + d.getSmallIn());
+                            d.setRetailOut(d.getMediumOut() + d.getSmallOut());
+                            d.setRetailNetIn(d.getMediumNetIn() + d.getSmallNetIn());
+                            d.setRetailNetRatio(d.getMediumNetRatio().add(d.getSmallNetRatio()));
                             list.add(d);
                         }
                     } catch (Exception e) {
