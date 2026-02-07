@@ -74,11 +74,7 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
         }
 
         StockInfo stockInfo = BeanUtil.fillBeanWithMap(maps[0], new StockInfo(), true);
-        if (exist(new LambdaQueryWrapper<StockInfo>().eq(StockInfo::getCode, stockInfo.getCode()))) {
-            updateById(stockInfo);
-        } else {
-            save(stockInfo);
-        }
+        saveOrUpdate(stockInfo, new String[]{"code", "transaction_date"});
         return Result.success();
     }
 
@@ -106,9 +102,9 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
             if (!boardInfoService.exist(new LambdaQueryWrapper<BoardInfo>().eq(BoardInfo::getCode, bcode))) {
                 boardInfoService.save(BoardInfo.builder().code(bcode).name(d.getString("BOARD_NAME")).type(d.getString("BOARD_TYPE")).level(d.getString("BOARD_LEVEL")).build());
             }
-            stockBoardList.add(StockBoard.builder().scode(code).bcode(bcode).build());
+            stockBoardList.add(StockBoard.builder().code(code).bcode(bcode).build());
         }
-        stockBoardService.delete(new LambdaQueryWrapper<StockBoard>().eq(StockBoard::getScode, code));
+        stockBoardService.delete(new LambdaQueryWrapper<StockBoard>().eq(StockBoard::getCode, code));
         stockBoardService.saveBatch(stockBoardList);
         return Result.success();
     }

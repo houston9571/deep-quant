@@ -24,7 +24,7 @@ import static com.optimus.constant.Constants.ID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_trade")
+@TableName("stock_trade_realtime")
 public class StockTradeRealTime extends BaseEntity {
 
 
@@ -181,11 +181,6 @@ public class StockTradeRealTime extends BaseEntity {
     private BigDecimal limitDown;
 
 
-    /**
-     * f178 5日主力净流入
-     */
-    @JSONField(alternateNames = "f178")
-    private String lastFiveNetAmt;
 
 
 }

@@ -15,20 +15,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_funds_flow")
-public class StockFundsFlow extends BaseEntity {
+public class StockFundsFlow {
 
 
-    @TableId(value = Constants.ID, type = IdType.AUTO)
-    private Integer id;
+    @JSONField(ordinal = 0)
+    private String tradingTime;
+
 
     private String code;
 
     private String name;
-
-    @TableField("transaction_date")
-    @JSONField(format="yyyy-MM-dd", ordinal = 90)
-    private LocalDate transactionDate;
 
     /**
      * 主力净流入 = 超大单净流入 + 大单净流入

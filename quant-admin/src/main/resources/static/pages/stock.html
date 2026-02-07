@@ -43,25 +43,25 @@
 						</thead>
 						<tbody id="sort" class="ve-table-body ve-table-stripe ve-table-row-hover ve-table-row-highlight">
 							<tr style="height: 0px;"></tr>
-							<tr class="ve-table-body-tr" v-for="col in tableData" :id="col.scode">
+							<tr class="ve-table-body-tr" v-for="col in tableData" :id="col.code">
 								<td class="ve-table-fixed-left" style="text-align: right;left: 0px;">
-									<a href="#" class="em-totop" @click="moveTop(col.scode)"><b class="em-icon em-ftop em-pro-toTop"></b></a>
+									<a href="#" class="em-totop" @click="moveTop(col.code)"><b class="em-icon em-ftop em-pro-toTop"></b></a>
 								</td>
 								<td class="ve-table-body-td ve-table-fixed-left" style="text-align: left;left: 15px;" :title="col.info">
-									<a :href="col.market=='HK' ? 'http://quote.eastmoney.com/hk/'+col.scode+'.html' : 'http://quote.eastmoney.com/'+col.market+col.scode+'.html'"
+									<a :href="col.market=='HK' ? 'http://quote.eastmoney.com/hk/'+col.code+'.html' : 'http://quote.eastmoney.com/'+col.market+col.code+'.html'"
 									 target="_blank">
 										{{col.sname}}<br>
-										<font style="color: #888">{{col.market}}.{{col.scode}}</font>
+										<font style="color: #888">{{col.market}}.{{col.code}}</font>
 									</a>
 								</td>
 								<td class="ve-table-body-td" style="text-align: center;">{{col.sshy}}</td>
 								<td class="ve-table-body-td" style="text-align: left;color: #4372ba;">
-									<div v-on:click="showFundDetail(col.scode)">
+									<div v-on:click="showFundDetail(col.code)">
 										{{col.ccl? col.ccl+'万股':''}}<br>{{col.cgjs? col.cgjs+'家':''}}<br>{{col.ltbl? '占'+col.ltbl+'%':''}}
 									</div>
 								</td>
 								<td class="ve-table-body-td" style="text-align: left;padding-left: 10px;">
-									<div v-if="col.ggyb!=null" v-on:click="showReportStock(col.scode)">
+									<div v-if="col.ggyb!=null" v-on:click="showReportStock(col.code)">
 										近一月<b style="color: blue;">{{col.ggyb.count}}</b>次<br>
 										评级: {{col.ggyb.emRatingName}}<br>
 										<font style="color: #888">{{col.ggyb.publishDate}}</font>
@@ -87,13 +87,13 @@
 											<li>量比：</li>
 										</ul>
 										<ul style="list-style: none;display: inline-block;width: 50px;">
-											<a v-if="col.market!='HK'" :href="'http://quote.eastmoney.com/concept/'+col.market+col.scode+'.html'" target="_blank">
+											<a v-if="col.market!='HK'" :href="'http://quote.eastmoney.com/concept/'+col.market+col.code+'.html'" target="_blank">
 												<li><span :style="col[d]['zdf']>0 ? 'color: red' : 'color: green'">{{col[d]['zdf']}}%</span></li>
 												<li><span :style="col[d]['zdf']>0 ? 'color: red' : 'color: green'">{{col[d]['zxj']}}</span></li>
 												<li><span style="color: black">{{col[d]['hs']}}%</span></li>
 												<li><span :style="col[d]['lb']>1.5 ? 'color: red' : 'color: black'">{{col[d]['lb']}}</span></li>
 											</a>
-											<a v-else :href="'http://data.eastmoney.com/hsgtcg/StockHdStatistics.aspx?stock='+col.scode" target="_blank">
+											<a v-else :href="'http://data.eastmoney.com/hsgtcg/StockHdStatistics.aspx?stock='+col.code" target="_blank">
 												<li><span :style="col[d]['zdf']>0 ? 'color: red' : 'color: green'">{{col[d]['zdf']}}%</span></li>
 												<li><span :style="col[d]['zdf']>0 ? 'color: red' : 'color: green'">{{col[d]['zxj']}}</span></li>
 												<li><span style="color: black">{{col[d]['hs']}}%</span></li>
@@ -108,7 +108,7 @@
 											<li v-else><span style="color: white">.</span></li>
 										</ul>
 										<ul style="list-style: none;display: inline-block;">
-											<a :href="col.market=='HK' ? 'http://data.eastmoney.com/hsgtcg/StockHdDetail.aspx?stock='+col.scode : 'http://data.eastmoney.com/zjlx/'+col.scode+'.html'"
+											<a :href="col.market=='HK' ? 'http://data.eastmoney.com/hsgtcg/StockHdDetail.aspx?stock='+col.code : 'http://data.eastmoney.com/zjlx/'+col.code+'.html'"
 											 target="_blank">
 												<li><span :style="col[d]['zljb']>0 ? 'color: red' : 'color: green'">{{col[d]['zljll']}}</span></li>
 												<li><span :style="col[d]['zljb']>0 ? 'color: red' : 'color: green'">{{col[d]['zljb']}}%</span></li>
@@ -116,7 +116,7 @@
 											</a>
 											<li v-if="col[d]['zcsz']==''"><span style="color: white">.</span></li>
 											<li v-else-if="col.market!='HK'">
-												<a :href="'http://data.eastmoney.com/hsgtcg/StockHdDetail.aspx?stock='+col.scode" target="_blank">
+												<a :href="'http://data.eastmoney.com/hsgtcg/StockHdDetail.aspx?stock='+col.code" target="_blank">
 													<span :style="col[d]['zcszzf']>0 ? 'color: red' : 'color: green'">{{col[d]['zcsz']}}</span>
 												</a>
 											</li>
@@ -192,7 +192,7 @@
 				getJsonValue: function(json) {
 					console.log(json)
 				},
-				showFundDetail: function(scode) {
+				showFundDetail: function(code) {
 					if (fcode == "all") {
 						MyDiv.style.left = '20%';
 					} else {
@@ -203,11 +203,11 @@
 					MyDiv.style.height = '680px';
 					MyDiv.style.display = 'block';
 					fade.style.display = 'block';
-					MyDiv.innerHTML = '<object type="text/html" data="fundDetail.html?' + scode +
+					MyDiv.innerHTML = '<object type="text/html" data="fundDetail.html?' + code +
 						'" width="100%" height="99%"></object>';
 
 				},
-				showReportStock: function(scode) {
+				showReportStock: function(code) {
 					if (fcode == "all") {
 						MyDiv.style.left = '20%';
 					} else {
@@ -218,7 +218,7 @@
 					MyDiv.style.height = '680px';
 					MyDiv.style.display = 'block';
 					fade.style.display = 'block';
-					MyDiv.innerHTML = '<object type="text/html" data="reportStock.html?' + scode +
+					MyDiv.innerHTML = '<object type="text/html" data="reportStock.html?' + code +
 						'" width="100%" height="100%"></object>';
 
 				},

@@ -21,7 +21,7 @@
         },
         {
           "description": "股票代码",
-          "property": "scode",
+          "property": "code",
           "xPath": "$.SCode"
         },
         {

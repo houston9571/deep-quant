@@ -17,6 +17,7 @@ public enum DateFormatEnum {
     DATE_SHORT("yyyyMMdd"),
     DATETIME_SHORT("yyyyMMddHHmmss"),
     TIMESTAMP_SHORT("yyyyMMddHHmmssSSS"),
+    DATETIME_MIN("yyyy-MM-dd HH:mm"),
     DATETIME("yyyy-MM-dd HH:mm:ss"),
     DATETIMEZ("yyyy-MM-dd'T'HH:mm:ss'Z'"),
     TIMESTAMP("yyyy-MM-dd HH:mm:ss.SSS"),

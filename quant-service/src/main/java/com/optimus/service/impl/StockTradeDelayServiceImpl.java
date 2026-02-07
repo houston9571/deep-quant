@@ -61,8 +61,10 @@ public class StockTradeDelayServiceImpl extends MybatisBaseServiceImpl<StockTrad
                     try {
                         StockTradeDelay d = JSONObject.parseObject(array.getString(i), StockTradeDelay.class);
                         if (MarketType.contains(d.getCode())) {
-                            d.setLimitUp(d.getOpenPrice().add(d.getOpenPrice().multiply(MarketType.getChangeLimit(d.getCode()))));
-                            d.setLimitDown(d.getOpenPrice().subtract(d.getOpenPrice().multiply(MarketType.getChangeLimit(d.getCode()))));
+                            if(ObjectUtil.isNotEmpty(d.getOpenPrice())) {
+                                d.setLimitUp(d.getOpenPrice().add(d.getOpenPrice().multiply(MarketType.getChangeLimit(d.getCode()))));
+                                d.setLimitDown(d.getOpenPrice().subtract(d.getOpenPrice().multiply(MarketType.getChangeLimit(d.getCode()))));
+                            }
                             d.setMainIn(d.getSuperLargeIn() + d.getLargeIn());
                             d.setMainOut(d.getSuperLargeOut() + d.getLargeOut());
                             d.setMainNetIn(d.getSuperLargeNetIn() + d.getLargeNetIn());

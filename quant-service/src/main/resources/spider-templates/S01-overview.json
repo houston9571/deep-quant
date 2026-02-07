@@ -5,7 +5,7 @@
   "requestBody": "",
   "executeJavaScript": false,
   // http://f10.eastmoney.com/CompanySurvey/CompanySurveyAjax?code=sh601633
-  "url": "http://f10.eastmoney.com/CompanySurvey/CompanySurveyAjax?code={market}{scode}",
+  "url": "http://f10.eastmoney.com/CompanySurvey/CompanySurveyAjax?code={market}{code}",
   "factors": [
     {
       "modelName": "overview",

@@ -5,7 +5,7 @@
   "requestBody": "",
   "executeJavaScript": false,
   // http://emweb.securities.eastmoney.com/PC_HKF10/CompanyProfile/PageAjax?code=03690
-  "url": "http://emweb.securities.eastmoney.com/PC_HKF10/CompanyProfile/PageAjax?code={scode}",
+  "url": "http://emweb.securities.eastmoney.com/PC_HKF10/CompanyProfile/PageAjax?code={code}",
   "factors": [
     {
       "modelName": "overview",
@@ -15,7 +15,7 @@
       "subsets": [
         {
           "description": "股票代码",
-          "property": "scode",
+          "property": "code",
           "xPath": "$.zqzl.zqdm",
           "xPattern": [
             "(\\d+).HK"

@@ -31,9 +31,9 @@ public interface EmPush2delayApi {
 
     /**
      * 获取实时资金流向 klt=1 K线类型
-     * http://push2delay.eastmoney.com/api/qt/stock/fflow/kline/get?klt=101&secid=1.600986&lmt=0&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65
+     * http://push2delay.eastmoney.com/api/qt/stock/fflow/kline/get?klt=1&secid=1.600986&lmt=0&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65
      * 日期        主力净流入  小单净流入   中单净流入   大单净流入   超大单净流入
-     * "klines": ["2026-01-07,-34158323.0,-1068838.0,35227152.0,-2848341.0,-31309982.0"]
+     * "klines": ["2026-02-06 09:31,-34158323.0,-1068838.0,35227152.0,-2848341.0,-31309982.0"]
      */
     @Get(url = "/api/qt/stock/fflow/kline/get?klt={klt}&secid={marketCode}.{code}&lmt=0&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65")
     JSONObject getStockFundsFlow(@Var("code") String code, @Var("marketCode") String marketCode, @Var("klt") int klt);

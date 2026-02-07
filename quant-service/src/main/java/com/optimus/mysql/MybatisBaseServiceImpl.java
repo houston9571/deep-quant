@@ -13,11 +13,13 @@ import com.optimus.base.PageInfo;
 import com.optimus.base.Result;
 import com.optimus.mysql.entity.BaseEntity;
 import com.optimus.utils.DateUtils;
+import com.optimus.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -89,16 +92,16 @@ public class MybatisBaseServiceImpl<M extends BaseMapper<P>, P extends BaseEntit
         for (P p : list) {
             try {
                 baseMapper.insert(p);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error(">>>>> saveBatch failed :{} \n {}", p, e.getMessage());
             }
-            if(at.incrementAndGet() >= batchSize){
+            if (at.incrementAndGet() >= batchSize) {
                 sqlSession.flushStatements();
                 log.info(">>>>> saveBatch flushStatements size:{} ", at.get());
                 at.set(0);
             }
         }
-        if(at.get() > 0){
+        if (at.get() > 0) {
             sqlSession.flushStatements();
             log.info(">>>>> saveBatch flushStatements size:{} ", at.get());
         }
@@ -109,6 +112,91 @@ public class MybatisBaseServiceImpl<M extends BaseMapper<P>, P extends BaseEntit
         return Result.success(size);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Integer> updateBatch(List<P> list, Wrapper<P> queryWrapper, int batchSize) {
+        if (CollectionUtils.isEmpty(list)) {
+            return Result.success(0);
+        }
+        AtomicInteger at = new AtomicInteger();
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
+        for (P p : list) {
+            try {
+                baseMapper.update(p, queryWrapper);
+            } catch (Exception e) {
+                log.error(">>>>> updateBatch failed :{} \n {}", p, e.getMessage());
+            }
+            if (at.incrementAndGet() >= batchSize) {
+                sqlSession.flushStatements();
+                log.info(">>>>> updateBatch flushStatements size:{} ", at.get());
+                at.set(0);
+            }
+        }
+        if (at.get() > 0) {
+            sqlSession.flushStatements();
+            log.info(">>>>> updateBatch flushStatements size:{} ", at.get());
+        }
+        sqlSession.commit();
+        stopWatch.stop();
+        int size = list.size();
+        log.info(">>>>> updateBatch finished size:{} time:{}", size, DateUtils.formatDateTime(stopWatch.getTotalTimeMillis()));
+        return Result.success(size);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Void> saveOrUpdateBatch(List<P> list, String[] columns, int batchSize) {
+        // 分离需要插入和更新的记录
+        List<P> toInsert = new ArrayList<>();
+        List<P> toUpdate = new ArrayList<>();
+        QueryWrapper<P> wrapper = findExistingWrapper(list.get(0), columns);
+        for (P p : list) {
+            if (exist(wrapper)) {
+                toUpdate.add(p);
+            } else {
+                toInsert.add(p);
+            }
+        }
+        saveBatch(toInsert, batchSize);
+        updateBatch(toUpdate, wrapper, batchSize);
+        return Result.success();
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Void> saveOrUpdate(P p, String[] columns) {
+        QueryWrapper<P> wrapper = findExistingWrapper(p, columns);
+        if (exist(wrapper)) {
+            return update(p, wrapper);
+        } else {
+            return save(p);
+        }
+    }
+
+
+    private QueryWrapper<P> findExistingWrapper(P p, String[] columns) {
+        QueryWrapper<P> wrapper = new QueryWrapper<>();
+        for (String field : columns) {
+            try {
+                Object value = getFieldValue(p, field);
+                if (value != null) {
+                    wrapper.eq(field, value);
+                }
+            } catch (Exception e) {
+                log.error("获取字段值失败: {}", field, e);
+            }
+        }
+        return wrapper;
+    }
+
+    private Object getFieldValue(Object entity, String fieldName) throws Exception {
+        Field field = entity.getClass().getDeclaredField(StringUtil.toCamelCase(fieldName));
+        field.setAccessible(true);
+        return field.get(entity);
+    }
 
     @Override
     public Result<Void> updateById(P entity) {
@@ -119,6 +207,7 @@ public class MybatisBaseServiceImpl<M extends BaseMapper<P>, P extends BaseEntit
     public Result<Void> update(P entity, Wrapper<P> queryWrapper) {
         return Result.isSuccess(baseMapper.update(entity, queryWrapper), DATA_NOT_EXIST);
     }
+
 
     @Override
     public Result<Void> deleteById(Serializable id) {

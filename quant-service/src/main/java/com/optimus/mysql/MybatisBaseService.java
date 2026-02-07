@@ -23,6 +23,11 @@ public interface MybatisBaseService<P extends BaseEntity> {
 
     Result<Integer> saveBatch(List<P> list, int batchSize);
 
+    Result<Integer> updateBatch(List<P> list, Wrapper<P> queryWrapper, int batchSize);
+
+    Result<Void> saveOrUpdateBatch(List<P> list, String[] columns, int batchSize);
+
+    Result<Void> saveOrUpdate(P p, String[] columns);
 
     Result<Void> updateById(P entity);
 
@@ -31,7 +36,7 @@ public interface MybatisBaseService<P extends BaseEntity> {
 
     Result<Void> deleteById(Serializable id);
 
-    Result<Void> delete(Wrapper<P> queryWrapper) ;
+    Result<Void> delete(Wrapper<P> queryWrapper);
 
     Result<Integer> deleteBatch(Collection<? extends Serializable> ids);
 

@@ -2,8 +2,8 @@ package com.optimus.rest;
 
 import com.google.common.collect.Lists;
 import com.optimus.base.Result;
+import com.optimus.mysql.entity.StockFundsFlow;
 import com.optimus.mysql.entity.StockTradeRealTime;
-import com.optimus.service.StockFundsFlowService;
 import com.optimus.service.StockTradeDelayService;
 import com.optimus.service.StockTradeRealtimeService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,6 @@ public class StockTradeRest {
 
     private final StockTradeRealtimeService stockTradeRealtimeService;
 
-    private final StockFundsFlowService stockFundsFlowService;
 
     /**
      * 获取所有股票今天交易行情
@@ -60,13 +59,13 @@ public class StockTradeRest {
     }
 
     /**
-     * 获取实时资金流向
+     * 获取实时资金流向，按分钟返回列表
      * @param code
      * @return
      */
-    @GetMapping("fundsFlow/{code}")
-    public Result<Void> getStockFundsFlow(@PathVariable String code) {
-        return stockFundsFlowService.getStockFundsFlow(code);
+    @GetMapping("flow/{code}")
+    public Result<List<StockFundsFlow>> getStockFundsFlow(@PathVariable String code) {
+        return stockTradeRealtimeService.getStockFundsFlow(code);
     }
 
    /* @GetMapping("fundHoldInfo/{scode}")

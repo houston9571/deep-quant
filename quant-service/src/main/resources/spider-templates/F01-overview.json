@@ -193,7 +193,7 @@
       "subsets": [
         {
           "description": "股票代码",
-          "property": "scode",
+          "property": "code",
           "xPath": "td[0]>a",
           "xAttribute": "href",
           "xPattern": [

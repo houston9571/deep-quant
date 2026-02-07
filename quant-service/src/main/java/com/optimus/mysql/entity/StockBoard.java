@@ -20,7 +20,7 @@ public class StockBoard extends BaseEntity {
     @TableId(value = Constants.ID, type = IdType.AUTO)
     private Integer id;
 
-    private String scode;
+    private String code;
 
     private String bcode;
 
