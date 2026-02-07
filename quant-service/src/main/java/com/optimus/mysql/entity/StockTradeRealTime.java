@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.optimus.ext.CountLotsWriter;
-import com.optimus.ext.CountUtilWriter;
-import com.optimus.ext.DivideBy100Reader;
-import com.optimus.ext.PercentageWriter;
+import com.optimus.ext.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -44,9 +41,9 @@ public class StockTradeRealTime extends BaseEntity {
     private String name;
 
 
-    @TableField("transaction_date")
-    @JSONField(format="yyyy-MM-dd", ordinal = 90)
-    private LocalDate transactionDate;
+    @TableField("trade_date")
+    @JSONField(alternateNames = "f80", deserializeUsing = StringToDateReader.class, format = "yyyy-MM-dd")
+    private LocalDate tradeDate;
 
     /**
      * f116 总市值/100 %

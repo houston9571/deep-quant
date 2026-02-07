@@ -43,9 +43,9 @@ public class StockTradeDelay extends BaseEntity {
     private String name;
 
 
-    @TableField("transaction_date")
+    @TableField("trade_date")
     @JSONField(alternateNames = "f297", deserializeUsing = StringToDateReader.class, format = "yyyy-MM-dd")
-    private LocalDate transactionDate;
+    private LocalDate tradeDate;
 
     /**************************
      ******** 交易数据 *********

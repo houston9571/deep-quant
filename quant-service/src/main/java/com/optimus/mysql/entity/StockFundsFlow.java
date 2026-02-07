@@ -18,9 +18,7 @@ import java.time.LocalDate;
 public class StockFundsFlow {
 
 
-    @JSONField(ordinal = 0)
-    private String tradingTime;
-
+    private String tradeDate;
 
     private String code;
 

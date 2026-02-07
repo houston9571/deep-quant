@@ -62,10 +62,10 @@ public class StockTradeRealtimeServiceImpl extends MybatisBaseServiceImpl<StockT
         String fields = "f80,f43,f44,f45,f46,f47,f48,f49,f50,f51,f52,f57,f58,f60,f116,f117,f161,f162,f163,f164,f167,f168,f169,f170,f171,f178";
         JSONObject json = eastMoneyApi.getStockTradeRealtime(code, MarketType.getMarketCode(code), fields);
         StockTradeRealTime stockTradeRealTime = JSONObject.parseObject(json.getString(LABEL_DATA), StockTradeRealTime.class);
-        String transactionDate = json.getJSONObject(LABEL_DATA).getJSONArray("f80").getJSONObject(0).getString("b");
-        stockTradeRealTime.setTransactionDate(DateUtils.parseLocalDate(transactionDate.substring(0, 8), DateFormatEnum.DATE_SHORT));
+//        String transactionDate = json.getJSONObject(LABEL_DATA).getJSONArray("f80").getJSONObject(0).getString("b");
+//        stockTradeRealTime.setTransactionDate(DateUtils.parseLocalDate(transactionDate.substring(0, 8), DateFormatEnum.DATE_SHORT));
 
-        saveOrUpdate(stockTradeRealTime, new String[]{"code", "transaction_date"});
+        saveOrUpdate(stockTradeRealTime, new String[]{"code", "trade_date"});
         return Result.success(stockTradeRealTime);
     }
 
@@ -90,7 +90,7 @@ public class StockTradeRealtimeServiceImpl extends MybatisBaseServiceImpl<StockT
                 StockFundsFlow stockFundsFlow = StockFundsFlow.builder()
                         .code(code)
                         .name(name)
-                        .tradingTime( line[0])
+                        .tradeDate( line[0])
                         .mainNetInflow(line[1])
                         .smallNetInflow(line[2])
                         .mediumNetInflow(line[3])

@@ -82,7 +82,7 @@ public class StockTradeDelayServiceImpl extends MybatisBaseServiceImpl<StockTrad
             }
             try {
                 log.info(">>>>>syncStockTradeList read finished total:{} list:{} ", total, list.size());
-                LambdaQueryWrapper<StockTradeDelay> wrapper = new LambdaQueryWrapper<StockTradeDelay>().eq(StockTradeDelay::getTransactionDate, list.get(0).getTransactionDate());
+                LambdaQueryWrapper<StockTradeDelay> wrapper = new LambdaQueryWrapper<StockTradeDelay>().eq(StockTradeDelay::getTradeDate, list.get(0).getTradeDate());
                 delete(wrapper);
                 saveBatch(list);
             } catch (Exception e) {
