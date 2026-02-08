@@ -14,6 +14,7 @@ query_fund_by_stock.go
 
 
 ### 先拿到当天上榜的股票代码
+龙虎榜详情页面
 https://data.eastmoney.com/stock/tradedetail.html
 上榜个股列表
 https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=SECURITY_CODE,TRADE_DATE&sortTypes=1,-1&pageSize=100&pageNumber=1&reportName=RPT_DAILYBILLBOARD_DETAILSNEW&columns=SECURITY_CODE,SECUCODE,SECURITY_NAME_ABBR,TRADE_DATE,EXPLAIN,CLOSE_PRICE,CHANGE_RATE,BILLBOARD_NET_AMT,BILLBOARD_BUY_AMT,BILLBOARD_SELL_AMT,BILLBOARD_DEAL_AMT,ACCUM_AMOUNT,DEAL_NET_RATIO,DEAL_AMOUNT_RATIO,TURNOVERRATE,FREE_MARKET_CAP,EXPLANATION,D1_CLOSE_ADJCHRATE,D2_CLOSE_ADJCHRATE,D5_CLOSE_ADJCHRATE,D10_CLOSE_ADJCHRATE,SECURITY_TYPE_CODE&source=WEB&client=WEB&filter=(TRADE_DATE<='2026-02-03')(TRADE_DATE>='2026-02-03')
@@ -21,6 +22,11 @@ https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=SECURITY_CODE,T
 ### 个股的龙虎榜页面
 https://data.eastmoney.com/stock/lhb,2026-02-06,002165.html
 上榜前五数据
+https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery11230180775244911632_1770542839474&reportName=RPT_BILLBOARD_DAILYDETAILSBUY&columns=ALL&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&pageNumber=1&pageSize=50&sortTypes=-1&sortColumns=BUY&source=WEB&client=WEB&_=1770542839476
+https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery11230180775244911632_1770542839470&reportName=RPT_BILLBOARD_DAILYDETAILSSELL&columns=ALL&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&pageNumber=1&pageSize=50&sortTypes=-1&sortColumns=SELL&source=WEB&client=WEB&_=1770542839477
+
+
+
 https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSSELL&columns=ALL&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&pageNumber=1&pageSize=50&sortTypes=-1&sortColumns=SELL&source=WEB&client=WEB&_=1770486329447
 上榜后统计 (STATISTICSCYCLENAME="近一月") (STATISTICSCYCLENAME="近三月") (STATISTICSCYCLENAME="近六月")
 https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_TRADE_BACK_PROFILE&columns=ALL&filter=(STATISTICSCYCLENAME="近三月")(OPERATEDEPT_CODE+in+("10030463","10030463","10634757","10026937","10520724","10000213448","10026937","10467655","0","10484897"))&pageNumber=1&pageSize=50&sortTypes=-1&source=WEB&client=WEB&_=1770486329448

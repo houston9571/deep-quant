@@ -17,28 +17,29 @@ import static com.optimus.enums.ErrorCode.INTERFACE_UNSUPPORTED;
 
 public interface MybatisBaseService<P extends BaseEntity> {
 
-    Result<Void> save(P entity);
+    int save(P entity);
 
-    Result<Integer> saveBatch(List<P> list);
+    int saveBatch(List<P> list);
 
-    Result<Integer> saveBatch(List<P> list, int batchSize);
+    int saveBatch(List<P> list, int batchSize);
 
-    Result<Integer> updateBatch(List<P> list, Wrapper<P> queryWrapper, int batchSize);
+    int saveOrUpdate(P p, String[] columns);
 
-    Result<Void> saveOrUpdateBatch(List<P> list, String[] columns, int batchSize);
+    int saveOrUpdateBatch(List<P> list, String[] columns);
 
-    Result<Void> saveOrUpdate(P p, String[] columns);
-
-    Result<Void> updateById(P entity);
-
-    Result<Void> update(P entity, Wrapper<P> queryWrapper);
+    int saveOrUpdateBatch(List<P> list, String[] columns, int batchSize);
 
 
-    Result<Void> deleteById(Serializable id);
+    int updateById(P entity);
 
-    Result<Void> delete(Wrapper<P> queryWrapper);
+    int update(P entity, Wrapper<P> queryWrapper);
 
-    Result<Integer> deleteBatch(Collection<? extends Serializable> ids);
+
+    int deleteById(Serializable id);
+
+    int delete(Wrapper<P> queryWrapper);
+
+    int deleteBatch(Collection<? extends Serializable> ids);
 
 
     Long count(P entity);

@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.optimus.enums.DateFormatEnum;
 import com.optimus.ext.*;
 import com.optimus.mysql.entity.BaseEntity;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static com.optimus.constant.Constants.ID;
 
@@ -43,20 +45,20 @@ public class StockTradeRealTime extends BaseEntity {
 
 
     @TableField("trade_date")
-    @JSONField(alternateNames = "f80", deserializeUsing = StringToDateReader.class, format = "yyyy-MM-dd")
-    private LocalDate tradeDate;
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime tradeDate;
 
     /**
      * f116 总市值/100 %
      */
     @JSONField(alternateNames = "f116",   serializeUsing = CountUtilWriter.class)
-    private Integer marketValue;
+    private Long marketCap;
 
     /**
      * f117 流通市值/100 %
      */
     @JSONField(alternateNames = "f117",   serializeUsing = CountUtilWriter.class)
-    private Integer floatMarketValue;
+    private Long freeMarketCap;
 
     /**
      * f162 市盈(动)/100 % 未来12个月预期盈利 前瞻性
@@ -98,7 +100,7 @@ public class StockTradeRealTime extends BaseEntity {
      * f170 涨跌幅/100 %
      */
     @JSONField(alternateNames = "f170", deserializeUsing = DivideBy100Reader.class, serializeUsing = PercentageWriter.class)
-    private BigDecimal changePercent;
+    private BigDecimal changeRate;
 
     /**
      * f171 振幅/100 %
@@ -140,25 +142,25 @@ public class StockTradeRealTime extends BaseEntity {
      * f47 成交量（手）
      */
     @JSONField(alternateNames = "f47", serializeUsing = CountLotsWriter.class)
-    private Integer volume;
+    private Long volume;
 
     /**
      * f48 成交额
      */
     @JSONField(alternateNames = "f48", serializeUsing = CountUtilWriter.class)
-    private Integer turnover;
+    private Long accumAmount;
 
     /**
      * f49 外盘（主动性买盘,买方主动"扫货"，按卖方报价成交）
      */
     @JSONField(alternateNames = "f49", serializeUsing = CountUtilWriter.class)
-    private Integer buyVolume;
+    private Long buyVolume;
 
     /**
      * f161 内盘（主动性卖盘,卖方主动"砸盘"，按买方报价成交）
      */
     @JSONField(alternateNames = "f161", serializeUsing = CountUtilWriter.class)
-    private Integer sellVolume;
+    private Long sellVolume;
 
     /**
      * f50 量比/100

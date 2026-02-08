@@ -8,7 +8,7 @@ public interface StockInfoService extends MybatisBaseService<StockInfo> {
 
     Result<Void> getStockInfo(String code);
 
-    Result<Void> getStockBoards(String code);
+    Result<Void> getStockBoardList(String code);
 
 
 }

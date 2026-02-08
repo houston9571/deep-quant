@@ -67,7 +67,7 @@ public class FundInfoRest {
                         log.error("解析基金列表错误：{}", found);
                     }
                 }
-                return fundInfoService.saveBatch(fundInfoList);
+                return Result.success(fundInfoService.saveBatch(fundInfoList));
             }
         }
         return Result.fail(DATA_NOT_EXIST);

@@ -47,6 +47,8 @@ public interface Constants {
 
     String LABEL_CODE = "code";
 
+    String LABEL_RESULT = "result";
+
     String LABEL_DATA = "data";
 
 

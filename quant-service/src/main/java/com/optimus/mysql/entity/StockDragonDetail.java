@@ -1,0 +1,130 @@
+package com.optimus.mysql.entity;
+
+import com.alibaba.fastjson2.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.optimus.ext.CountLotsWriter;
+import com.optimus.ext.CountUtilWriter;
+import com.optimus.ext.PercentageWriter;
+import com.optimus.ext.StringToDateReader;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static com.optimus.constant.Constants.ID;
+
+/**
+ * 股票行情
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@TableName("stock_dragon_detail")
+public class StockDragonDetail extends BaseEntity {
+
+
+    @TableId(value = ID, type = IdType.AUTO)
+    private Integer id;
+
+    /**
+     * 股票代码
+     */
+    @JSONField(alternateNames = "SECURITY_CODE")
+    private String code;
+
+    /**
+     * 股票名称
+     */
+    private String name;
+
+    @TableField("trade_date")
+    @JSONField(alternateNames = "TRADE_DATE", format = "yyyy-MM-dd", deserializeUsing = StringToDateReader.class)
+    private LocalDate tradeDate;
+
+    /**
+     * 营业部代码
+     */
+    @JSONField( alternateNames = "OPERATEDEPT_CODE")
+    private String deptCode;
+
+    /**
+     * 营业部名称
+     */
+    @JSONField(  alternateNames = "OPERATEDEPT_NAME")
+    private String deptName;
+
+
+    /**
+     * 收盘价
+     */
+    @JSONField(alternateNames = "CLOSE_PRICE"  )
+    private BigDecimal closePrice;
+
+    /**
+     * 涨跌幅
+     */
+    @JSONField(alternateNames = "CHANGE_RATE", serializeUsing = PercentageWriter.class )
+    private BigDecimal changeRate;
+
+    /**
+     * 净额
+     */
+    @JSONField(alternateNames = "NET", serializeUsing = CountUtilWriter.class)
+    private Long netBuyAmount;
+
+    /**
+     * 买入金额
+     */
+    @JSONField(alternateNames = "BUY", serializeUsing = CountUtilWriter.class)
+    private Long buyAmount;
+
+    /**
+     * 买入金额占总成交比例
+     */
+    @JSONField(alternateNames = "TOTAL_BUYRIO", serializeUsing = CountUtilWriter.class)
+    private BigDecimal totalBuyRatio;
+
+    /**
+     * 卖出金额
+     */
+    @JSONField(alternateNames = "SELL", serializeUsing = CountUtilWriter.class)
+    private Long sellAmount;
+
+    /**
+     * 卖出金额占总成交比例
+     */
+    @JSONField(alternateNames = "TOTAL_SELLRIO", serializeUsing = CountUtilWriter.class)
+    private BigDecimal totalSellRatio;
+
+    /**
+     * 市场总成交量
+     */
+    @JSONField(alternateNames = "ACCUM_VOLUME", serializeUsing = CountLotsWriter.class)
+    private Long accumVolume;
+
+    /**
+     * 市场总成交额
+     */
+    @JSONField(alternateNames = "ACCUM_AMOUNT", serializeUsing = CountUtilWriter.class)
+    private Long accumAmount;
+
+
+    /**
+     * 上榜原因
+     */
+    @JSONField(alternateNames = "EXPLANATION")
+    private String explanation;
+
+
+    @JSONField(alternateNames = "TRADE_ID")
+    private Integer tradeId;
+
+    @JSONField(alternateNames = "OPERATEDEPT_CODE_OLD")
+    private String deptCodeOld;
+
+}

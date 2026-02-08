@@ -27,6 +27,6 @@ public enum DateFormatEnum {
 
     //	19 , which is the number of characters in yyyy-mm-dd hh:mm:ss
 //	20 + s , which is the number of characters in the yyyy-mm-dd hh:mm:ss.[fff...] and s represents the scale of the given Timestamp, its fractional seconds precision. 
-    final String format;
+    private final String format;
 
 }

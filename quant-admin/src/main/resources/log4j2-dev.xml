@@ -25,7 +25,7 @@
 
     <Loggers>
         <root level="info" includeLocation="true">
-            <appender-ref ref="FileLog"/>
+<!--            <appender-ref ref="FileLog"/>-->
             <appender-ref ref="Console"/>
         </root>
         <logger name="com.alibaba.fastjson" level="info"/>
@@ -35,7 +35,7 @@
         <logger name="org.springframework.context" level="info"/>
         <logger name="org.springframework.web" level="info"/>
         <logger name="com.optimus" level="debug" includeLocation="true" additivity="false">
-            <appender-ref ref="FileLog"/>
+<!--            <appender-ref ref="FileLog"/>-->
             <appender-ref ref="Console"/>
         </logger>
     </Loggers>

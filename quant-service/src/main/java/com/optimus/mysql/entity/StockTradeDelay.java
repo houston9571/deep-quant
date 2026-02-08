@@ -115,7 +115,7 @@ public class StockTradeDelay extends BaseEntity {
      * f6 成交额
      */
     @JSONField(alternateNames = "f6", deserializeUsing = NumberCheckReader.class, serializeUsing = CountUtilWriter.class)
-    private Long turnover;
+    private Long accumAmount;
 
     /**
      * f8 换手率/100 %
@@ -127,13 +127,13 @@ public class StockTradeDelay extends BaseEntity {
      * f34 外盘（主动性买盘,买方主动"扫货"，按卖方报价成交）
      */
     @JSONField(alternateNames = "f34", deserializeUsing = NumberCheckReader.class, serializeUsing = CountUtilWriter.class)
-    private Integer buyVolume;
+    private Long buyVolume;
 
     /**
      * f35 内盘（主动性卖盘,卖方主动"砸盘"，按买方报价成交）
      */
     @JSONField(alternateNames = "f35", deserializeUsing = NumberCheckReader.class, serializeUsing = CountUtilWriter.class)
-    private Integer sellVolume;
+    private Long sellVolume;
 
     /**
      * 涨停价 = 今开 * 110%
@@ -154,13 +154,13 @@ public class StockTradeDelay extends BaseEntity {
      * f20 总市值
      */
     @JSONField(alternateNames = "f20", deserializeUsing = NumberCheckReader.class, serializeUsing = CountUtilWriter.class)
-    private Long marketValue;
+    private Long marketCap;
 
     /**
      * f21 流通市值/100
      */
     @JSONField(alternateNames = "f21", deserializeUsing = NumberCheckReader.class, serializeUsing = CountUtilWriter.class)
-    private Long floatMarketValue;
+    private Long freeMarketCap;
 
     /**
      * f9 市盈率(动)/100 未来12个月预期盈利 前瞻性

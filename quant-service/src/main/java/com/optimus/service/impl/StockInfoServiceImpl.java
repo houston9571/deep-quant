@@ -7,9 +7,8 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import com.optimus.base.Result;
-import com.optimus.client.EmPush2delayApi;
+import com.optimus.client.EastMoneyApi;
 import com.optimus.client.EastMoneyH5Api;
-import com.optimus.client.EmDatacenterApi;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.BoardInfo;
 import com.optimus.mysql.entity.StockBoard;
@@ -29,6 +28,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 
+import static com.optimus.constant.Constants.LABEL_DATA;
+import static com.optimus.constant.Constants.LABEL_RESULT;
 import static com.optimus.constants.MarketType.codeMap;
 import static com.optimus.constants.MarketType.getMarket;
 import static com.optimus.enums.ErrorCode.NOT_GET_PAGE_ERROR;
@@ -45,12 +46,10 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
     private final StockBoardService stockBoardService;
 
     @Autowired
-    EmPush2delayApi eastMoneyApi;
+    EastMoneyApi eastMoneyApi;
     @Autowired
     EastMoneyH5Api eastMoneyH5Api;
 
-    @Autowired
-    EmDatacenterApi emDatacenterApi;
 
     @Autowired
     SpriderTemplateParser spiderTemplateParser;
@@ -74,7 +73,7 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
         }
 
         StockInfo stockInfo = BeanUtil.fillBeanWithMap(maps[0], new StockInfo(), true);
-        saveOrUpdate(stockInfo, new String[]{"code", "transaction_date"});
+        saveOrUpdate(stockInfo, new String[]{"code"});
         return Result.success();
     }
 
@@ -84,15 +83,15 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
      * @param code
      * @return
      */
-    public Result<Void> getStockBoards(String code) {
-        JSONObject json = emDatacenterApi.getBoards(code, getMarket(code));
-        JSONObject result = json.getJSONObject("result");
-        if (ObjectUtil.isEmpty(result) || !result.containsKey("data")) {
-            return Result.fail(NOT_GET_PAGE_ERROR, "getBoards result is null");
+    public Result<Void> getStockBoardList(String code) {
+        JSONObject json = eastMoneyApi.getBoards(code, getMarket(code));
+        JSONObject result = json.getJSONObject(LABEL_RESULT);
+        if (ObjectUtil.isEmpty(result) || !result.containsKey(LABEL_DATA)) {
+            return Result.fail(NOT_GET_PAGE_ERROR, "getStockBoardList result is null");
         }
-        JSONArray data = result.getJSONArray("data");
+        JSONArray data = result.getJSONArray(LABEL_DATA);
         if (CollectionUtils.isEmpty(data)) {
-            return Result.fail(NOT_GET_PAGE_ERROR, "getBoards data is null");
+            return Result.fail(NOT_GET_PAGE_ERROR, "getStockBoardList data is null");
         }
         JSONObject d;
         List<StockBoard> stockBoardList = Lists.newArrayList();

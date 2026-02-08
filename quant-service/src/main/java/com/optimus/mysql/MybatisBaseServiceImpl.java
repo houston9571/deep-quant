@@ -68,106 +68,94 @@ public class MybatisBaseServiceImpl<M extends BaseMapper<P>, P extends BaseEntit
 
 
     @Override
-    public Result<Void> save(P entity) {
-        return Result.isSuccess(baseMapper.insert(entity), DATA_NOT_EXIST);
-    }
-
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Result<Integer> saveBatch(List<P> list) {
-        return saveBatch(list, 1000);
+    public int save(P entity) {
+        return baseMapper.insert(entity);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<Integer> saveBatch(List<P> list, int batchSize) {
+    public int saveBatch(List<P> list) {
         if (CollectionUtils.isEmpty(list)) {
-            return Result.success(0);
+            return 0;
         }
-        AtomicInteger at = new AtomicInteger();
+        return saveBatch(list, list.size());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int saveBatch(List<P> list, int batchSize) {
+        if (CollectionUtils.isEmpty(list)) {
+            return 0;
+        }
+        int at = 0;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
         for (P p : list) {
             try {
-                baseMapper.insert(p);
+                save(p);
+                if (++at % batchSize == 0) {
+                    sqlSession.flushStatements();
+                    log.info(">>>>> saveBatch flushStatements index:{} ", at);
+                }
             } catch (Exception e) {
-                log.error(">>>>> saveBatch failed :{} \n {}", p, e.getMessage());
-            }
-            if (at.incrementAndGet() >= batchSize) {
-                sqlSession.flushStatements();
-                log.info(">>>>> saveBatch flushStatements size:{} ", at.get());
-                at.set(0);
+                log.error(">>>>> saveBatch failed index:{} {} {}", at, p, e.getMessage());
             }
         }
-        if (at.get() > 0) {
+        if (at % batchSize > 0) {
             sqlSession.flushStatements();
-            log.info(">>>>> saveBatch flushStatements size:{} ", at.get());
+            log.info(">>>>> saveBatch flushStatements index:{} ", at);
         }
         sqlSession.commit();
         stopWatch.stop();
-        int size = list.size();
-        log.info(">>>>> saveBatch finished size:{} time:{}", size, DateUtils.formatDateTime(stopWatch.getTotalTimeMillis()));
-        return Result.success(size);
+        log.info(">>>>> saveBatch finished size:{} time:{}", at, DateUtils.formatDateTime(stopWatch.getTotalTimeMillis()));
+        return at;
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int saveOrUpdateBatch(List<P> list, String[] columns) {
+        if (CollectionUtils.isEmpty(list)) {
+            return 0;
+        }
+        return saveOrUpdateBatch(list, columns, list.size());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<Integer> updateBatch(List<P> list, Wrapper<P> queryWrapper, int batchSize) {
+    public int saveOrUpdateBatch(List<P> list, String[] columns, int batchSize) {
         if (CollectionUtils.isEmpty(list)) {
-            return Result.success(0);
+            return 0;
         }
-        AtomicInteger at = new AtomicInteger();
+        int at = 0;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
         for (P p : list) {
             try {
-                baseMapper.update(p, queryWrapper);
+                saveOrUpdate(p, columns);
+                if (++at % batchSize == 0) {
+                    sqlSession.flushStatements();
+                    log.info(">>>>> updateBatch flushStatements index:{} ", at);
+                }
             } catch (Exception e) {
-                log.error(">>>>> updateBatch failed :{} \n {}", p, e.getMessage());
-            }
-            if (at.incrementAndGet() >= batchSize) {
-                sqlSession.flushStatements();
-                log.info(">>>>> updateBatch flushStatements size:{} ", at.get());
-                at.set(0);
+                log.error(">>>>> updateBatch failed index:{} {} {}", at, p, e.getMessage());
             }
         }
-        if (at.get() > 0) {
+        if (at % batchSize > 0) {
             sqlSession.flushStatements();
-            log.info(">>>>> updateBatch flushStatements size:{} ", at.get());
+            log.info(">>>>> updateBatch flushStatements index:{} ", at);
         }
         sqlSession.commit();
         stopWatch.stop();
-        int size = list.size();
-        log.info(">>>>> updateBatch finished size:{} time:{}", size, DateUtils.formatDateTime(stopWatch.getTotalTimeMillis()));
-        return Result.success(size);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Result<Void> saveOrUpdateBatch(List<P> list, String[] columns, int batchSize) {
-        // 分离需要插入和更新的记录
-        List<P> toInsert = new ArrayList<>();
-        List<P> toUpdate = new ArrayList<>();
-        QueryWrapper<P> wrapper = findExistingWrapper(list.get(0), columns);
-        for (P p : list) {
-            if (exist(wrapper)) {
-                toUpdate.add(p);
-            } else {
-                toInsert.add(p);
-            }
-        }
-        saveBatch(toInsert, batchSize);
-        updateBatch(toUpdate, wrapper, batchSize);
-        return Result.success();
+        log.info(">>>>> updateBatch finished size:{} time:{}", at, DateUtils.formatDateTime(stopWatch.getTotalTimeMillis()));
+        return at;
     }
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Result<Void> saveOrUpdate(P p, String[] columns) {
+    public int saveOrUpdate(P p, String[] columns) {
         QueryWrapper<P> wrapper = findExistingWrapper(p, columns);
         if (exist(wrapper)) {
             return update(p, wrapper);
@@ -199,30 +187,29 @@ public class MybatisBaseServiceImpl<M extends BaseMapper<P>, P extends BaseEntit
     }
 
     @Override
-    public Result<Void> updateById(P entity) {
-        return Result.isSuccess(baseMapper.updateById(entity), DATA_NOT_EXIST);
+    public int updateById(P entity) {
+        return baseMapper.updateById(entity);
     }
 
     @Override
-    public Result<Void> update(P entity, Wrapper<P> queryWrapper) {
-        return Result.isSuccess(baseMapper.update(entity, queryWrapper), DATA_NOT_EXIST);
+    public int update(P entity, Wrapper<P> queryWrapper) {
+        return baseMapper.update(entity, queryWrapper);
     }
 
 
     @Override
-    public Result<Void> deleteById(Serializable id) {
-        return Result.isSuccess(baseMapper.deleteById(id), DATA_NOT_EXIST);
+    public int deleteById(Serializable id) {
+        return baseMapper.deleteById(id);
     }
 
     @Override
-    public Result<Void> delete(Wrapper<P> queryWrapper) {
-        return Result.isSuccess(baseMapper.delete(queryWrapper), DATA_NOT_EXIST);
+    public int delete(Wrapper<P> queryWrapper) {
+        return baseMapper.delete(queryWrapper);
     }
 
     @Override
-    public Result<Integer> deleteBatch(Collection<? extends Serializable> ids) {
-        int l = baseMapper.deleteBatchIds(ids);
-        return l > 0 ? Result.success(l) : Result.fail(DATA_NOT_EXIST);
+    public int deleteBatch(Collection<? extends Serializable> ids) {
+        return baseMapper.deleteBatchIds(ids);
     }
 
 

@@ -37,7 +37,7 @@ public class StockInfoRest {
             if (!result.isSuccess()) {
                 return result;
             }
-            stockInfoService.getStockBoards(code);
+            stockInfoService.getStockBoardList(code);
         }
         return result;
     }

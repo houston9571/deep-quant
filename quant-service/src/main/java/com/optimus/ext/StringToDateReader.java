@@ -21,6 +21,9 @@ public class StringToDateReader implements ObjectReader<LocalDate> {
         if (StringUtil.length(date) < 8)
             return null;
         try {
+            if(StringUtil.containsString(date, "-")){
+                return DateUtils.parseLocalDate(date.substring(0, 10), DateFormatEnum.DATE);
+            }
             return DateUtils.parseLocalDate(date.substring(0, 8), DateFormatEnum.DATE_SHORT);
         } catch (Exception e) {
             log.error(">>>>>{} 日期格式错误：{}={}", this.getClass().getSimpleName(), fieldName, date);
