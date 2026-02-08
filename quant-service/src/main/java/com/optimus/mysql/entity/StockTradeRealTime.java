@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.optimus.ext.*;
+import com.optimus.mysql.entity.BaseEntity;
 import lombok.*;
 
 import java.math.BigDecimal;

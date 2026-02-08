@@ -85,13 +85,13 @@ public class StockTradeDelay extends BaseEntity {
      * f3 涨跌幅/100 %
      */
     @JSONField(alternateNames = "f3", deserializeUsing = DivideBy100Reader.class, serializeUsing = PercentageWriter.class)
-    private BigDecimal changePercent;
+    private BigDecimal changeRate;
 
     /**
      * f4 涨跌额/100
      */
     @JSONField(alternateNames = "f4", deserializeUsing = DivideBy100Reader.class)
-    private BigDecimal changeAmount;
+    private BigDecimal changePrice;
 
     /**
      * f7 振幅/100 %

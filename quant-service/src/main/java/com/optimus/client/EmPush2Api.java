@@ -7,7 +7,7 @@ import com.dtflys.forest.annotation.Var;
 import org.springframework.stereotype.Component;
 
 @Component
-@BaseRequest(baseURL = "http://push2.eastmoney.com", headers = {"User-Agent:Mozilla/5.0...", "Host:push2.eastmoney.com", "Referer:http://push2.eastmoney.com"})
+@BaseRequest(baseURL = "http://push2.eastmoney.com", headers = {"User-Agent:Mozilla/5.0...", "Host:push2.eastmoney.com", "Referer:push2.eastmoney.com"})
 public interface EmPush2Api {
 
 

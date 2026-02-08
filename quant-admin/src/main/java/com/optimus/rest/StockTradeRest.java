@@ -2,7 +2,7 @@ package com.optimus.rest;
 
 import com.google.common.collect.Lists;
 import com.optimus.base.Result;
-import com.optimus.mysql.entity.StockFundsFlow;
+import com.optimus.mysql.vo.StockFundsFlow;
 import com.optimus.mysql.entity.StockTradeRealTime;
 import com.optimus.service.StockTradeDelayService;
 import com.optimus.service.StockTradeRealtimeService;
