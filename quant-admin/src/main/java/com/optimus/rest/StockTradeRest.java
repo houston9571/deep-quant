@@ -1,21 +1,12 @@
 package com.optimus.rest;
 
-import com.google.common.collect.Lists;
-import com.optimus.base.Result;
-import com.optimus.mysql.vo.StockFundsFlow;
-import com.optimus.mysql.entity.StockTradeRealTime;
-import com.optimus.service.StockTradeDelayService;
-import com.optimus.service.StockTradeRealtimeService;
+import com.optimus.service.StockDelayService;
+import com.optimus.service.StockRealtimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import static cn.hutool.core.text.StrPool.COMMA;
 import static com.dtflys.forest.backend.ContentType.APPLICATION_JSON;
 
 
@@ -27,46 +18,12 @@ public class StockTradeRest {
 
 
 
-    private final StockTradeDelayService stockTradeService;
+    private final StockDelayService stockDelayService;
 
-    private final StockTradeRealtimeService stockTradeRealtimeService;
+    private final StockRealtimeService stockRealtimeService;
 
 
-    /**
-     * 获取所有股票今天交易行情
-     */
-    @GetMapping("delay")
-    public Result<Void> syncStockTradeList() {
-        return stockTradeService.syncStockTradeList();
-    }
 
-    /**
-     * 获取股票实时交易行情
-     * @param codes
-     * @return
-     */
-    @GetMapping("realtime/{codes}")
-    public Result<List<StockTradeRealTime>> getStockTradeRealtime(@PathVariable String codes) {
-        List<StockTradeRealTime> list = Lists.newArrayList();
-        String[] codeArray = codes.split(COMMA);
-        for (String code : codeArray) {
-            Result<StockTradeRealTime> result = stockTradeRealtimeService.getStockTradeRealtime(code);
-            if (result.isSuccess()) {
-                list.add(result.getData());
-            }
-        }
-        return Result.success(list);
-    }
-
-    /**
-     * 获取实时资金流向，按分钟返回列表
-     * @param code
-     * @return
-     */
-    @GetMapping("flow/{code}")
-    public Result<List<StockFundsFlow>> getStockFundsFlow(@PathVariable String code) {
-        return stockTradeRealtimeService.getStockFundsFlow(code);
-    }
 
    /* @GetMapping("fundHoldInfo/{scode}")
     public JSONResult fundHoldInfo(@PathVariable String scode) {

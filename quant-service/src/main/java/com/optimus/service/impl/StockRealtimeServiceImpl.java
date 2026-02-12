@@ -5,20 +5,19 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Lists;
 import com.optimus.base.Result;
-import com.optimus.client.EastMoneyApi;
+import com.optimus.client.EastMoneyStockApi;
 import com.optimus.client.EastMoneyH5Api;
 import com.optimus.constants.MarketType;
 import com.optimus.constants.StockCodeUtils;
 import com.optimus.enums.DateFormatEnum;
 import com.optimus.mysql.MybatisBaseServiceImpl;
-import com.optimus.mysql.vo.StockFundsFlow;
-import com.optimus.mysql.entity.StockTradeRealTime;
-import com.optimus.mysql.mapper.StockTradeRealtimeMapper;
-import com.optimus.service.StockTradeRealtimeService;
+import com.optimus.mysql.vo.FundsFlowLine;
+import com.optimus.mysql.entity.StockRealTime;
+import com.optimus.mysql.mapper.StockRealtimeMapper;
+import com.optimus.service.StockRealtimeService;
 import com.optimus.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -34,19 +33,13 @@ import static com.optimus.enums.ErrorCode.NOT_GET_PAGE_ERROR;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StockTradeRealtimeServiceImpl extends MybatisBaseServiceImpl<StockTradeRealtimeMapper, StockTradeRealTime> implements StockTradeRealtimeService {
+public class StockRealtimeServiceImpl extends MybatisBaseServiceImpl<StockRealtimeMapper, StockRealTime> implements StockRealtimeService {
 
-    @Autowired
-    EastMoneyApi eastMoneyApi;
-    @Autowired
-    EastMoneyH5Api eastMoneyH5Api;
+    private final StockRealtimeMapper stockRealtimeMapper;
 
-    @Autowired
-    EastMoneyApi emPush2delayApi;
+    private final EastMoneyStockApi eastMoneyStockApi;
 
-
-    private final StockTradeRealtimeMapper stockTradeRealtimeMapper;
-
+    private final EastMoneyH5Api eastMoneyH5Api;
 
     /**
      * 获取股票实时交易行情
@@ -54,10 +47,10 @@ public class StockTradeRealtimeServiceImpl extends MybatisBaseServiceImpl<StockT
      * @param code
      * @return
      */
-    public Result<StockTradeRealTime> getStockTradeRealtime(String code) {
+    public Result<StockRealTime> getStockRealtime(String code) {
         String fields = "f80,f43,f44,f45,f46,f47,f48,f49,f50,f51,f52,f57,f58,f60,f116,f117,f161,f162,f163,f164,f167,f168,f169,f170,f171,f178";
-        JSONObject json = eastMoneyApi.getStockTradeRealtime(code, MarketType.getMarketCode(code), fields);
-        StockTradeRealTime stockTradeRealTime = JSONObject.parseObject(json.getString(LABEL_DATA), StockTradeRealTime.class);
+        JSONObject json = eastMoneyStockApi.getStockTradeRealtime(code, MarketType.getMarketCode(code), fields);
+        StockRealTime stockTradeRealTime = JSONObject.parseObject(json.getString(LABEL_DATA), StockRealTime.class);
         String transactionDate = json.getJSONObject(LABEL_DATA).getJSONArray("f80").getJSONObject(1).getString("e");
         stockTradeRealTime.setTradeDate(DateUtils.parse(transactionDate+"00", DateFormatEnum.DATETIME_SHORT));
         if(DateUtils.now().isBefore(stockTradeRealTime.getTradeDate())){
@@ -74,19 +67,19 @@ public class StockTradeRealtimeServiceImpl extends MybatisBaseServiceImpl<StockT
      * @param code
      * @return
      */
-    public Result<List<StockFundsFlow>> getStockFundsFlow(String code) {
-        JSONObject json = emPush2delayApi.getStockFundsFlow(code, MarketType.getMarketCode(code), KLINE_1MIN);
+    public Result<List<FundsFlowLine>> getFundsFlowLines(String code) {
+        JSONObject json = eastMoneyStockApi.getFundsFlowLines(code, MarketType.getMarketCode(code), KLINE_1MIN, 10);
         JSONObject data = json.getJSONObject(LABEL_DATA);
         if (ObjectUtil.isEmpty(data) || !data.containsKey("klines")) {
             return Result.fail(NOT_GET_PAGE_ERROR,"");
         }
         String name = data.getString("name");
         JSONArray lines = data.getJSONArray("klines");
-        List<StockFundsFlow> list = Lists.newArrayList();
+        List<FundsFlowLine> list = Lists.newArrayList();
         if(!CollectionUtils.isEmpty(lines)){
             for (int i = 0; i < lines.size(); i++) {
                 String[] line = lines.getString(i).split(COMMA);
-                StockFundsFlow stockFundsFlow = StockFundsFlow.builder()
+                FundsFlowLine stockFundsFlow = FundsFlowLine.builder()
                         .code(code)
                         .name(name)
                         .tradeDate( line[0])

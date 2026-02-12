@@ -10,6 +10,8 @@ import java.util.List;
 public interface StockDragonDetailService {
 
 
+    List<StockDragonDetail> queryDragonDetail();
+
     int getStockDragonDetail(LocalDate date, String code, String name) ;
 
 }

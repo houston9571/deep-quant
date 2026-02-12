@@ -24,8 +24,8 @@ import static com.optimus.constant.Constants.ID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_trade_realtime")
-public class StockTradeRealTime extends BaseEntity {
+@TableName("stock_realtime")
+public class StockRealTime extends BaseEntity {
 
 
     @TableId(value = ID, type = IdType.AUTO)

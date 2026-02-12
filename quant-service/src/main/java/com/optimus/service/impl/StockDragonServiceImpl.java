@@ -6,16 +6,15 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Maps;
 import com.optimus.base.Result;
-import com.optimus.client.EastMoneyApi;
+import com.optimus.client.EastMoneyDragonApi;
+import com.optimus.client.EastMoneyStockApi;
 import com.optimus.constants.MarketType;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.StockDragon;
-import com.optimus.mysql.entity.StockDragonDetail;
 import com.optimus.mysql.mapper.StockDragonMapper;
 import com.optimus.service.StockDragonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -34,8 +33,8 @@ public class StockDragonServiceImpl extends MybatisBaseServiceImpl<StockDragonMa
     private final StockDragonMapper stockDragonMapper;
 
 
-    @Autowired
-    EastMoneyApi eastMoneyApi;
+    private final EastMoneyDragonApi eastMoneyDragonApi;
+
 
 
     /**
@@ -50,13 +49,13 @@ public class StockDragonServiceImpl extends MybatisBaseServiceImpl<StockDragonMa
     }
 
     /**
-     * 个股龙虎榜列表
+     * 龙虎榜个股列表
      */
     public Result<List<StockDragon>> getStockDragonList(String date) {
         int total = 0, pageNum = 0, pageSize = 100;
         Map<String, StockDragon> map = Maps.newHashMap();
         while (true) {
-            JSONObject json = eastMoneyApi.getStockDragonList(date, ++pageNum, pageSize);
+            JSONObject json = eastMoneyDragonApi.getStockDragonList(date, ++pageNum, pageSize);
             JSONObject result = json.getJSONObject(LABEL_RESULT);
             if (ObjectUtil.isEmpty(result) || !result.containsKey(LABEL_DATA)) {
                 break;

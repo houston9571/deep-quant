@@ -16,15 +16,15 @@ import java.time.LocalDateTime;
 import static com.optimus.constant.Constants.ID;
 
 /**
- * 股票行情
+ * 股票每日行情
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_trade_delay")
-public class StockTradeDelay extends BaseEntity {
+@TableName("stock_delay")
+public class StockDelay extends BaseEntity {
 
 
     @TableId(value = ID, type = IdType.AUTO)

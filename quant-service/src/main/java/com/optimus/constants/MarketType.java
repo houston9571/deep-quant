@@ -12,13 +12,13 @@ import java.util.Map;
 
 public class MarketType {
 
-    private static final String MARKET_SZ = "SZ", MARKET_SH = "SH", MARKET_BJ = "BJ", MARKET_HK = "HK";
-    private static final String MARKET_CODE_SZ = "0", MARKET_CODE_SH = "1", MARKET_CODE_BJ = "2", MARKET_CODE_HK = "116";
+    public static final String MARKET_SZ = "SZ", MARKET_SH = "SH", MARKET_BJ = "BJ", MARKET_HK = "HK";
+    public static final String MARKET_CODE_SZ = "0", MARKET_CODE_SH = "1", MARKET_CODE_BJ = "2", MARKET_CODE_HK = "116";
 
-    private static final BigDecimal LIMIT_FIVE = BigDecimal.valueOf(0.05);
-    private static final BigDecimal LIMIT_TEN = BigDecimal.valueOf(0.1);
-    private static final BigDecimal LIMIT_TWENTY = BigDecimal.valueOf(0.2);
-    private static final BigDecimal LIMIT_THIRTY = BigDecimal.valueOf(0.3);
+    public static final BigDecimal LIMIT_FIVE = BigDecimal.valueOf(0.05);
+    public static final BigDecimal LIMIT_TEN = BigDecimal.valueOf(0.1);
+    public static final BigDecimal LIMIT_TWENTY = BigDecimal.valueOf(0.2);
+    public static final BigDecimal LIMIT_THIRTY = BigDecimal.valueOf(0.3);
 
     /**
      * 第1位标识证券大类，第2位标识该大类下的衍生证券
@@ -43,23 +43,17 @@ public class MarketType {
     }
 
     public static String getMarket(String code) {
-        if (code.length() == 5) {
-            return MARKET_SH;
-        }
         return markets.get(code.substring(0, 3)).getMarket();
     }
 
     public static String getMarketCode(String code) {
-        if (code.length() == 5) {
-            return MARKET_CODE_HK;
+        if (code.startsWith("BK")) {
+            return "90";
         }
         return markets.get(code.substring(0, 3)).getMarketCode();
     }
 
     public static BigDecimal getChangeLimit(String code) {
-        if (code.length() == 5) {
-            return BigDecimal.ONE;
-        }
         return markets.get(code.substring(0, 3)).getChangeLimits();
     }
 

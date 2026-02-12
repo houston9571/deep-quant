@@ -1,7 +1,4 @@
 
-### https://github.com/axiaoxin-com/investool/blob/v1.3.9/datacenter/eastmoney/company_profile.go
-
-
 emh5.eastmoney.com          H5获取A股市场实时行情、历史数据、资金流向、财务指标等金融数据
 push2.eastmoney.com         实时数据推送 http://push2delay.eastmoney.com
 push2his.eastmoney.com      历史数据 K线数据（日K、周K、月K） 分时数据 复权数据
@@ -9,21 +6,9 @@ datacenter.eastmoney.com    数据中心
 quote.eastmoney.com         实时行情 股票、基金、债券、期货实时行情 指数行情 港股、美股行情
 
 
-根据股票查询购买的基金 机构 股东
-query_fund_by_stock.go
+上方列出主要股票市场指数，动态显示
 
-
-### 先拿到当天上榜的股票代码
-龙虎榜详情页面
-https://data.eastmoney.com/stock/tradedetail.html
-上榜个股列表
-https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=SECURITY_CODE,TRADE_DATE&sortTypes=1,-1&pageSize=100&pageNumber=1&reportName=RPT_DAILYBILLBOARD_DETAILSNEW&columns=SECURITY_CODE,SECUCODE,SECURITY_NAME_ABBR,TRADE_DATE,EXPLAIN,CLOSE_PRICE,CHANGE_RATE,BILLBOARD_NET_AMT,BILLBOARD_BUY_AMT,BILLBOARD_SELL_AMT,BILLBOARD_DEAL_AMT,ACCUM_AMOUNT,DEAL_NET_RATIO,DEAL_AMOUNT_RATIO,TURNOVERRATE,FREE_MARKET_CAP,EXPLANATION,D1_CLOSE_ADJCHRATE,D2_CLOSE_ADJCHRATE,D5_CLOSE_ADJCHRATE,D10_CLOSE_ADJCHRATE,SECURITY_TYPE_CODE&source=WEB&client=WEB&filter=(TRADE_DATE<='2026-02-03')(TRADE_DATE>='2026-02-03')
-
-### 个股的龙虎榜页面
-https://data.eastmoney.com/stock/lhb,2026-02-06,002165.html
-上榜前五数据
-https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery11230180775244911632_1770542839474&reportName=RPT_BILLBOARD_DAILYDETAILSBUY&columns=ALL&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&pageNumber=1&pageSize=50&sortTypes=-1&sortColumns=BUY&source=WEB&client=WEB&_=1770542839476
-https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery11230180775244911632_1770542839470&reportName=RPT_BILLBOARD_DAILYDETAILSSELL&columns=ALL&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&pageNumber=1&pageSize=50&sortTypes=-1&sortColumns=SELL&source=WEB&client=WEB&_=1770542839477
+1 股票行情，表格上方列出热门概念板块，根据热门概念查询股票
 
 
 
@@ -33,10 +18,18 @@ https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_TRADE_BACK_P
 近一个月涨幅	近三个月涨幅	近六个月涨幅
 https://datacenter-web.eastmoney.com/securities/api/data/v1/get?reportName=RPT_BILLBOARD_STATISTICS&columns=SECUCODE,SECURITY_CODE,SECURITY_NAME_ABBR,BILLBOARD_TIMES_1M,BILLBOARD_TIMES_3M,BILLBOARD_TIMES_6M,IPCT1M,IPCT3M,IPCT6M&quoteColumns=f2,f3,f8,f21&quoteType=0&filter=(SECURITY_CODE="000547")&pageNumber=1&pageSize=200&sortTypes=&sortColumns=&source=DataCenter&client=WEB&callback=jQuery1123004116039305586894_1770486329442&code=000547&_=1770486329443
 
+1 获取概念板块最新行情列表，大概不到500个，在概念板块显示
+2 按概念获取个股列表
 ### 概念页面
-https://quote.eastmoney.com/bk/90.BK1134.html
-
-
+https://quote.eastmoney.com/center/gridlist.html#concept_board
+概念排名列表
+push2delay.eastmoney.com/api/qt/clist/get?fs=m:90+t:3+f:!50&pn=1&pz=100&fields=f12,f13,f14,f1,f2,f4,f3,f152,f20,f8,f104,f105&fid=f3&po=1&np=1&fltt=1&invt=2&dect=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=|0|0|0|web&_=1770654328438
+所属概念的个股列表
+push2delay.eastmoney.com/api/qt/clist/get?fs=b:bk1172+f:!50&pn=1&pz=100&fields=f12,f13,f14,f1,f2,f4,f3,f152,f5,f6,f7,f15,f18,f16,f17,f10,f8,f9,f23&fid=f3&po=1&np=1&fltt=1&invt=2&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=|0|0|0|web&_=1770654635342
+概念板块资金流向
+https://push2.eastmoney.com/api/qt/stock/get?secid=90.BK1172&fields=f135,f136,f137,f138,f139,f140,f141,f142,f143,f144,f145,f146,f147,f148,f149&invt=2&fltt=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=4363375817489466|0|1|0|web&dect=1&_=1770693880163
+行业咨询
+https://np-listapi.eastmoney.com/comm/web/getListInfo?cfh=1&client=web&mTypeAndCode=90.BK1172&type=1&pageSize=5&callback=jQuery35108169508511492598_1770693133522&traceId=8449912282&_=1770693133523
 
 
 
@@ -44,8 +37,8 @@ https://quote.eastmoney.com/bk/90.BK1134.html
 https://push2.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65&klt=1&secid=1.600986
 "trends":["2026-01-07 15:00,88.63,88.63,88.63,88.63,2638,23380594.00,88.102,1936,0.00,437302,3852698702.00"]
 
-
-
+根据secids返回多个code的字段，字段根据fields决定
+https://push2.eastmoney.com/api/qt/ulist/get?fltt=1&invt=2&fields=f14,f12,f13,f1,f2,f4,f3,f152&secids=122.XAU,122.XAG,109.LCPT,225.lc2605,0.002405,0.000555,0.002777,1.518600&ut=fa5fd1943c7b386f172d6893dbfba10b&pn=1&np=1&pz=20&dect=1&wbp2u=4363375817489466|0|1|0|web&_=1770693133539
 
 
 

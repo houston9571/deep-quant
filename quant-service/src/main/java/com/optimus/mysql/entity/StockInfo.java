@@ -7,6 +7,9 @@ import lombok.*;
 
 import static com.optimus.constant.Constants.ID;
 
+/**
+ * 股票基本资料
+ */
 @Data
 @Builder
 @NoArgsConstructor

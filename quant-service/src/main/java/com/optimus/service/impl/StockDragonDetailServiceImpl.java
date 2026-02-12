@@ -3,29 +3,24 @@ package com.optimus.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.optimus.base.Result;
-import com.optimus.client.EastMoneyApi;
-import com.optimus.constants.MarketType;
+import com.optimus.client.EastMoneyDragonApi;
+import com.optimus.client.EastMoneyStockApi;
 import com.optimus.enums.DateFormatEnum;
 import com.optimus.mysql.MybatisBaseServiceImpl;
-import com.optimus.mysql.entity.StockDragon;
+import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.StockDragonDetail;
 import com.optimus.mysql.mapper.StockDragonDetailMapper;
-import com.optimus.mysql.mapper.StockDragonMapper;
 import com.optimus.service.StockDragonDetailService;
-import com.optimus.service.StockDragonService;
 import com.optimus.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.optimus.constant.Constants.LABEL_DATA;
 import static com.optimus.constant.Constants.LABEL_RESULT;
@@ -38,18 +33,24 @@ public class StockDragonDetailServiceImpl extends MybatisBaseServiceImpl<StockDr
     private final StockDragonDetailMapper stockDragonDetailMapper;
 
 
-    @Autowired
-    EastMoneyApi eastMoneyApi;
+    private final EastMoneyDragonApi eastMoneyDragonApi;
 
 
     /**
-     * 个股龙虎榜买卖详情
+     * 查询当天龙虎榜列表，按游资分类
+     */
+    public List<StockDragonDetail> queryDragonDetail() {
+        return stockDragonDetailMapper.queryDragonDetail();
+    }
+
+    /**
+     * 龙虎榜个股买卖详情
      */
     public int getStockDragonDetail(LocalDate date, String code, String name) {
         Map<String, StockDragonDetail> map = Maps.newHashMap();
         String tradeDate = DateUtils.format(date, DateFormatEnum.DATE);
-        JSONObject buy = eastMoneyApi.getStockDragonListBuy(tradeDate, code).getJSONObject(LABEL_RESULT);
-        JSONObject sell = eastMoneyApi.getStockDragonListSell(tradeDate, code).getJSONObject(LABEL_RESULT);
+        JSONObject buy = eastMoneyDragonApi.getStockDragonListBuy(tradeDate, code).getJSONObject(LABEL_RESULT);
+        JSONObject sell = eastMoneyDragonApi.getStockDragonListSell(tradeDate, code).getJSONObject(LABEL_RESULT);
         JSONArray data = new JSONArray();
         if (ObjectUtil.isNotNull(buy) && ObjectUtil.isNotNull(sell) && buy.containsKey(LABEL_DATA) && sell.containsKey(LABEL_DATA)) {
             data = buy.getJSONArray(LABEL_DATA);
@@ -59,8 +60,9 @@ public class StockDragonDetailServiceImpl extends MybatisBaseServiceImpl<StockDr
                     try {
                         StockDragonDetail d = JSONObject.parseObject(data.getString(i), StockDragonDetail.class);
                         d.setName(name);
-                        if (!map.containsKey(d.getDeptCode()) || map.get(d.getDeptCode()).getTradeId() < d.getTradeId()) {
-                            map.put(d.getDeptCode(), d);
+                        // 自然人、其他自然人、机构投资者、中小投资者、深股通投资者等，这些code一样，所有要用名称去重
+                        if (!map.containsKey(d.getDeptName()) || map.get(d.getDeptName()).getTradeId() < d.getTradeId()) {
+                            map.put(d.getDeptName(), d);
                         }
                     } catch (Exception e) {
                         log.error(">>>>>getStockDragonDetail JSONObject.parseObject error. {}", e.getMessage());

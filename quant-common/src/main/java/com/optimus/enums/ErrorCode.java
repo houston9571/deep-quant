@@ -20,7 +20,7 @@ public enum ErrorCode {
 
     NETWORK_ERROR(1001, "网络异常 %s", "Network exception %s"),
 
-    REQUEST_UNSUPPORTED(1002, "不支持该请求", "The request is not supported"),
+    REQUEST_UNSUPPORTED(1002, "不支持该请求: %s", "The request is not supported: %s"),
 
     INTERFACE_UNSUPPORTED(1003, "不支持该接口", "This interface is not supported"),
 
@@ -40,9 +40,8 @@ public enum ErrorCode {
 
     DATE_PARSE_ERROR(1011, "数据解析错误:%s", "Date parse error: %s"),
 
-    TASK_RUNNING(1012, "当前任务正在执行", "The current task is being executed"),
 
-    THREAD_INTERRUPTED(1013, "任务执行异常", "Task execution exception"),
+    DATA_UPDATED(1012, "数据已经更新 %s:%s", "Date was updated %s:%s"),
 
     NETWORK_FAILED(1014,"网络请求失败。url=%s body=%s", "" ),
     ;

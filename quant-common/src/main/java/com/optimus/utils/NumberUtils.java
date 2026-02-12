@@ -12,6 +12,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+import static java.math.RoundingMode.HALF_UP;
+
 
 /**
  * 2015年8月7日 下午12:54:57
@@ -19,6 +21,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class NumberUtils {
+
 
     private static AtomicInteger a2 = new AtomicInteger(11);
 
@@ -36,22 +39,21 @@ public class NumberUtils {
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
 
-
-    private static final BigDecimal Y = new BigDecimal("100000000");
-    private static final BigDecimal W = new BigDecimal("10000");
+    public static final BigDecimal WY = new BigDecimal("1000000000000");
+    public static final BigDecimal Y = new BigDecimal("100000000");
+    public static final BigDecimal W = new BigDecimal("10000");
 
     public static BigDecimal moneyDivide(int fee) {
-        return new BigDecimal(fee).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        return new BigDecimal(fee).divide(new BigDecimal("100"), 2, HALF_UP);
     }
 
     public static BigDecimal moneyDivide(String fee) {
-        return new BigDecimal(fee).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        return new BigDecimal(fee).divide(new BigDecimal("100"), 2, HALF_UP);
     }
 
     public static BigDecimal money(String fee) {
-        return new BigDecimal(fee).setScale(2, RoundingMode.HALF_UP);
+        return new BigDecimal(fee).setScale(2, HALF_UP);
     }
-
 
 
     public static String uuid() {
@@ -145,11 +147,14 @@ public class NumberUtils {
         }
         if (NumberUtils.isNumeric(count)) {
             BigDecimal b = new BigDecimal(count);
+            if (b.compareTo(WY) >= 0) {
+                return fh + b.divide(WY).setScale(1, HALF_UP).toPlainString() + "亿";
+            }
             if (b.compareTo(Y) > 0) {
-                return fh + b.divide(Y).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "亿";
+                return fh + b.divide(Y).setScale(1, HALF_UP).toPlainString() + "亿";
             }
             if (b.compareTo(W) > 0) {
-                return fh + b.divide(W).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "万";
+                return fh + b.divide(W).setScale(1, HALF_UP).toPlainString() + "万";
             }
         }
         return count;

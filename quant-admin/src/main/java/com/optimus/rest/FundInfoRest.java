@@ -230,9 +230,5 @@ public class FundInfoRest {
         return JSONResult.success("");
     }
 */
-    private Map<String, String> createMap(String fcode) {
-        return new HashMap<String, String>() {{
-            put("fcode", fcode);
-        }};
-    }
+
 }

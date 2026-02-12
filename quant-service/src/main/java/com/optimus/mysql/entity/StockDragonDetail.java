@@ -10,6 +10,7 @@ import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
 import com.optimus.ext.StringToDateReader;
 import lombok.*;
+import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -66,13 +67,13 @@ public class StockDragonDetail extends BaseEntity {
     private BigDecimal closePrice;
 
     /**
-     * 涨跌幅
+     * 涨幅
      */
     @JSONField(alternateNames = "CHANGE_RATE", serializeUsing = PercentageWriter.class )
     private BigDecimal changeRate;
 
     /**
-     * 净额
+     * 净买入
      */
     @JSONField(alternateNames = "NET", serializeUsing = CountUtilWriter.class)
     private Long netBuyAmount;
@@ -126,5 +127,11 @@ public class StockDragonDetail extends BaseEntity {
 
     @JSONField(alternateNames = "OPERATEDEPT_CODE_OLD")
     private String deptCodeOld;
+
+    @Transient
+    private String partnerCode;
+
+    @Transient
+    private String partnerName;
 
 }

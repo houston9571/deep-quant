@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8"/>
     <link rel="stylesheet" href="../css/theme-default-easytable.css"/>
@@ -7,8 +7,40 @@
     <script src="../js/Sortable.js"></script>
     <script src="../js/vue.min.js"></script>
     <script src="../js/axios.min.js"></script>
-<!--    <script src="https://unpkg.com/vue/dist/vue.js"></script>-->
-<!--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 0px solid #ddd;
+            padding: 5px;
+        }
+
+        .td-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .float-left {
+            float: left;
+        }
+
+        .float-right {
+            float: right;
+        }
+
+        .left {
+            text-align: left;
+        }
+
+        .right {
+            text-align: right;
+        }
+    </style>
 </head>
 <body>
 <div id="app" style="font-size: 12px;">
@@ -17,39 +49,39 @@
             <table class="ve-table-content ve-table-border-x ve-table-border-y" id="vTable" style="width: 2000px;">
                 <thead class="ve-table-fixed-header ve-table-header">
                 <tr class="ve-table-header-tr">
-                    <th class="ve-table-fixed-left" style="width: 15px; left: 0px;background-color: #fafafa;"></th>
-                    <th class="ve-table-header-th ve-table-fixed-left" style="width: 90px; left: 15px;">股票</th>
-                    <th class="ve-table-header-th" style="width: 90px;"><a id="sshy" @click="doSort">行业</a></th>
-                    <th class="ve-table-header-th" style="width: 80px;"><a id="syld" @click="doSort"> PE(动) </a><b class="hxsjccsyl" :title="syld_title"/></th>
-                    <th class="ve-table-header-th" style="width: 80px;"><a id="sjl" @click="doSort"> 市净率 </a><b class="hxsjccsyl" :title="sjl_title"/></th>
-                    <th class="ve-table-header-th" style="width: 80px;"><a id="jzcsyl" @click="doSort"> ROE </a><b class="hxsjccsyl" :title="jzcsyl_title"/></th>
-                    <th class="ve-table-header-th" style="width: 70px;"><a id="fzl" @click="doSort"> 负债率 </a></th>
-                    <th class="ve-table-header-th" style="width: 100px;">总市值</th>
-                    <th class="ve-table-header-th" style="width: 100px;">流通市值</th>
-                    <th class="ve-table-header-th" style="width: 100px;">季度收益</th>
+                    <th class="ve-table-header-th" style="width: 250px; font-size: medium" v-for="col in tableData[0]">{{col.tradeDate}}</th>
                 </tr>
                 </thead>
                 <tbody id="sort" class="ve-table-body ve-table-stripe ve-table-row-hover ve-table-row-highlight">
                 <tr style="height: 0px;"></tr>
-                <tr class="ve-table-body-tr" v-for="col in tableData" :id="col.code">
-                    <td class="ve-table-fixed-left" style="text-align: right;left: 0px;">
-                        <a href="#" class="em-totop" @click="moveTop(col.code)"><b class="em-icon em-ftop em-pro-toTop"></b></a>
-                    </td>
-                    <td class="ve-table-body-td ve-table-fixed-left" style="text-align: left;left: 15px;" :title="col.info">
-                        <a :href="'http://quote.eastmoney.com/'+col.market+col.code+'.html'" target="_blank" style="color: #00298F">
-                            {{col.name}}<br><span style="color: #888">{{col.market}}.{{col.code}}</span>
+                <tr class="ve-table-body-tr" v-for="(col,index) in tableData" v-if="index > 0">
+                    <td class="ve-table-body-td" style="text-align: left;padding: 5px; " v-for="c in col" :class="c.code" @mouseenter="isHover(c.code)" @mouseleave="isLeave(c.code)">
+                        <a :href="'https://quote.eastmoney.com/bk/'+c.market+'.'+c.code+'.html'" target="_blank" style="color: #494949">
+                            <div class="td-flex">
+                                <span class="left" style="font-size: 22px;">{{c.name}}</span>
+                                <span class="right" :style="c.changeRate.startsWith('-') ? 'color: green' : 'color: red'"><span style="font-size: medium">{{c.changeRate}}</span></span>
+                            </div>
+                            <div class="td-flex">
+                                <span class="left" style="width: 39%">总: {{c.marketCap}}</span>
+                                <span class="left" style="width: 39%">成: {{c.accumAmount}}</span>
+                                <div class="right">
+                                    <span style="color: red">{{c.upNum}}</span> | <span style="color: green;">{{c.downNum}}</span>
+                                </div>
+                            </div>
+                            <div class="td-flex">
+                                <span class="left">主力</span>
+                                <span class="right" style="width: 27%; color: red">{{c.mainIn}}</span>
+                                <span class="right" style="width: 27%; color: green">-{{c.mainOut}}</span>
+                                <span class="right" style="width: 27%"><span :style="c.mainNetIn.startsWith('-') ? 'color: green' : 'color: red'">{{c.mainNetIn}}</span></span>
+                            </div>
+                            <div class="td-flex">
+                                <span class="left">散户</span>
+                                <span class="right" style="width: 27%; color: red">{{c.retailIn}}</span>
+                                <span class="right" style="width: 27%; color: green">-{{c.retailOut}}</span>
+                                <span class="right" style="width: 27%"><span :style="c.retailNetIn.startsWith('-') ? 'color: green' : 'color: red'">{{c.retailNetIn}}</span></span>
+                            </div>
                         </a>
                     </td>
-                    <td class="ve-table-body-td" style="text-align: center;">{{col.qy}}{{col.sshy}}</td>
-
-                    <td class="ve-table-body-td" style="text-align: right;padding-right: 20px;">{{col.clrq}}</td>
-                    <td class="ve-table-body-td" style="text-align: right;padding-right: 20px;">{{col.ssrq}}</td>
-                    <td class="ve-table-body-td" style="text-align: right;padding-right: 20px;">{{col.frdb}}%</td>
-                    <td class="ve-table-body-td" style="text-align: right;padding-right: 10px;">{{col.dsz}}</td>
-                    <td class="ve-table-body-td" style="text-align: right;padding-right: 10px;">{{col.zcdz}}</td>
-<!--                    <td class="ve-table-body-td" style="text-align: right;"><span :style="col.jdsy>0 ? 'color: red' : 'color: green'">{{col.jdsy}}%</span>&nbsp;({{col.jd}})</td>-->
-
-                    <td class="ve-table-body-td" style="text-align: right;padding-right: 10px;"></td>
                 </tr>
                 </tbody>
             </table>
@@ -80,14 +112,12 @@
 
     // 异步请求函数必须要写在外面，然后在vue里面调用
     function asyncLoadDate() {
-        axios.post(url + 'stock', {
-            pageIndex: 1,
-            pageSize: 20
-        }).then(function (response) {
-            if (response.status === 200) {
-                vm.fillData(response);
-            }
-        }).catch(function (error) {
+        axios.get(url + 'board/10/10')
+            .then(function (response) {
+                if (response.status === 200) {
+                    vm.fillData(response);
+                }
+            }).catch(function (error) {
             alert("系统异常");
         });
     }
@@ -96,7 +126,6 @@
         el: "#app",
         mounted: function () {
             asyncLoadDate();
-            saveSortData('sort', url + 'setStockSort');
         },
         methods: {
             fillData: function (response) {
@@ -104,6 +133,19 @@
                 this.tableData = json.data;
                 // console.log(JSON.stringify(this.tableData))
             },
+
+            isHover: function (code) {
+                document.getElementById('vTable').querySelectorAll('.' + code).forEach(function (el) {
+                    el.style.backgroundColor = 'yellow';
+                });
+            },
+
+            isLeave: function (code) {
+                document.getElementById('vTable').querySelectorAll('.' + code).forEach(function (el) {
+                    el.style.backgroundColor = ''; // 或者设置回默认颜色或其他颜色
+                });
+            },
+
             //弹出隐藏层
             getJsonValue: function (json) {
                 console.log(json)
@@ -138,77 +180,11 @@
                     '" width="100%" height="100%"></object>';
 
             },
-            moveTop: function (id) {
-                moveTop(id, 'sort', url + 'setStockSort');
-            },
-            doSort: function (event) {
-                if (this.isDragging) {
-                    destroySort();
-                    this.isDragging = false;
-                }
-                // console.log(event.target.className)
-                // console.log(event.target.id)
-                var className = event.target.className;
-                className = className == '' || className == 'asc' ? 'desc' : 'asc';
-                document.querySelectorAll('.desc').forEach(a => {
-                    a.className = ''
-                })
-                document.querySelectorAll('.asc').forEach(a => {
-                    a.className = ''
-                })
-                event.target.className = className;
-                let data = this.tableData.slice(0);
-                var id = event.target.id;
-                var hasSub = id.indexOf(".") > 0;
-                if (hasSub) {
-                    var i = id.indexOf(".");
-                    id_o = id.substr(0, i);
-                    id_t = id.substr(i + 1);
-                }
-                if (className === "asc") {
-                    data.sort((a, b) => {
-                        if (hasSub) {
-                            if (a[id_o] == null || a[id_o][id_t] == null || a[id_o][id_t] == '')
-                                return 1;
-                            if (b[id_o] == null || b[id_o][id_t] == null || b[id_o][id_t] == '')
-                                return -1;
-                            re = a[id_o][id_t] - b[id_o][id_t];
-                            return isNaN(re) ? a[id_o][id_t].localeCompare(b[id_o][id_t]) : re;
-                        } else {
-                            if (a[id] == null || a[id] == '')
-                                return 1;
-                            if (b[id] == null || b[id] == '')
-                                return -1;
-                            re = a[id] - b[id];
-                            return isNaN(re) ? a[id].localeCompare(b[id]) : re;
-                        }
-                    });
-                } else if (className === "desc") {
-                    data.sort((a, b) => {
-                        if (hasSub) {
-                            if (a[id_o] == null || a[id_o][id_t] == null || a[id_o][id_t] == '')
-                                return 1;
-                            if (b[id_o] == null || b[id_o][id_t] == null || b[id_o][id_t] == '')
-                                return -1;
-                            re = b[id_o][id_t] - a[id_o][id_t];
-                            return isNaN(re) ? b[id_o][id_t].localeCompare(a[id_o][id_t]) : re;
-                        } else {
-                            if (a[id] == null || a[id] == '')
-                                return 1;
-                            if (b[id] == null || b[id] == '')
-                                return -1;
-                            re = b[id] - a[id];
-                            return isNaN(re) ? b[id].localeCompare(a[id]) : re;
-
-                        }
-                    });
-                }
-
-                this.tableData = data;
-            }
         },
         data: function () {
             return {
+                days: 10,
+                tops: 10,
                 isDragging: true,
                 hs_lb_title: '换手率=（某一段时期内的成交量）/（流通股）x 100% ，反映股票流通性强弱的指标之一\n' +
                     '将换手率与股价走势相结合，可以股价做出一定的预测和判断。某只股票的换手率突然上升，成交量放大，可能意味着有投资者在大量买进，\n' +

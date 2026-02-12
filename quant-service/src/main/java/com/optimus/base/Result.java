@@ -67,16 +67,15 @@ public class Result<T> {
 
     public static <T> Result<T> fail(ErrorCode code, Object... args) {
         String msg = args != null ? String.format(code.getMsg(), args) : code.getMsg();
+        log.error("[{}]{}", code, msg);
         return fail(code.getCode(), msg);
     }
 
     public static <T> Result<T> fail(int code, String msg) {
-        log.error("失败原因:[{}]{}", code, msg);
         return Result.<T>builder().code(code).msg(msg).build();
     }
 
     public static <T> Result<T> fail(String msg) {
-        log.error("失败原因:[{}]{}", SYSTEM_ERROR.getCode(), msg);
         return Result.<T>builder().code(SYSTEM_ERROR.getCode()).msg(msg).build();
     }
 

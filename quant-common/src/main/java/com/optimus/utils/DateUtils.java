@@ -204,7 +204,7 @@ public class DateUtils {
         long hour = sec / (60 * 60) - day * 24;
         long min = (sec / 60) - day * 24 * 60 - hour * 60;
         long s = sec - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60;
-        return (day > 0 ? day + " days, " : "") + String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", s);
+        return (day > 0 ? day + " days, " : "") + String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", s) + "." + String.format("%03d", (timeMillis % 1000));
     }
 
 }

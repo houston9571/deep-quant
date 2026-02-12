@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
+/**
+ * 板块基本资料
+ */
 @Data
 @Builder
 @NoArgsConstructor

@@ -13,9 +13,6 @@ public interface Constants {
     String APP_INFO = "APP_INFO";
 
 
-
-    String DARK = "dark";
-
     int MAX_PAGE_SIZE = 10000;
 
     int ENABLE = 1;
@@ -51,9 +48,9 @@ public interface Constants {
 
     String LABEL_DATA = "data";
 
+    String LABEL_TOTAL = "total";
 
-    int STATE_NO = 0;
-    int STATE_YES = 1;
+
 
 
     int THREE_MINUTES = 180;
