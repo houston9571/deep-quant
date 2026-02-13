@@ -2,7 +2,7 @@ package com.optimus.rest;
 
 import com.google.common.collect.Lists;
 import com.optimus.base.Result;
-import com.optimus.mysql.entity.StockDragon;
+import com.optimus.mysql.entity.DragonStock;
 import com.optimus.mysql.entity.StockInfo;
 import com.optimus.mysql.entity.StockDelay;
 import com.optimus.mysql.entity.StockRealTime;
@@ -10,6 +10,7 @@ import com.optimus.mysql.vo.FundsFlowLine;
 import com.optimus.service.*;
 import com.optimus.thread.Threads;
 import com.optimus.utils.DateUtils;
+import com.optimus.utils.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -41,9 +42,9 @@ public class TaskRest {
 
     private final TradeCalendarService tradeCalendarService;
 
-    private final StockDragonService stockDragonService;
+    private final DragonStockService dragonStockService;
 
-    private final StockDragonDetailService stockDragonDetailService;
+    private final DragonStockDetailService dragonStockDetailService;
 
 
     /**
@@ -107,13 +108,19 @@ public class TaskRest {
      */
     @GetMapping("dragon/{date}")
     public Result<Integer> getStockDragonList(@PathVariable String date) {
-        Result<List<StockDragon>> result = stockDragonService.getStockDragonList(date);
+        Result<List<DragonStock>> result = dragonStockService.getDragonStockList(date);
         if (result.hasData()) {
-            List<StockDragon> list = result.getData();
+            List<DragonStock> list = result.getData();
             Threads.asyncExecute(() -> {
                 int count = 0;
-                for (StockDragon d : list) {
-                    count += stockDragonDetailService.getStockDragonDetail(d.getTradeDate(), d.getCode(), d.getName());
+                for (DragonStock d : list) {
+                    int cc = dragonStockDetailService.getDragonStockDetail(d.getTradeDate(), d.getCode(), d.getName());
+                    if(cc == 0){
+                        // 连续请求容易超时，重试一次
+                        Threads.sleep(NumberUtils.random(2000));
+                        cc = dragonStockDetailService.getDragonStockDetail(d.getTradeDate(), d.getCode(), d.getName());
+                    }
+                    count += cc;
                 }
                 log.info(">>>>>getStockDragonDetail: {} total_save_size:{}", date, count);
             });

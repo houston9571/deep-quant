@@ -10,11 +10,11 @@ import com.optimus.base.Result;
 import com.optimus.client.EastMoneyStockApi;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.BoardInfo;
-import com.optimus.mysql.entity.StockBoard;
+import com.optimus.mysql.entity.BoardStock;
 import com.optimus.mysql.entity.StockInfo;
 import com.optimus.mysql.mapper.StockInfoMapper;
 import com.optimus.service.BoardInfoService;
-import com.optimus.service.StockBoardService;
+import com.optimus.service.BoardStockService;
 import com.optimus.service.StockInfoService;
 import com.optimus.sprider.SpriderTemplateParser;
 import com.optimus.utils.StringUtil;
@@ -45,7 +45,7 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
 
     private final BoardInfoService boardInfoService;
 
-    private final StockBoardService stockBoardService;
+    private final BoardStockService boardStockService;
 
     private final EastMoneyStockApi eastMoneyStockApi;
 
@@ -106,7 +106,7 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
                 return Result.fail(NOT_GET_PAGE_ERROR, "getStockBoardList data is null");
             }
             JSONObject d;
-            List<StockBoard> stockBoardList = Lists.newArrayList();
+            List<BoardStock> boardStockList = Lists.newArrayList();
             for (int i = 0; i < data.size(); i++) {
                 d = data.getJSONObject(i);
                 String bcode = d.getString("NEW_BOARD_CODE");
@@ -114,10 +114,10 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
                     // 添加不存在的概念名称
                     boardInfoService.save(BoardInfo.builder().code(bcode).name(d.getString("BOARD_NAME")).type(d.getString("BOARD_TYPE")).level(d.getString("BOARD_LEVEL")).build());
                 }
-                stockBoardList.add(StockBoard.builder().code(code).bcode(bcode).build());
+                boardStockList.add(BoardStock.builder().code(code).bcode(bcode).build());
             }
-            stockBoardService.delete(new LambdaQueryWrapper<StockBoard>().eq(StockBoard::getCode, code));
-            stockBoardService.saveBatch(stockBoardList);
+            boardStockService.delete(new LambdaQueryWrapper<BoardStock>().eq(BoardStock::getCode, code));
+            boardStockService.saveBatch(boardStockList);
         } catch (Exception e) {
             log.error(">>>>>getStockBoardList error. {}", e.getMessage());
             return Result.fail(e.getMessage());

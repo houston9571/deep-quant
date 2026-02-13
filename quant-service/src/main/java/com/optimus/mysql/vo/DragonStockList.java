@@ -23,7 +23,7 @@ import static com.optimus.constant.Constants.ID;
  * 龙虎榜页面
  */
 @Data
-public class StockDragonList extends StockDelay {
+public class DragonStockList extends StockDelay {
 
 
     /**************************

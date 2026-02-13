@@ -81,7 +81,7 @@ public class BoardDelayServiceImpl extends MybatisBaseServiceImpl<BoardDelayMapp
                     saveOrUpdate(boardDelay, new String[]{"code", "trade_date"});
                     list.add(boardDelay);
                 } catch (Exception e) {
-                    log.error(">>>>>syncBoardTradeList JSONObject.parseObject error. {}", e.getMessage());
+                    log.error(">>>>>syncBoardTradeList JSONObject.parseObject error. {} {}", array.getString(i), e.getMessage());
                 }
             }
             if (array.size() < pageSize) {

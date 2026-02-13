@@ -3,25 +3,30 @@ package com.optimus.mysql.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.optimus.constant.Constants;
 import lombok.*;
 
-/**
- *
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_board")
-public class StockBoard extends BaseEntity {
+@TableName("org_dept")
+public class OrgDept extends BaseEntity {
 
-    @TableId(value = Constants.ID, type = IdType.AUTO)
-    private Integer id;
 
+    /**
+     * 营业厅代码
+     */
+    @TableId(value = "code", type = IdType.INPUT)
     private String code;
 
-    private String bcode;
+    /**
+     * 营业厅名称
+     */
+    private String name;
+
+    private String codeOld;
+
+    private String remark;
 
 }

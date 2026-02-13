@@ -28,8 +28,8 @@ import static java.math.RoundingMode.HALF_UP;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_dragon")
-public class StockDragon extends BaseEntity {
+@TableName("dragon_stock")
+public class DragonStock extends BaseEntity {
 
 
     @TableId(value = ID, type = IdType.AUTO)

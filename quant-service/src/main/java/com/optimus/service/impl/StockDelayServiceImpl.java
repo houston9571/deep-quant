@@ -67,7 +67,7 @@ public class StockDelayServiceImpl extends MybatisBaseServiceImpl<StockDelayMapp
                         list.add(d);
                     }
                 } catch (Exception e) {
-                    log.error(">>>>>syncStockTradeList JSONObject.parseObject error. {}", e.getMessage());
+                    log.error(">>>>>syncStockTradeList JSONObject.parseObject error. {} {}", array.getString(i), e.getMessage());
                 }
             }
             if (array.size() < pageSize) {

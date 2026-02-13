@@ -25,8 +25,8 @@ import static com.optimus.constant.Constants.ID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_dragon_detail")
-public class StockDragonDetail extends BaseEntity {
+@TableName("dragon_stock_detail")
+public class DragonStockDetail extends BaseEntity {
 
 
     @TableId(value = ID, type = IdType.AUTO)
@@ -52,13 +52,6 @@ public class StockDragonDetail extends BaseEntity {
      */
     @JSONField( alternateNames = "OPERATEDEPT_CODE")
     private String deptCode;
-
-    /**
-     * 营业部名称
-     */
-    @JSONField(  alternateNames = "OPERATEDEPT_NAME")
-    private String deptName;
-
 
     /**
      * 收盘价

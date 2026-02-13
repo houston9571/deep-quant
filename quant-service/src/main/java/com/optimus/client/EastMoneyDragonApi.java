@@ -34,28 +34,29 @@ public interface EastMoneyDragonApi {
     @Get(url = DATACENTER_WEB_URL + "/api/data/v1/get?reportName=RPT_DAILYBILLBOARD_DETAILSNEW&filter=(TRADE_DATE='{tradeDate}')&pageNumber={pageNum}&pageSize={pageSize}&source=WEB&client=WEB" +
             "&columns=TRADE_DATE,SECURITY_CODE,SECUCODE,SECURITY_NAME_ABBR,EXPLAIN,CLOSE_PRICE,CHANGE_RATE,BILLBOARD_NET_AMT,BILLBOARD_BUY_AMT,BILLBOARD_SELL_AMT,BILLBOARD_DEAL_AMT,ACCUM_AMOUNT,DEAL_NET_RATIO,DEAL_AMOUNT_RATIO,TURNOVERRATE,FREE_MARKET_CAP,EXPLANATION,D1_CLOSE_ADJCHRATE,D2_CLOSE_ADJCHRATE,D5_CLOSE_ADJCHRATE,D10_CLOSE_ADJCHRATE,SECURITY_TYPE_CODE"
     )
-    JSONObject getStockDragonList(@Var("tradeDate") String tradeDate, @Var("pageNum") int pageNum, @Var("pageSize") int pageSize);
+    JSONObject getDragonStockList(@Var("tradeDate") String tradeDate, @Var("pageNum") int pageNum, @Var("pageSize") int pageSize);
 
     /**
      * 个股龙虎榜详情 卖出列表
      * https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSSELL&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&sortColumns=SELL&sortTypes=-1&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770486329447
      */
     @Get(url = DATACENTER_WEB_URL + "/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSSELL&filter=(TRADE_DATE='{tradeDate}')(SECURITY_CODE=\"{code}\")&sortColumns=SELL&sortTypes=-1&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770486329447")
-    JSONObject getStockDragonListSell(@Var("tradeDate") String tradeDate, @Var("code") String code);
+    JSONObject getDragonStockListSell(@Var("tradeDate") String tradeDate, @Var("code") String code);
 
     /**
      * 个股龙虎榜详情 买入列表
      * https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSBUY&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&sortTypes=-1&sortColumns=BUY&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770542839476
      */
     @Get(url = DATACENTER_WEB_URL + "/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSBUY&filter=(TRADE_DATE='{tradeDate}')(SECURITY_CODE=\"{code}\")&sortTypes=-1&sortColumns=BUY&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770542839476")
-    JSONObject getStockDragonListBuy(@Var("tradeDate") String tradeDate, @Var("code") String code);
+    JSONObject getDragonStockListBuy(@Var("tradeDate") String tradeDate, @Var("code") String code);
 
 
     /**
-     * 实时访问主要指数 fs指定指数代码
-     * https://push2.eastmoney.com/api/qt/clist/get?_=1770608220902&fs=i:1.000001,i:0.399001,i:0.399006,i:1.000300,i:100.HSI,i:100.UDI,i:100.DJIA,i:100.SPX,i:100.NDX,i:100.MCX,i:100.FCHI,i:100.GDAXI&fields=f2,f4,f3,f12,f13,f14&np=1&invt=2&pn=1&pz=100&po=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=4363375817489466|0|1|0|web
+     * 每日活跃营业部
+     * https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_OPERATEDEPT_ACTIVE&filter=(ONLIST_DATE='2026-02-13')&pageNumber=1&pageSize=100&sortColumns=TOTAL_NETAMT,ONLIST_DATE,OPERATEDEPT_CODE&sortTypes=-1,-1,1&columns=ALL&source=WEB&client=WEB
      */
-    JSONObject getStockMarketIndex(@Var("tradeDate") String tradeDate, @Var("code") String code);
+    @Get(url = DATACENTER_WEB_URL + "/api/data/v1/get?reportName=RPT_OPERATEDEPT_ACTIVE&filter=(ONLIST_DATE='{tradeDate}')&pageNumber={pageNum}&pageSize={pageSize}&sortColumns=TOTAL_NETAMT,ONLIST_DATE,OPERATEDEPT_CODE&sortTypes=-1,-1,1&columns=ALL&source=WEB&client=WEB")
+    JSONObject getDragonDeptListBuy(@Var("tradeDate") String tradeDate, @Var("pageNum") int pageNum, @Var("pageSize") int pageSize);
 
 
 }

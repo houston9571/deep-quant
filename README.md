@@ -14,11 +14,14 @@ Deep Think Quant System
 
 
 #######################
-1. 收盘获取所有股票当天最新数据 
-   9:31 11:31 15:01   127.0.0.1/task/stock/delay -- stock_delay
-2. 收盘后获取龙虎榜数据 
-   16:00  127.0.0.1/task/dragon/2026-02-10  -- stock_dragon stock_dragon_detail
-3. 板块列表 
-   点击后可实时更新  收盘后自动更新一次 127.0.0.1/task/board/delay -- board_delay 
-4. 通过所属概念的更新个股列表
-   板块更新后，再更新板块所属的股票 stock_board  stock_delay
+1. 龙虎榜数据
+   龙虎榜机构列表更新 17:00  127.0.0.1/task/dragon/dept/2026-02-10  -- dragon_dept org_dept
+   龙虎榜个股列表更新 17:10  127.0.0.1/task/dragon/stock/2026-02-10  -- dragon_stock dragon_stock_detail
+
+2. 板块列表 15：10
+   127.0.0.1/task/board/delay -- board_delay board_stock
+
+3. 全部股票列表 9:31 11:31 15:01
+   127.0.0.1/task/stock/delay -- stock_delay
+
+4. 板块页面定时更新前20 board_stock  board_stock
