@@ -40,8 +40,12 @@ public class NumberUtils {
 
 
     public static final BigDecimal WY = new BigDecimal("1000000000000");
-    public static final BigDecimal Y = new BigDecimal("100000000");
-    public static final BigDecimal W = new BigDecimal("10000");
+    public static final BigDecimal BY = new BigDecimal("10000000000");
+    public static final BigDecimal SY = new BigDecimal("1000000000");;
+    public static final BigDecimal Y =  new BigDecimal("100000000");
+    public static final BigDecimal BW = new BigDecimal("1000000");
+    public static final BigDecimal SW = new BigDecimal("100000");
+    public static final BigDecimal W =  new BigDecimal("10000");
 
     public static BigDecimal moneyDivide(int fee) {
         return new BigDecimal(fee).divide(new BigDecimal("100"), 2, HALF_UP);
@@ -148,12 +152,24 @@ public class NumberUtils {
         if (NumberUtils.isNumeric(count)) {
             BigDecimal b = new BigDecimal(count);
             if (b.compareTo(WY) >= 0) {
-                return fh + b.divide(WY).setScale(1, HALF_UP).toPlainString() + "亿";
+                return fh + b.divide(WY).setScale(1, HALF_UP).toPlainString() + "万亿";
             }
-            if (b.compareTo(Y) > 0) {
+            if (b.compareTo(Y) >= 0) {
+                if (b.compareTo(BY) >= 0) {
+                    return fh + b.divide(Y).setScale(0, HALF_UP).toPlainString() + "亿";
+                }
+                if (b.compareTo(SY) < 0) {
+                    return fh + b.divide(Y).setScale(2, HALF_UP).toPlainString() + "亿";
+                }
                 return fh + b.divide(Y).setScale(1, HALF_UP).toPlainString() + "亿";
             }
-            if (b.compareTo(W) > 0) {
+            if (b.compareTo(W) >= 0) {
+                if (b.compareTo(BW) >= 0) {
+                    return fh + b.divide(W).setScale(0, HALF_UP).toPlainString() + "万";
+                }
+                if (b.compareTo(SW) >= 0) {
+                    return fh + b.divide(W).setScale(2, HALF_UP).toPlainString() + "万";
+                }
                 return fh + b.divide(W).setScale(1, HALF_UP).toPlainString() + "万";
             }
         }

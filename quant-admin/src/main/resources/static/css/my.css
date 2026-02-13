@@ -1,0 +1,45 @@
+table {
+    width: 100%; /* 或者你想要的固定宽度 */
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+th {
+    font-size: 15px !important;
+}
+td{
+    padding: 5px !important;
+}
+
+th, td {
+    border: 0px solid #ddd;
+    padding: 5px;
+    word-wrap: break-word; /* 防止内容过长时被截断 */
+}
+
+.td-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.center {
+    text-align: center;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}

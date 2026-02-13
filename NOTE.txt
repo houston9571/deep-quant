@@ -42,3 +42,34 @@ https://push2.eastmoney.com/api/qt/ulist/get?fltt=1&invt=2&fields=f14,f12,f13,f1
 
 
 
+黄金页面
+https://quote.eastmoney.com/q/122.XAU.html
+嵌入图片img
+<img src="//webquotepic.eastmoney.com/GetPic.aspx?imageType=r&type=&token=44c9d251add88e27b65ed86506f6e5da&nid=122.XAU&timespan=1770914654" width="578" height="276">
+
+黄金/美元XAU kline
+http://webquotepic.eastmoney.com/GetPic.aspx?imageType=r&type=&nid=122.XAU&timespan=1770914372
+
+
+黄金/美元XAU formula=RSI 日线type=D 周线type=W 月线type=M 5分钟type=M5 60分钟type=M60
+http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=122.XAU&type=&unitWidth=-6&ef=&formula=RSI&AT=1&imageType=KXL&timespan=1770914551
+http://webquoteklinepic.eastmoney.com/GetPic.aspx?nid=122.XAU&type=&unitWidth=-6&ef=&formula=MACD&AT=1&imageType=KXL&timespan=1770914551
+
+kline 日线 图片支持 指数 股票 基金 概念板块 行业板块等，不能返回场外的基金
+黄金/美元XAU nid=122.XAU
+白银/美金XAG nid=122.XAG
+综合铜03LCPT nid=109.LCPT
+上证 nid=1.000001
+深证 nid=0.399001
+创业 nid=0.399006
+纳斯达克 nid=100.NDX
+主要指数 1.000001, 0.399001, 0.399006, 1.000300, 100.HSI, 100.UDI, 100.DJIA, 100.SPX, 100.NDX, 100.MCX, 100.FCHI, 100.GDAXI
+场内ETF 上海金ETF nid=1.518600
+股票代码 nid=0.002405,0.000555,0.002777,1.518600
+概念板块 稀土永磁 90.BK0578
+90.BK1036
+半导体BK1036
+
+
+基金净值估算图
+http://j4.dfcfw.com/charts/pic6/560690.png

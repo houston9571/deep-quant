@@ -78,6 +78,9 @@ public class StockDragonDetail extends BaseEntity {
     @JSONField(alternateNames = "NET", serializeUsing = CountUtilWriter.class)
     private Long netBuyAmount;
 
+    @JSONField(serializeUsing = PercentageWriter.class)
+    private BigDecimal totalNetBuyRatio;
+
     /**
      * 买入金额
      */
@@ -87,7 +90,7 @@ public class StockDragonDetail extends BaseEntity {
     /**
      * 买入金额占总成交比例
      */
-    @JSONField(alternateNames = "TOTAL_BUYRIO", serializeUsing = CountUtilWriter.class)
+    @JSONField(alternateNames = "TOTAL_BUYRIO", serializeUsing = PercentageWriter.class)
     private BigDecimal totalBuyRatio;
 
     /**
@@ -99,7 +102,7 @@ public class StockDragonDetail extends BaseEntity {
     /**
      * 卖出金额占总成交比例
      */
-    @JSONField(alternateNames = "TOTAL_SELLRIO", serializeUsing = CountUtilWriter.class)
+    @JSONField(alternateNames = "TOTAL_SELLRIO", serializeUsing = PercentageWriter.class)
     private BigDecimal totalSellRatio;
 
     /**
@@ -128,10 +131,5 @@ public class StockDragonDetail extends BaseEntity {
     @JSONField(alternateNames = "OPERATEDEPT_CODE_OLD")
     private String deptCodeOld;
 
-    @Transient
-    private String partnerCode;
-
-    @Transient
-    private String partnerName;
 
 }

@@ -344,16 +344,19 @@ public class StockDelay extends BaseEntity {
     /**
      * 主力流入 = 超大单流入 + 大单流入
      */
+    @JSONField(serializeUsing = CountUtilWriter.class)
     private Long mainIn;
 
     /**
      * 主力流出
      */
+    @JSONField(serializeUsing = CountUtilWriter.class)
     private Long mainOut;
 
     /**
      * 主力净流入
      */
+    @JSONField(serializeUsing = CountUtilWriter.class)
     private Long mainNetIn;
 
     /**
@@ -365,16 +368,19 @@ public class StockDelay extends BaseEntity {
     /**
      * 散户流入 = 中单流入 + 小单流入
      */
+    @JSONField(serializeUsing = CountUtilWriter.class)
     private Long retailIn;
 
     /**
      * 散户流出
      */
+    @JSONField(serializeUsing = CountUtilWriter.class)
     private Long retailOut;
 
     /**
      * 散户净流入
      */
+    @JSONField(serializeUsing = CountUtilWriter.class)
     private Long retailNetIn;
 
     /**

@@ -27,6 +27,7 @@ public interface EastMoneyStockApi {
 
     /**
      * 分页获取股票当日交易行情
+     * http://push2delay.eastmoney.com/api/qt/clist/get?fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f14,f15,f16,f17,f18,f20,f21,f23,f24,f34,f35,f37,f40,f41,f45,f46,f48,f49,f57,f64,f65,f66,f69,f70,f71,f72,f75,f76,f77,f78,f81,f82,f83,f84,f87,f109,f129,f297&pn=1&pz=100&np=1&invt=2&fid=f12&po=0&dect=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=4363375817489466%7C0%7C1%7C0%7Cweb&fs=m:0+t:6+f:!2,m:0+t:80+f:!2,m:1+t:2+f:!2,m:1+t:23+f:!2,m:0+t:81+s:262144+f:!2&_=1770898894918
      */
     @Get(url = PUSH2DELAY_URL + "/api/qt/clist/get?fields={fields}&pn={pageNum}&pz={pageSize}" +
             "&np=1&invt=2&fid=f12&po=0&dect=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=4363375817489466|0|1|0|web" +

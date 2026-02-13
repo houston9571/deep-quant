@@ -9,11 +9,16 @@ import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
 import com.optimus.ext.StringToDateReader;
 import lombok.*;
+import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
+import static com.optimus.constant.Constants.HUNDRED;
 import static com.optimus.constant.Constants.ID;
+import static java.math.RoundingMode.HALF_UP;
 
 /**
  * 股票行情
@@ -51,13 +56,13 @@ public class StockDragon extends BaseEntity {
     /**
      * 收盘价
      */
-    @JSONField(alternateNames = "CLOSE_PRICE"  )
+    @JSONField(alternateNames = "CLOSE_PRICE")
     private BigDecimal closePrice;
 
     /**
      * 涨跌幅
      */
-    @JSONField(alternateNames = "CHANGE_RATE", serializeUsing = PercentageWriter.class )
+    @JSONField(alternateNames = "CHANGE_RATE", serializeUsing = PercentageWriter.class)
     private BigDecimal changeRate;
 
     /**
@@ -67,16 +72,28 @@ public class StockDragon extends BaseEntity {
     private Long netBuyAmount;
 
     /**
+     * 龙虎榜 净买额/市场总成交额
+     */
+    @JSONField(alternateNames = "DEAL_NET_RATIO", serializeUsing = PercentageWriter.class)
+    private BigDecimal netBuyAmountRatio;
+
+    /**
      * 龙虎榜 买入额
      */
     @JSONField(alternateNames = "BILLBOARD_BUY_AMT", serializeUsing = CountUtilWriter.class)
     private Long buyAmount;
+
+    @JSONField( serializeUsing = PercentageWriter.class)
+    private BigDecimal buyAmountRatio;
 
     /**
      * 龙虎榜 卖出额
      */
     @JSONField(alternateNames = "BILLBOARD_SELL_AMT", serializeUsing = CountUtilWriter.class)
     private Long sellAmount;
+
+    @JSONField( serializeUsing = PercentageWriter.class)
+    private BigDecimal sellAmountRatio;
 
     /**
      * 龙虎榜 成交额
@@ -85,28 +102,17 @@ public class StockDragon extends BaseEntity {
     private Long dealAmount;
 
     /**
-     * 市场总成交额
-     */
-    @JSONField(alternateNames = "ACCUM_AMOUNT", serializeUsing = CountUtilWriter.class)
-    private Long accumAmount;
-
-    /**
-     * 龙虎榜净买额/市场总成交额
-     */
-    @JSONField(alternateNames = "DEAL_NET_RATIO", serializeUsing = PercentageWriter.class)
-    private BigDecimal dealNetRatio;
-
-    /**
-     * 龙虎榜成交额/市场总成交额
+     * 龙虎榜 成交额/市场总成交额
      */
     @JSONField(alternateNames = "DEAL_AMOUNT_RATIO", serializeUsing = PercentageWriter.class)
     private BigDecimal dealAmountRatio;
 
     /**
-     * 换手率
+     * 市场总成交额
      */
-    @JSONField(alternateNames = "TURNOVERRATE", serializeUsing = PercentageWriter.class)
-    private BigDecimal turnoverRate;
+    @JSONField(alternateNames = "ACCUM_AMOUNT", serializeUsing = CountUtilWriter.class)
+    private Long accumAmount;
+
 
     /**
      * 流通市值
@@ -141,5 +147,6 @@ public class StockDragon extends BaseEntity {
 
     @JSONField(alternateNames = "SECURITY_TYPE_CODE")
     private String securityTypeCode;
+
 
 }
