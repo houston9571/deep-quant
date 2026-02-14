@@ -1,6 +1,7 @@
 package com.optimus.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.optimus.base.Result;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.OrgDept;
 import com.optimus.mysql.mapper.OrgDeptMapper;
@@ -35,8 +36,8 @@ public class OrgDeptServiceImpl extends MybatisBaseServiceImpl<OrgDeptMapper, Or
         return count;
     }
 
-    public List<OrgDept> queryNomatchPartnerDeptList(String code) {
-        return orgDeptMapper.queryNomatchPartnerDeptList(code);
+    public Result<List<OrgDept>> queryNomatchPartnerDeptList(String code) {
+        return Result.success(orgDeptMapper.queryNomatchPartnerDeptList(code));
     }
 
 }

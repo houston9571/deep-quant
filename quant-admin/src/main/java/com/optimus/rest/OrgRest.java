@@ -31,7 +31,7 @@ public class OrgRest {
      */
     @GetMapping("partner")
     public Result<List<OrgPartner>> queryDragonPartnerList() {
-        return Result.success(orgPartnerService.queryOrgPartnerList());
+        return orgPartnerService.queryOrgPartnerList();
     }
 
     /**
@@ -39,7 +39,7 @@ public class OrgRest {
      */
     @DeleteMapping("partner/dept/{code}/{deptCode}")
     public Result<Void> deletePartnerDept(@PathVariable String code, @PathVariable String deptCode) {
-        return orgPartnerService.deletePartnerDept(code, deptCode) > 0 ? Result.success() : Result.fail(DATA_NOT_EXIST);
+        return orgPartnerService.deletePartnerDept(code, deptCode);
     }
 
 
@@ -48,7 +48,7 @@ public class OrgRest {
      */
     @GetMapping("partner/dept/nomatch/{code}")
     public Result<List<OrgDept>> queryNomatchPartnerDeptList(@PathVariable String code) {
-        return Result.success(orgDeptService.queryNomatchPartnerDeptList(code));
+        return orgDeptService.queryNomatchPartnerDeptList(code);
     }
 
     /**
@@ -56,6 +56,6 @@ public class OrgRest {
      */
     @PutMapping("partner/dept/{code}/{deptCode}")
     public Result<Void> addPartnerDept(@PathVariable String code, @PathVariable String deptCode) {
-        return orgPartnerService.addPartnerDept(code, deptCode) > 0 ? Result.success() : Result.fail(DATA_NOT_EXIST);
+        return orgPartnerService.addPartnerDept(code, deptCode);
     }
 }

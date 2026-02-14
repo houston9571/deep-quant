@@ -17,7 +17,7 @@
 </head>
 <body style="overflow-y:hidden; font-size: 12px">
 <div id="app">
-    <div style="color: #696767">新增游资席位</div>
+    <div style="color: #494949">新增游资席位</div>
     <div class="flex-container">
         <div style="width: 20%">
             <div class="right" style="font-size: 14px; padding-right: 20px;height: 40px;">游资:</div>
@@ -72,7 +72,7 @@
                 axios.put(url + 'org/partner/dept/' + this.partnerCode + '/' + code, {}).then(function (response) {
                     if (response.status === 200) {
                         alert('操作成功', function () {
-
+                            window.close();
                         });
                     }
                 }).catch(function (error) {

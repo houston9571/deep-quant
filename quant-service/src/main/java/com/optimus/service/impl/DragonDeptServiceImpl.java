@@ -92,7 +92,7 @@ public class DragonDeptServiceImpl extends MybatisBaseServiceImpl<DragonDeptMapp
                         stocks.put(sc[j].substring(0, 6), sn[j]);
                     }
                     d.setBuyStocks(stocks.toJSONString());
-                    d.setName(d.getName().replace("营业部", ""));
+                    d.setName(d.getName().replace("证券营业部", "").replace("营业部", ""));
                     list.add(d);
                     orgDeptSet.add(OrgDept.builder().code(d.getCode()).name(d.getName()).nameFull(d.getNameFull()).build());
                 } catch (Exception e) {

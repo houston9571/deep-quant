@@ -1,5 +1,6 @@
 package com.optimus.service;
 
+import com.optimus.base.Result;
 import com.optimus.mysql.MybatisBaseService;
 import com.optimus.mysql.entity.OrgDept;
 import org.apache.ibatis.annotations.Param;
@@ -12,7 +13,7 @@ public interface OrgDeptService extends MybatisBaseService<OrgDept> {
 
     int saveBatch(Set<OrgDept> orgDeptSet);
 
-    List<OrgDept> queryNomatchPartnerDeptList(@Param("code") String code);
+    Result<List<OrgDept>> queryNomatchPartnerDeptList(@Param("code") String code);
 
 
 }

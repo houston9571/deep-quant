@@ -1,5 +1,6 @@
 package com.optimus.service.impl;
 
+import com.optimus.base.Result;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.OrgPartner;
 import com.optimus.mysql.mapper.OrgPartnerMapper;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.optimus.enums.ErrorCode.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -18,19 +21,24 @@ public class OrgPartnerServiceImpl extends MybatisBaseServiceImpl<OrgPartnerMapp
 
     private final OrgPartnerMapper orgPartnerMapper;
 
-    public List<OrgPartner> queryOrgPartnerList() {
-        return orgPartnerMapper.queryOrgPartnerList();
+    public Result<List<OrgPartner>> queryOrgPartnerList() {
+        List<OrgPartner> list = orgPartnerMapper.queryOrgPartnerList();
+
+
+
+        return Result.success(orgPartnerMapper.queryOrgPartnerList());
     }
 
-    public int deletePartnerDept(String code,  String deptCode) {
-        return orgPartnerMapper.deletePartnerDept(code,deptCode);
+    public Result<Void> deletePartnerDept(String code, String deptCode) {
+        return Result.isSuccess(orgPartnerMapper.deletePartnerDept(code, deptCode), DATA_NOT_EXIST);
     }
 
-    public int addPartnerDept(String code,  String deptCode) {
-        return orgPartnerMapper.addPartnerDept(code,deptCode);
+    public Result<Void> addPartnerDept(String code, String deptCode) {
+        if (orgPartnerMapper.countPartnerDept(code, deptCode) == 0) {
+            return Result.isSuccess(orgPartnerMapper.addPartnerDept(code, deptCode), DB_ERROR);
+        }
+        return Result.fail(DATE_DUPLICATE);
     }
-
-
 
 
 }

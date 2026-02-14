@@ -34,7 +34,7 @@ public enum ErrorCode {
 
     DATA_NOT_EXIST(1008, "数据不存在", "Data does not exist"),
 
-    DATE_DUPLICATE(1009, "数据重复", "Data duplication"),
+    DATE_DUPLICATE(1009, "数据已存在", "Data duplication"),
 
     NOT_GET_PAGE_ERROR(1010, "未获取到页面信息:%s", "Do not get the page:%s"),
 
