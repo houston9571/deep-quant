@@ -24,8 +24,8 @@ public class OrgDept extends BaseEntity {
      * 营业厅名称
      */
     private String name;
-
-    private String codeOld;
+    
+    private String nameFull;
 
     private String remark;
 

@@ -60,7 +60,7 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
      * @param code
      * @return
      */
-    public Result<StockInfo> getStockInfo(String code) {
+    public Result<StockInfo> syncStockInfo(String code) {
         try {
             if (exist(new LambdaQueryWrapper<StockInfo>().eq(StockInfo::getCode, code).gt(StockInfo::getUpdateTime, LocalDateTime.of(LocalDate.now(), LocalTime.MIN)))) {
                 return Result.fail(DATA_UPDATED, "getStockInfo", code);
@@ -89,14 +89,14 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
     }
 
     /**
-     * 所属概念
+     * 个股所属概念
      *
      * @param code
      * @return
      */
-    public Result<Void> getStockBoardList(String code) {
+    public Result<Void> syncStockBoardList(String code) {
         try {
-            JSONObject json = eastMoneyStockApi.getBoards(code, getMarket(code));
+            JSONObject json = eastMoneyStockApi.syncStockBoards(code, getMarket(code));
             JSONObject result = json.getJSONObject(LABEL_RESULT);
             if (ObjectUtil.isEmpty(result) || !result.containsKey(LABEL_DATA)) {
                 return Result.fail(NOT_GET_PAGE_ERROR, "getStockBoardList result is null");

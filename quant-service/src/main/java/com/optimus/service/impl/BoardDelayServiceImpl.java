@@ -66,7 +66,7 @@ public class BoardDelayServiceImpl extends MybatisBaseServiceImpl<BoardDelayMapp
         int total = 0, pageNum = 0, pageSize = 100;
         List<BoardDelay> list = new ArrayList<>();
         while (true) {
-            JSONObject json = eastMoneyBoardApi.getBoardTradeList(++pageNum, pageSize, System.currentTimeMillis());
+            JSONObject json = eastMoneyBoardApi.syncBoardTradeList(++pageNum, pageSize, System.currentTimeMillis());
             JSONObject data = json.getJSONObject(LABEL_DATA);
             if (Objects.isNull(data) || !data.containsKey("diff")) {
                 break;
@@ -96,7 +96,7 @@ public class BoardDelayServiceImpl extends MybatisBaseServiceImpl<BoardDelayMapp
      */
     private void syncBoardFundsFlow(BoardDelay boardDelay) {
         try {
-            JSONObject json = eastMoneyBoardApi.getFundsFlow(boardDelay.getCode(), MarketType.getMarketCode(boardDelay.getCode()), System.currentTimeMillis());
+            JSONObject json = eastMoneyBoardApi.syncFundsFlow(boardDelay.getCode(), MarketType.getMarketCode(boardDelay.getCode()), System.currentTimeMillis());
             BoardDelay d = JSONObject.parseObject(json.getString(LABEL_DATA), BoardDelay.class);
             BigDecimal acc = BigDecimal.valueOf(boardDelay.getAccumAmount());
             MathContext mc = new MathContext(4, HALF_UP);

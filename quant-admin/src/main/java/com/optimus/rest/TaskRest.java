@@ -2,10 +2,7 @@ package com.optimus.rest;
 
 import com.google.common.collect.Lists;
 import com.optimus.base.Result;
-import com.optimus.mysql.entity.DragonStock;
-import com.optimus.mysql.entity.StockInfo;
-import com.optimus.mysql.entity.StockDelay;
-import com.optimus.mysql.entity.StockRealTime;
+import com.optimus.mysql.entity.*;
 import com.optimus.mysql.vo.FundsFlowLine;
 import com.optimus.service.*;
 import com.optimus.thread.Threads;
@@ -19,10 +16,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static cn.hutool.core.text.StrPool.COMMA;
 import static com.dtflys.forest.backend.ContentType.APPLICATION_JSON;
+import static com.optimus.constant.Constants.DISABLED;
+import static com.optimus.constant.Constants.ENABLE;
+import static com.optimus.enums.DateFormatEnum.DATE;
+import static java.time.format.TextStyle.SHORT;
+import static java.util.Locale.SIMPLIFIED_CHINESE;
 
 
 @Slf4j
@@ -46,6 +50,7 @@ public class TaskRest {
 
     private final DragonStockDetailService dragonStockDetailService;
 
+    private final DragonDeptService dragonDeptService;
 
     /**
      * 同步概念板块列表
@@ -62,9 +67,9 @@ public class TaskRest {
      */
     @GetMapping("stock/{code}}")
     public Result<StockInfo> stock(@PathVariable String code) {
-        Result<StockInfo> result = stockInfoService.getStockInfo(code);
+        Result<StockInfo> result = stockInfoService.syncStockInfo(code);
         if (result.isSuccess()) {
-            stockInfoService.getStockBoardList(code);
+            stockInfoService.syncStockBoardList(code);
         }
         return Result.success();
     }
@@ -80,9 +85,9 @@ public class TaskRest {
             Threads.asyncExecute(() -> {
                 Result<StockInfo> result;
                 for (StockDelay delay : list) {
-                    result = stockInfoService.getStockInfo(delay.getCode());
+                    result = stockInfoService.syncStockInfo(delay.getCode());
                     if (result.isSuccess()) {
-                        stockInfoService.getStockBoardList(delay.getCode());
+                        stockInfoService.syncStockBoardList(delay.getCode());
                     }
                 }
             });
@@ -96,36 +101,57 @@ public class TaskRest {
      */
     @GetMapping("stock/delay")
     public Result<Void> syncStockTradeList() {
-        Threads.asyncExecute(() -> {
-            stockDelayService.syncStockTradeList();
-        });
+        Threads.asyncExecute(stockDelayService::syncStockTradeList);
         return Result.success();
 
     }
 
     /**
+     * 龙虎榜营业部列表
+     */
+    @GetMapping("dragon/dept/{date}")
+    public Result<Void> syncDragonDeptList(@PathVariable String date) {
+        LocalDate end = DateUtils.parseLocalDate("2025-10-01", DATE);
+        LocalDate from = DateUtils.parseLocalDate(date, DATE);
+        while (from.isAfter(end)) {
+            if (from.getDayOfWeek().getValue() < 6) {
+                dragonDeptService.syncDragonDeptList(DateUtils.format(from, DATE));
+                Threads.sleep(2000);
+            }
+            from = from.plusDays(-1);
+        }
+        return Result.success();
+    }
+
+    /**
      * 龙虎榜个股列表
      */
-    @GetMapping("dragon/{date}")
-    public Result<Integer> getStockDragonList(@PathVariable String date) {
-        Result<List<DragonStock>> result = dragonStockService.getDragonStockList(date);
-        if (result.hasData()) {
-            List<DragonStock> list = result.getData();
-            Threads.asyncExecute(() -> {
-                int count = 0;
-                for (DragonStock d : list) {
-                    int cc = dragonStockDetailService.getDragonStockDetail(d.getTradeDate(), d.getCode(), d.getName());
-                    if(cc == 0){
-                        // 连续请求容易超时，重试一次
-                        Threads.sleep(NumberUtils.random(2000));
-                        cc = dragonStockDetailService.getDragonStockDetail(d.getTradeDate(), d.getCode(), d.getName());
+    @GetMapping("dragon/stock/{date}")
+    public Result<Void> syncDragonStockList(@PathVariable String date) {
+        LocalDate end = DateUtils.parseLocalDate("2025-10-01", DATE);
+        LocalDate from = DateUtils.parseLocalDate(date, DATE);
+        while (from.isAfter(end)) {
+            if (from.getDayOfWeek().getValue() < 6) {
+                Result<List<DragonStock>> result = dragonStockService.syncDragonStockList(DateUtils.format(from, DATE));
+                if (result.hasData()) {
+                    List<DragonStock> list = result.getData();
+                    int count = 0;
+                    for (DragonStock d : list) {
+                        int cc = dragonStockDetailService.syncDragonStockDetail(d.getTradeDate(), d.getCode(), d.getName());
+                        if (cc == 0) {
+                            // 连续请求容易超时，重试一次
+                            Threads.sleep(NumberUtils.random(5000));
+                            cc = dragonStockDetailService.syncDragonStockDetail(d.getTradeDate(), d.getCode(), d.getName());
+                        }
+                        count += cc;
                     }
-                    count += cc;
+                    log.info(">>>>>getStockDragonDetail: {} total_save_size:{}", date, count);
                 }
-                log.info(">>>>>getStockDragonDetail: {} total_save_size:{}", date, count);
-            });
+                Threads.sleep(2000);
+            }
+            from = from.plusDays(-1);
         }
-        return Result.success(result.getData().size());
+        return Result.success();
     }
 
 

@@ -1,6 +1,7 @@
 package com.optimus.mysql.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
@@ -28,9 +29,11 @@ public class OrgPartner extends BaseEntity {
 
     private String remark;
 
-    @Transient
+
+    @TableField(exist = false)
     private String deptCode;
 
-    @Transient
+
+    @TableField(exist = false)
     private String deptName;
 }

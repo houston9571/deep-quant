@@ -6,7 +6,9 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.LocalDate;
 
+import static com.optimus.enums.DateFormatEnum.DATE;
 import static java.math.RoundingMode.HALF_UP;
 import static java.time.format.TextStyle.SHORT;
 import static java.util.Locale.SIMPLIFIED_CHINESE;
@@ -27,10 +29,14 @@ public class TradeCalendarServiceTest {
 
     @Test
     public void test1() {
-        String[] s = "深科技 特发信息 粤桂股份 国风新材 欢瑞世纪 博纳影业 天奇股份 巨力索具 百川股份 二六三 通鼎互联 汉缆股份 银河电子    浙江世宝 ".split("\\s+");
-        for (int i = 0; i < s.length; i++) {
-
-            System.out.println(s[i]);
+        LocalDate end = DateUtils.parseLocalDate("2025-10-01", DATE);
+        LocalDate from = DateUtils.parseLocalDate("2026-02-11", DATE);
+        while (from.isAfter(end)) {
+            if (from.getDayOfWeek().getValue() < 6) {
+                System.out.println(DateUtils.format(from, DATE) + " " + from.getDayOfWeek().getDisplayName(SHORT, SIMPLIFIED_CHINESE));
+            }
+            from = from.plusDays(-1);
         }
+
     }
 }

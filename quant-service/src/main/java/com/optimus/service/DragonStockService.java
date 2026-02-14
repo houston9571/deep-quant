@@ -10,6 +10,6 @@ public interface DragonStockService {
 
     List<DragonStockList> queryDragonPartnerList(String tradeDate);
 
-    Result<List<DragonStock>> getDragonStockList(String date);
+    Result<List<DragonStock>> syncDragonStockList(String date);
 
 }

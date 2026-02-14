@@ -13,6 +13,8 @@ import com.optimus.mysql.entity.DragonStock;
 import com.optimus.mysql.mapper.DragonStockMapper;
 import com.optimus.mysql.vo.DragonStockList;
 import com.optimus.service.DragonStockService;
+import com.optimus.thread.Threads;
+import com.optimus.utils.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,26 +50,27 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
     /**
      * 龙虎榜个股列表
      */
-    public Result<List<DragonStock>> getDragonStockList(String date) {
+    public Result<List<DragonStock>> syncDragonStockList(String date) {
         int total = 0, pageNum = 0, pageSize = 100;
         Map<String, DragonStock> map = Maps.newHashMap();
-        JSONArray data;
+        JSONArray data = new JSONArray();
         while (true) {
-            data = new JSONArray();
+            ++pageNum;
             try {
-                JSONObject json = eastMoneyDragonApi.getDragonStockList(date, ++pageNum, pageSize);
-                JSONObject result = json.getJSONObject(LABEL_RESULT);
-                if (ObjectUtil.isEmpty(result) || !result.containsKey(LABEL_DATA)) {
-                    break;
-                }
-                data = result.getJSONArray(LABEL_DATA);
-                if (CollectionUtils.isEmpty(data)) {
-                    break;
-                }
+                data = syncDragonStockList(date, pageNum, pageSize);
             } catch (Exception e) {
-                log.error(">>>>>getDragonStockList request json error. {}", e.getMessage());
+                try {
+                    data = syncDragonStockList(date, pageNum, pageSize);
+                } catch (Exception e1) {
+                    Threads.sleep(NumberUtils.random(5000));
+                    log.error(">>>>>getDragonStockList request json error. {}", e.getMessage());
+                }
+            }
+            if (CollectionUtils.isEmpty(data)) {
+                break;
             }
             log.info(">>>>>getDragonStockList {} pageNum:{} data:{}", data, pageNum, data.size());
+            total += data.size();
             for (int i = 0; i < data.size(); i++) {
                 ++total;
                 try {
@@ -108,6 +111,15 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
             log.error(">>>>>getDragonStockList saveBatch error. {}", e.getMessage());
         }
         return Result.success(list);
+    }
+
+    private JSONArray syncDragonStockList(String date, int pageNum, int pageSize) {
+        JSONObject json = eastMoneyDragonApi.syncDragonStockList(date, pageNum, pageSize);
+        JSONObject result = json.getJSONObject(LABEL_RESULT);
+        if (ObjectUtil.isEmpty(result) || !result.containsKey(LABEL_DATA)) {
+            return null;
+        }
+        return result.getJSONArray(LABEL_DATA);
     }
 
 

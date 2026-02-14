@@ -70,14 +70,14 @@ public interface EastMoneyStockApi {
 
 
     /**
-     * 所属概念
+     * 个股所属概念
      * https://datacenter.eastmoney.com/securities/api/data/get?type=RPT_F10_CORETHEME_BOARDTYPE&sty=ALL&filter=(SECUCODE="600986.SH")&p=1&ps=&sr=1&st=BOARD_RANK&source=HSF10&client=PC&v=04715492084049595
      */
     @Get(url = DATACENTER_URL + "/securities/api/data/get?type=RPT_F10_CORETHEME_BOARDTYPE&sty=ALL" +
             "&filter=(SECUCODE=\"{code}.{market}\")&p=1&ps=&sr=1&st=BOARD_RANK&source=HSF10&client=PC&v=04715492084049595",
             headers = { DATACENTER_HOST}
     )
-    JSONObject getBoards(@Var("code") String code, @Var("market") String market);
+    JSONObject syncStockBoards(@Var("code") String code, @Var("market") String market);
 
 
 

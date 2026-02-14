@@ -43,13 +43,12 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
     /**
      * 龙虎榜个股买卖详情
      */
-    public int getDragonStockDetail(LocalDate date, String code, String name) {
+    public int syncDragonStockDetail(LocalDate date, String code, String name) {
         Map<String, DragonStockDetail> map = Maps.newHashMap();
         String tradeDate = DateUtils.format(date, DateFormatEnum.DATE);
-        Set<OrgDept> salesDeptSet = Sets.newHashSet();
         try {
-            JSONObject buy = eastMoneyDragonApi.getDragonStockListBuy(tradeDate, code).getJSONObject(LABEL_RESULT);
-            JSONObject sell = eastMoneyDragonApi.getDragonStockListSell(tradeDate, code).getJSONObject(LABEL_RESULT);
+            JSONObject buy = eastMoneyDragonApi.syncDragonStockListBuy(tradeDate, code).getJSONObject(LABEL_RESULT);
+            JSONObject sell = eastMoneyDragonApi.syncDragonStockListSell(tradeDate, code).getJSONObject(LABEL_RESULT);
             JSONArray data = new JSONArray();
             if (ObjectUtil.isNotNull(buy) && ObjectUtil.isNotNull(sell) && buy.containsKey(LABEL_DATA) && sell.containsKey(LABEL_DATA)) {
                 data = buy.getJSONArray(LABEL_DATA);
@@ -81,7 +80,6 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
                 ArrayList<DragonStockDetail> list = new ArrayList<>(map.values());
                 list.sort(Comparator.comparingLong(DragonStockDetail::getNetBuyAmount).reversed());
                 saveOrUpdateBatch(list, new String[]{"code", "trade_date", "dept_code"});
-                orgDeptService.saveBatch(salesDeptSet);
             }
         } catch (Exception e) {
             log.error(">>>>>getDragonStockDetail saveBatch error. {}", e.getMessage());

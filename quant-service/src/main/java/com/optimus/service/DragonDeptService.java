@@ -11,6 +11,6 @@ public interface DragonDeptService {
 
     List<DragonDept> queryDragonDeptList(String tradeDate);
 
-    Result<List<DragonDept>> getDragonDeptList(String date);
+    Result<List<DragonDept>> syncDragonDeptList(String date);
 
 }

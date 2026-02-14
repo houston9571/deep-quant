@@ -9,6 +9,7 @@ import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
 import com.optimus.ext.StringToDateReader;
 import lombok.*;
+import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -45,6 +46,7 @@ public class DragonDept extends BaseEntity {
     /**
      * 营业部名称
      */
+    @TableField(exist = false)
     @JSONField(alternateNames = "OPERATEDEPT_NAME")
     private String nameFull;
 
@@ -70,9 +72,11 @@ public class DragonDept extends BaseEntity {
     @JSONField(alternateNames = "TOTAL_SELLAMT", serializeUsing = CountUtilWriter.class)
     private Long sellAmount;
 
+    @TableField(exist = false)
     @JSONField(alternateNames = "BUY_STOCK")
     private String buyStock;
 
+    @TableField(exist = false)
     @JSONField(alternateNames = "SECURITY_NAME_ABBR")
     private String buyStockName;
 

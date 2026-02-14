@@ -7,6 +7,6 @@ public interface DragonStockDetailService {
 
 
 
-    int getDragonStockDetail(LocalDate date, String code, String name) ;
+    int syncDragonStockDetail(LocalDate date, String code, String name) ;
 
 }

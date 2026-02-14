@@ -31,7 +31,7 @@ public interface EastMoneyBoardApi {
             "&po=1&np=1&fltt=1&invt=2&dect=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=|0|0|0|web&_={ts}",
             headers = {PUSH2DELAY_HOST}
     )
-    JSONObject getBoardTradeList(@Var("pageNum") int pageNum, @Var("pageSize") int pageSize, @Var("ts") long ts);
+    JSONObject syncBoardTradeList(@Var("pageNum") int pageNum, @Var("pageSize") int pageSize, @Var("ts") long ts);
 
 
     /**
@@ -43,7 +43,7 @@ public interface EastMoneyBoardApi {
             "&invt=2&fltt=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=4363375817489466|0|1|0|web&dect=1&_={ts}",
             headers = {PUSH2DELAY_HOST}
     )
-    JSONObject getFundsFlow(@Var("code") String code, @Var("marketCode") String marketCode, @Var("ts") long ts);
+    JSONObject syncFundsFlow(@Var("code") String code, @Var("marketCode") String marketCode, @Var("ts") long ts);
 
     /**
      * 所属概念的个股列表
