@@ -3,39 +3,34 @@ package com.optimus.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.optimus.base.Result;
 import com.optimus.client.EastMoneyDragonApi;
-import com.optimus.constants.MarketType;
 import com.optimus.mysql.MybatisBaseServiceImpl;
+import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.DragonDept;
-import com.optimus.mysql.entity.DragonStock;
 import com.optimus.mysql.entity.OrgDept;
 import com.optimus.mysql.mapper.DragonDeptMapper;
-import com.optimus.mysql.mapper.DragonStockMapper;
-import com.optimus.mysql.vo.DragonStockList;
+import com.optimus.mysql.vo.DragonDeptDto;
 import com.optimus.service.DragonDeptService;
-import com.optimus.service.DragonStockService;
 import com.optimus.service.OrgDeptService;
 import com.optimus.thread.Threads;
+import com.optimus.utils.DateUtils;
 import com.optimus.utils.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static com.optimus.constant.Constants.*;
-import static java.math.RoundingMode.HALF_UP;
 
 @Slf4j
 @Service
@@ -49,12 +44,6 @@ public class DragonDeptServiceImpl extends MybatisBaseServiceImpl<DragonDeptMapp
 
     private final OrgDeptService orgDeptService;
 
-    /**
-     * 查询当天龙虎榜营业部列表
-     */
-    public List<DragonDept> queryDragonDeptList(String tradeDate) {
-        return null;
-    }
 
     /**
      * 龙虎榜个股营业部列表

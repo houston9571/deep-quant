@@ -124,5 +124,10 @@ public class DragonStockDetail extends BaseEntity {
     @JSONField(alternateNames = "OPERATEDEPT_CODE_OLD")
     private String deptCodeOld;
 
+    @TableField(exist = false)
+    private String partnerCode;
+
+    @TableField(exist = false)
+    private String partnerName;
 
 }

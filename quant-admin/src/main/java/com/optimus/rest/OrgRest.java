@@ -1,6 +1,8 @@
 package com.optimus.rest;
 
+import com.optimus.base.PageResult;
 import com.optimus.base.Result;
+import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.OrgDept;
 import com.optimus.mysql.entity.OrgPartner;
 import com.optimus.mysql.vo.DragonStockList;
@@ -25,6 +27,8 @@ public class OrgRest {
     private final OrgPartnerService orgPartnerService;
 
     private final OrgDeptService orgDeptService;
+
+
 
     /**
      * 游资列表

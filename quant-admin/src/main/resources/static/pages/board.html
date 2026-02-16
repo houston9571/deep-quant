@@ -16,12 +16,19 @@
             <table class="ve-table-content ve-table-border-x ve-table-border-y" id="vTable">
                 <thead class="ve-table-fixed-header ve-table-header">
                 <tr class="ve-table-header-tr">
-                    <th class="ve-table-header-th" style="width: 140px;" v-for="col in tableData[0]">{{col.tradeDate}}</th>
+                    <th class="ve-table-header-th" style="width: 140px;" v-for="col in tableData[0]">
+                        <div class="td-flex">
+                            <span class="center" style="width: 100%;">{{col.tradeDate}}</span>
+                        </div>
+                        <div class="td-flex">
+                            <span class="center" style="width: 100%;">{{col.week}}</span>
+                        </div>
+                    </th>
                 </tr>
                 </thead>
                 <tbody id="sort" class="ve-table-body ve-table-stripe ve-table-row-hover ve-table-row-highlight">
                 <tr style="height: 0px;"></tr>
-                <tr class="ve-table-body-tr" style="width: 70px" v-for="(col,index) in tableData" v-if="index > 0">
+                <tr class="ve-table-body-tr" v-for="(col,index) in tableData" v-if="index > 0">
                     <td class="ve-table-body-td" v-for="c in col" :class="c.code" @mouseenter="isHover(c.code)" @mouseleave="isLeave(c.code)">
                         <a :href="'https://quote.eastmoney.com/bk/'+c.market+'.'+c.code+'.html'" target="_blank" style="color: #494949">
                             <div class="td-flex center">

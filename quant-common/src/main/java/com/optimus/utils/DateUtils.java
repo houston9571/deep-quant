@@ -15,6 +15,8 @@ import java.util.TimeZone;
 
 import static com.optimus.enums.DateFormatEnum.*;
 import static java.time.ZoneOffset.UTC;
+import static java.time.format.TextStyle.SHORT;
+import static java.util.Locale.SIMPLIFIED_CHINESE;
 
 @Slf4j
 public class DateUtils {
@@ -180,6 +182,9 @@ public class DateUtils {
         return lastDay.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 23:59:59.999";
     }
 
+    public static String getShortWeekName(LocalDate date) {
+        return date.getDayOfWeek().getDisplayName(SHORT, SIMPLIFIED_CHINESE);
+    }
 
     /****
      * 获取1天剩余的秒数

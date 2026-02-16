@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.optimus.ext.*;
 import lombok.*;
+import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -49,6 +50,10 @@ public class BoardDelay extends BaseEntity {
     @TableField("trade_date")
     @JSONField(alternateNames = "f297", deserializeUsing = StringToDateReader.class, format = "yyyy-MM-dd")
     private LocalDate tradeDate;
+
+    @TableField(exist = false)
+    private String week;
+
 
     /**
      * 股票数量

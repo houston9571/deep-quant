@@ -13,6 +13,7 @@ import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.mapper.BoardDelayMapper;
 import com.optimus.service.BoardDelayService;
+import com.optimus.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,8 @@ import java.util.Objects;
 
 import static com.optimus.constant.Constants.*;
 import static java.math.RoundingMode.HALF_UP;
+import static java.time.format.TextStyle.SHORT;
+import static java.util.Locale.SIMPLIFIED_CHINESE;
 
 @Slf4j
 @Service
@@ -38,12 +41,13 @@ public class BoardDelayServiceImpl extends MybatisBaseServiceImpl<BoardDelayMapp
     private final EastMoneyBoardApi eastMoneyBoardApi;
 
     /**
-     * 查询每日排名前10的板块，竖型列表，第一行是表头信息
+     * 概念板块查询，竖型列表，第一行表头日期
      */
     public List<List<BoardDelay>> queryBoardTradeList(int days, int top) {
         List<BoardDelay> title = boardDelayMapper.queryBoardTradeDate(days);
         Map<LocalDate, List<BoardDelay>> map = Maps.newLinkedHashMap();
         for (BoardDelay boardDelay : title) {
+            boardDelay.setWeek(DateUtils.getShortWeekName(boardDelay.getTradeDate()));
             map.put(boardDelay.getTradeDate(), boardDelayMapper.queryBoardTop(boardDelay.getTradeDate(), top));
         }
 

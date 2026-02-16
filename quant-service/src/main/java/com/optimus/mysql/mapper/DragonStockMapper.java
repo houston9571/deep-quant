@@ -2,6 +2,7 @@ package com.optimus.mysql.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.DragonStock;
 import com.optimus.mysql.vo.DragonStockList;
 import org.apache.ibatis.annotations.Param;
@@ -10,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 public interface DragonStockMapper extends BaseMapper<DragonStock> {
+
 
 
     @Select("SELECT a.code AS partnerCode, a.name AS partnerName, c.trade_date, c.dept_code, dept.name AS dept_name, " +

@@ -4,14 +4,17 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.optimus.client.EastMoneyDragonApi;
 import com.optimus.enums.DateFormatEnum;
 import com.optimus.mysql.MybatisBaseServiceImpl;
+import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.OrgDept;
 import com.optimus.mysql.entity.DragonStockDetail;
 import com.optimus.mysql.mapper.DragonStockDetailMapper;
+import com.optimus.mysql.vo.DragonDeptDto;
 import com.optimus.service.OrgDeptService;
 import com.optimus.service.DragonStockDetailService;
 import com.optimus.utils.DateUtils;
@@ -24,6 +27,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.optimus.constant.Constants.*;
 import static java.math.RoundingMode.HALF_UP;
@@ -38,6 +42,35 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
     private final OrgDeptService orgDeptService;
 
     private final EastMoneyDragonApi eastMoneyDragonApi;
+
+
+    /**
+     * 查询龙虎榜游资席位买入详情，合并为按游资的竖型列表，第一行表头游资
+     */
+    public List<List<DragonStockDetail>> queryDragonStockDetailWithPartner(String tradeDate) {
+        List<DragonStockDetail> list = dragonStockDetailMapper.queryDragonStockDetailWithPartner(tradeDate);
+        Map<String, List<DragonStockDetail>> map = Maps.newLinkedHashMap();
+        Map<String, DragonStockDetail> net = Maps.newLinkedHashMap();
+        for (DragonStockDetail detail : list) {
+            if (map.containsKey(detail.getPartnerCode())) {
+                map.get(detail.getPartnerCode()).add(detail);
+                net.get(detail.getPartnerCode()).setNetBuyAmount(net.get(detail.getPartnerCode()).getNetBuyAmount() + detail.getNetBuyAmount());
+            } else {
+                List<DragonStockDetail> details = Lists.newArrayList();
+                details.add(detail);
+                map.put(detail.getPartnerCode(), details);
+                net.put(detail.getPartnerCode(), DragonStockDetail.builder().partnerCode(detail.getPartnerCode()).partnerName(detail.getPartnerName()).netBuyAmount(detail.getNetBuyAmount()).build());
+            }
+        }
+        List<List<DragonStockDetail>> grid = Lists.newArrayList();
+        ArrayList<DragonStockDetail> nets = new ArrayList<>(net.values());
+        nets.sort(Comparator.comparingLong(DragonStockDetail::getNetBuyAmount).reversed());
+        grid.add(nets);
+        for (DragonStockDetail d : nets) {
+            grid.add(map.get(d.getPartnerCode()));
+        }
+        return grid;
+    }
 
 
     /**
