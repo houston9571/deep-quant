@@ -50,25 +50,50 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
     public List<List<DragonStockDetail>> queryDragonStockDetailWithPartner(String tradeDate) {
         List<DragonStockDetail> list = dragonStockDetailMapper.queryDragonStockDetailWithPartner(tradeDate);
         Map<String, List<DragonStockDetail>> map = Maps.newLinkedHashMap();
-        Map<String, DragonStockDetail> net = Maps.newLinkedHashMap();
+        Map<String, DragonStockDetail> totalNet = Maps.newLinkedHashMap();
+        Map<String, List<DragonStockDetail>> partners = Maps.newLinkedHashMap();
         for (DragonStockDetail detail : list) {
             if (map.containsKey(detail.getPartnerCode())) {
                 map.get(detail.getPartnerCode()).add(detail);
-                net.get(detail.getPartnerCode()).setNetBuyAmount(net.get(detail.getPartnerCode()).getNetBuyAmount() + detail.getNetBuyAmount());
+                totalNet.get(detail.getPartnerCode()).setNetBuyAmount(totalNet.get(detail.getPartnerCode()).getNetBuyAmount() + detail.getNetBuyAmount());
             } else {
                 List<DragonStockDetail> details = Lists.newArrayList();
                 details.add(detail);
                 map.put(detail.getPartnerCode(), details);
-                net.put(detail.getPartnerCode(), DragonStockDetail.builder().partnerCode(detail.getPartnerCode()).partnerName(detail.getPartnerName()).netBuyAmount(detail.getNetBuyAmount()).build());
+                totalNet.put(detail.getPartnerCode(), DragonStockDetail.builder().partnerCode(detail.getPartnerCode()).partnerName(detail.getPartnerName()).netBuyAmount(detail.getNetBuyAmount()).totalNetBuyRatio(detail.getTotalNetBuyRatio()).build());
+            }
+            DragonStockDetail np = DragonStockDetail.builder().partnerCode(detail.getPartnerCode()).partnerName(detail.getPartnerName()).netBuyAmount(detail.getNetBuyAmount()).totalNetBuyRatio(detail.getTotalNetBuyRatio()).build();
+            if (partners.containsKey(detail.getCode())) {
+                partners.get(detail.getCode()).add(np);
+            } else {
+                partners.put(detail.getCode(), new ArrayList<DragonStockDetail>() {{
+                    add(np);
+                }});
+            }
+
+        }
+
+        List<String> qt = new ArrayList<String>() {{
+            add("量化基金");
+            add("量化打板");
+            add("量化抢筹");
+            add("T王");
+        }};
+
+        List<List<DragonStockDetail>> grid = Lists.newArrayList();
+        ArrayList<DragonStockDetail> totalNets = new ArrayList<>(totalNet.values());
+        totalNets.sort(Comparator.comparingLong(DragonStockDetail::getNetBuyAmount).reversed());
+        grid.add(totalNets);
+        for (DragonStockDetail d : totalNets) {
+            if (!qt.contains(d.getPartnerName())) {
+                List<DragonStockDetail> data = map.get(d.getPartnerCode());
+                for (DragonStockDetail dd : data) {
+                    dd.setPartners(partners.get(dd.getCode()));
+                }
+                grid.add(data);
             }
         }
-        List<List<DragonStockDetail>> grid = Lists.newArrayList();
-        ArrayList<DragonStockDetail> nets = new ArrayList<>(net.values());
-        nets.sort(Comparator.comparingLong(DragonStockDetail::getNetBuyAmount).reversed());
-        grid.add(nets);
-        for (DragonStockDetail d : nets) {
-            grid.add(map.get(d.getPartnerCode()));
-        }
+        totalNets.removeIf(d -> qt.contains(d.getPartnerName()));
         return grid;
     }
 

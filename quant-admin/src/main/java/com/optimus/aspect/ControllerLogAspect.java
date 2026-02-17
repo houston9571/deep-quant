@@ -94,7 +94,7 @@ public class ControllerLogAspect {
         try {
             logLine.append("\nResHeader: ").append(JSON.toJSONString(getHeaders(response)));
             String str = JSON.toJSONString(result);
-            if (str.length() > 3000) {
+            if (str.length() > 30000) {
                 logLine.append("\nResponse : ").append(str, 0, 3000).append("......");
             } else {
                 logLine.append("\nResponse : ").append(str);

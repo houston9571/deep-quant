@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface DragonStockService {
 
-    List<DragonStockList> queryDragonPartnerList(String tradeDate);
+    List<DragonStockList> queryDragonStockList(String tradeDate);
+
+    List<DragonStockList> queryDragonStockDetail(String code);
 
     Result<List<DragonStock>> syncDragonStockList(String date);
 

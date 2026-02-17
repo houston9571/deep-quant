@@ -1,5 +1,6 @@
 package com.optimus.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
@@ -12,6 +13,7 @@ import com.optimus.constants.MarketType;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.DragonStock;
+import com.optimus.mysql.entity.DragonStockDetail;
 import com.optimus.mysql.mapper.DragonStockMapper;
 import com.optimus.mysql.vo.DragonStockList;
 import com.optimus.service.DragonStockService;
@@ -20,6 +22,7 @@ import com.optimus.utils.DateUtils;
 import com.optimus.utils.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -47,8 +50,28 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
     /**
      * 查询当天龙虎榜列表，按游资分类
      */
-    public List<DragonStockList> queryDragonPartnerList(String tradeDate) {
-        return dragonStockMapper.queryDragonPartnerList(tradeDate);
+    public List<DragonStockList> queryDragonStockList(String tradeDate) {
+        return dragonStockMapper.queryDragonStockList(tradeDate);
+    }
+
+    public List<DragonStockList> queryDragonStockDetail(String code) {
+        List<DragonStockList> list = dragonStockMapper.queryDragonStockDetail(code);
+        // 将游资按个股合并为一条记录
+        Map<String, DragonStockList> map = Maps.newLinkedHashMap();
+        for (DragonStockList stock : list) {
+            String k = stock.getTradeDate().toString();
+            DragonStockList s = new DragonStockList();
+            BeanUtils.copyProperties(stock, s);
+            if (map.containsKey(k)) {
+                map.get(k).getPartners().add(s);
+            } else {
+                stock.setPartners(new ArrayList<DragonStockList>() {{
+                    add(s);
+                }});
+                map.put(k, stock);
+            }
+        }
+        return new ArrayList<>(map.values());
     }
 
 

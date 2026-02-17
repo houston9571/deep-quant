@@ -29,7 +29,8 @@
                 <tbody id="sort" class="ve-table-body ve-table-stripe ve-table-row-hover ve-table-row-highlight">
                 <tr style="height: 0px;"></tr>
                 <tr class="ve-table-body-tr" v-for="(col,index) in tableData" v-if="index > 0">
-                    <td class="ve-table-body-td" v-for="c in col" :class="c.code" @mouseenter="isHover(c.code)" @mouseleave="isLeave(c.code)">
+                    <td class="ve-table-body-td" v-for="c in col" :class="c.code"
+                        @mouseenter="isHover(c.code)" @mouseleave="isLeave(c.code)">
                         <a :href="'https://quote.eastmoney.com/bk/'+c.market+'.'+c.code+'.html'" target="_blank" style="color: #494949">
                             <div class="td-flex center">
                                 <span class="center" style="width: 100%;" :style="c.name.length > 6 ? 'font-size: 17px;' : 'font-size: 20px;'">{{c.name}}</span>

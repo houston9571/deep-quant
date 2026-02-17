@@ -44,8 +44,18 @@ public class DragonListRest {
      * 查询当天龙虎榜列表，按游资分类
      */
     @GetMapping("stock/{tradeDate}")
-    public Result<List<DragonStockList>> queryDragonPartnerList(@PathVariable String tradeDate) {
-        return Result.success(dragonStockService.queryDragonPartnerList(tradeDate));
+    public Result<List<DragonStockList>> queryDragonStockList(@PathVariable String tradeDate) {
+        return Result.success(dragonStockService.queryDragonStockList(tradeDate));
+    }
+
+
+
+    /**
+     * 查询股票龙虎榜详细信息
+     */
+    @GetMapping("detail/stock/{code}")
+    public Result<List<DragonStockList>> queryDragonStockDetail(@PathVariable String code) {
+        return Result.success(dragonStockService.queryDragonStockDetail(code));
     }
 
 

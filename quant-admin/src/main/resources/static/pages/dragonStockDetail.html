@@ -31,7 +31,7 @@
                 <tbody id="sort" class="ve-table-body ve-table-stripe ve-table-row-hover ve-table-row-highlight">
                 <tr style="height: 0px;"></tr>
                 <tr class="ve-table-body-tr" style="width: 70px" v-for="col in tableData">
-                    <td class="ve-table-body-td" style="text-align: center;font-size: medium">{{col.partnerName}}</td>
+                    <td class="ve-table-body-td" style="text-align: center;">{{col.tradeDate}}</td>
                     <td class="ve-table-body-td" :class="col.code" @mouseenter="isHover(col.code)" @mouseleave="isLeave(col.code)">
                         <a :href="'https://data.eastmoney.com/stockdata/'+col.code+'.html'" target="_blank" style="color: #494949">
                             <div class="td-flex">
@@ -97,49 +97,44 @@
                     <td class="ve-table-body-td">
                         <a :href="'https://data.eastmoney.com/stock/lhb,'+col.tradeDate+','+col.code+'.html'" target="_blank" style="color: #494949">
                             <div class="td-flex">
-                                <span class="left" style="width: 60%">买入: <span style="color: red">{{col.deptBuyAmount}}</span></span>
-                                <span class="left" style="width: 40%"><span style="color: red">{{col.deptTotalBuyRatio}}</span></span>
+                                <span class="left" style="width: 60%">买入: <span style="color: red">{{col.partnerBuyAmount}}</span></span>
+                                <span class="left" style="width: 40%"><span style="color: red">{{col.partnerTotalBuyRatio}}</span></span>
                             </div>
                             <div class="td-flex">
-                                <span class="left" style="width: 60%">卖出: <span style="color: green">{{col.deptSellAmount}}</span></span>
-                                <span class="left" style="width: 40%"><span style="color: green">{{col.deptTotalSellRatio}}</span></span>
+                                <span class="left" style="width: 60%">卖出: <span style="color: green">{{col.partnerSellAmount}}</span></span>
+                                <span class="left" style="width: 40%"><span style="color: green">{{col.partnerTotalSellRatio}}</span></span>
                             </div>
                             <div class="td-flex">
-                                <span class="left" style="width: 60%">净额: <span :style="col.deptNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{col.deptNetBuyAmount}}</span></span>
-                                <span class="left" style="width: 40%"><span :style="col.deptNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{col.deptTotalNetBuyRatio}}</span></span>
+                                <span class="left" style="width: 60%">净额: <span :style="col.partnerNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{col.partnerNetBuyAmount}}</span></span>
+                                <span class="left" style="width: 40%"><span :style="col.partnerNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{col.partnerTotalNetBuyRatio}}</span></span>
                             </div>
                         </a>
                     </td>
                     <td class="ve-table-body-td">
-                        <a :href="'https://data.eastmoney.com/stock/lhb/yybtj/'+col.deptCode+'.html'" target="_blank">
-                            <div class="td-flex">{{col.deptName}}</div>
-                        </a>
-                        <div class="td-flex">{{col.explains}}</div>
+                        <div class="td-flex" v-for="(c, index) in col.partners">
+                            <span class="left" style="width: 40%"> <span style="color: red">{{c.partnerName}}</span></span>
+                            <span class="left" style="width: 30%"><span style="color: red">{{c.partnerNetBuyAmount}}</span></span>
+                            <span class="left" style="width: 30%"><span style="color: red">{{c.partnerNetBuyRatio}}</span></span>
+                        </div>
                     </td>
-                    <td class="ve-table-body-td">{{col.explanation}}</td>
+                    <td class="ve-table-body-td">{{col.explains}}<br>{{col.explanation}}</td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<!--弹出层时背景层DIV-->
-<div id="fade" class="black_overlay" onclick="CloseDiv()"></div>
-<div id="MyDiv" class="white_content" style="overflow-x:hidden; overflow-y:hidden;"></div>
 </body>
 
 <script>
-    var fade = document.getElementById('fade');
-    var MyDiv = document.getElementById('MyDiv');
-    //关闭弹出层
-    fade.onclick = function () {
-        MyDiv.style.display = 'none';
-        fade.style.display = 'none';
-    };
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlParams.entries());
+    // console.log('urlParams:' + urlParams);
+    // console.log('params:' + params);
 
     // 异步请求函数必须要写在外面，然后在vue里面调用
     function asyncLoadDate() {
-        axios.get(url + 'dragon/stock/2026-02-13').then(function (response) {
+        axios.get(url + 'dragon/detail/stock/' + params.code).then(function (response) {
             if (response.status === 200) {
                 vm.fillData(response);
             }

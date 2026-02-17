@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.common.collect.Lists;
 import com.optimus.ext.CountLotsWriter;
 import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
@@ -14,6 +15,7 @@ import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.optimus.constant.Constants.ID;
 
@@ -129,5 +131,8 @@ public class DragonStockDetail extends BaseEntity {
 
     @TableField(exist = false)
     private String partnerName;
+
+    @TableField(exist = false)
+    private List<DragonStockDetail> partners;
 
 }

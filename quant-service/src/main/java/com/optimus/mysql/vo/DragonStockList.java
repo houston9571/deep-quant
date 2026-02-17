@@ -15,6 +15,7 @@ import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.optimus.constant.Constants.HUNDRED;
 import static com.optimus.constant.Constants.ID;
@@ -23,6 +24,7 @@ import static com.optimus.constant.Constants.ID;
  * 龙虎榜页面
  */
 @Data
+@NoArgsConstructor
 public class DragonStockList extends StockDelay {
 
 
@@ -99,32 +101,35 @@ public class DragonStockList extends StockDelay {
      * 净买入
      */
     @JSONField( serializeUsing = CountUtilWriter.class)
-    private Long deptNetBuyAmount;
+    private Long partnerNetBuyAmount;
 
     @JSONField( serializeUsing = PercentageWriter.class)
-    private BigDecimal deptTotalNetBuyRatio;
+    private BigDecimal partnerNetBuyRatio;
+
     /**
      * 买入金额
      */
     @JSONField(serializeUsing = CountUtilWriter.class)
-    private Long deptBuyAmount;
+    private Long partnerBuyAmount;
 
     /**
      * 买入金额占总成交比例
      */
     @JSONField( serializeUsing = PercentageWriter.class)
-    private BigDecimal deptTotalBuyRatio;
+    private BigDecimal partnerBuyRatio;
 
     /**
      * 卖出金额
      */
     @JSONField(  serializeUsing = CountUtilWriter.class)
-    private Long deptSellAmount;
+    private Long partnerSellAmount;
 
     /**
      * 卖出金额占总成交比例
      */
     @JSONField(  serializeUsing = PercentageWriter.class)
-    private BigDecimal deptTotalSellRatio;
+    private BigDecimal partnerSellRatio;
+
+    private List<DragonStockList> partners;
 
 }
