@@ -31,16 +31,16 @@
                 <tr class="ve-table-body-tr" v-for="(col,index) in tableData" v-if="index > 0">
                     <td class="ve-table-body-td" v-for="c in col" :class="c.code"
                         @mouseenter="isHover(c.code)" @mouseleave="isLeave(c.code)">
-                        <a :href="'https://quote.eastmoney.com/bk/'+c.market+'.'+c.code+'.html'" target="_blank" style="color: #494949">
-                            <div class="td-flex center">
+                        <div class="td-flex center">
+                            <a :href="'https://quote.eastmoney.com/bk/'+c.market+'.'+c.code+'.html'" target="_blank" style="color: #494949">
                                 <span class="center" style="width: 100%;" :style="c.name.length > 6 ? 'font-size: 17px;' : 'font-size: 20px;'">{{c.name}}</span>
-                            </div>
-                            <div class="td-flex">
-                                <span class="right" style="width: 50%; font-size: 15px;" :style="c.changeRate.startsWith('-') ? 'color: green' : 'color: red'">{{c.changeRate}}</span>
-                                <!--<div class="center" ><span style="color: red">{{c.upNum}}</span> | <span style="color: green;">{{c.downNum}}</span></div>-->
-                                <span class="center" style="width: 50%" :style="c.mainNetIn.startsWith('-') ? 'color: green' : 'color: red'">{{c.mainNetIn}}</span>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
+                        <div class="td-flex">
+                            <span class="right" style="width: 50%; font-size: 15px;" :style="c.changeRate.startsWith('-') ? 'color: green' : 'color: red'">{{c.changeRate}}</span>
+                            <!--<div class="center" ><span style="color: red">{{c.upNum}}</span> | <span style="color: green;">{{c.downNum}}</span></div>-->
+                            <span class="center" style="width: 50%" :style="c.mainNetIn.startsWith('-') ? 'color: green' : 'color: red'">{{c.mainNetIn}}</span>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -117,7 +117,7 @@
                 MyDiv.style.height = '680px';
                 MyDiv.style.display = 'block';
                 fade.style.display = 'block';
-                MyDiv.innerHTML = '<object type="text/html" data="fundDetail.html?' + code +'" width="100%" height="99%"></object>';
+                MyDiv.innerHTML = '<object type="text/html" data="fundDetail.html?' + code + '" width="100%" height="99%"></object>';
             },
             showReportStock: function (code) {
                 if (fcode == "all") {

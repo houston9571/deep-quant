@@ -17,14 +17,13 @@
                 <thead class="ve-table-fixed-header ve-table-header">
                 <tr class="ve-table-header-tr">
                     <th class="ve-table-header-th" style="width: 100px;">
-                        <div v-on:click="showPartnerList()">游资</div>
+                        <div>日期</div>
                     </th>
                     <th class="ve-table-header-th" style="width: 140px;">个股</th>
                     <th class="ve-table-header-th" style="width: 190px;">行情</th>
+                    <th class="ve-table-header-th" style="width: 250px;">游资买入</th>
                     <th class="ve-table-header-th" style="width: 220px;">资金流向</th>
                     <th class="ve-table-header-th" style="width: 160px;">龙虎榜</th>
-                    <th class="ve-table-header-th" style="width: 160px;">游资买入</th>
-                    <th class="ve-table-header-th" style="width: 300px;">营业部</th>
                     <th class="ve-table-header-th" style="width: 300px;">上榜原因</th>
                 </tr>
                 </thead>
@@ -33,16 +32,17 @@
                 <tr class="ve-table-body-tr" style="width: 70px" v-for="col in tableData">
                     <td class="ve-table-body-td" style="text-align: center;">{{col.tradeDate}}</td>
                     <td class="ve-table-body-td" :class="col.code" @mouseenter="isHover(col.code)" @mouseleave="isLeave(col.code)">
-                        <a :href="'https://data.eastmoney.com/stockdata/'+col.code+'.html'" target="_blank" style="color: #494949">
-                            <div class="td-flex">
+                        <div class="td-flex">
+                            <a :href="'https://data.eastmoney.com/stockdata/'+col.code+'.html'" target="_blank" style="color: #494949">
                                 <span class="center" style="width: 65%; font-size: 20px; ">{{col.name}}</span>
-                                <span class="center" style="width: 35%">{{col.freeMarketCap}}</span>
-                            </div>
-                            <div class="td-flex">
-                                <span class="center" style="width: 50%; font-size: 15px;" :style="col.changeRate.startsWith('-') ? 'color: green' : 'color: red'">{{col.closePrice}}</span>
-                                <span class="center" style="width: 50%; font-size: 15px;" :style="col.changeRate.startsWith('-') ? 'color: green' : 'color: red'">{{col.changeRate}}</span>
-                            </div>
-                        </a>
+                            </a>
+
+                            <span class="center" style="width: 35%">{{col.freeMarketCap}}</span>
+                        </div>
+                        <div class="td-flex">
+                            <span class="center" style="width: 50%; font-size: 15px;" :style="col.changeRate.startsWith('-') ? 'color: green' : 'color: red'">{{col.closePrice}}</span>
+                            <span class="center" style="width: 50%; font-size: 15px;" :style="col.changeRate.startsWith('-') ? 'color: green' : 'color: red'">{{col.changeRate}}</span>
+                        </div>
                     </td>
                     <td class="ve-table-body-td">
                         <div class="td-flex">
@@ -57,6 +57,28 @@
                             <span class="left" style="width: 45%">市净: {{col.pb}}</span>
                             <span class="left" style="width: 55%">市盈(动): {{col.pef}}</span>
                         </div>
+                    </td>
+                    <td style="vertical-align: top;padding: 3px !important;" >
+                        <ul style="width: 100%; margin-bottom: 4px; padding: 2px; border: 0.4px solid #fef6f5;">
+                            <!--                            :style="c.changeRate.startsWith('-') ? 'background: linear-gradient(#edf9f0, #fff);' : 'background: linear-gradient(#fef6f5, #fff);'"-->
+                            <li>
+                                <div class="td-flex" style="font-size: 11px; " v-for="(p, index) in col.partners"
+                                     :style="(p.partnerName==p.partnerName && p.partnerBuyAmount.startsWith('-')) ? 'background: linear-gradient(to right, #abf0ab, #f1f1c2); border-radius: 1px; box-shadow: rgba(0.2, 0.2, 0.2, 0.2) 0px 3px 6px;'
+                                            : ((p.partnerName==p.partnerName && !p.partnerBuyAmount.startsWith('-')) ? 'background: linear-gradient(to right, #f2b8b8, #f1f1c2); border-radius: 1px; box-shadow: rgba(0.2, 0.2, 0.2, 0.2) 0px 3px 6px;' : '')">
+                                    <span class="left" style="width: 57px;" :style="p.partnerNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{p.partnerName}}</span>
+                                    <span class="right" style="width: 45px; color: red">{{p.partnerBuyAmount}}</span>
+                                    <span class="right" style="width: 45px; color: green">{{p.partnerSellAmount}}</span>
+                                    <span class="right" style="width: 45px;" :style="p.partnerNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{p.partnerNetBuyAmount}}</span>
+                                    <span class="right" style="width: 42px;" :style="p.partnerNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{p.partnerNetBuyRatio}}</span>
+                                </div>
+
+                                <!-- <div class="td-flex" style="display: inline-table;">
+                                     <span class="right" style="font-size: 10px;display: inline-block;color: red; border: 0.2px solid #f00; border-radius: 1px;box-shadow: 0 3px 6px rgba(0,0,0,0.2);">
+                                         中山东路
+                                     </span>
+                                 </div>-->
+                            </li>
+                        </ul>
                     </td>
                     <td class="ve-table-body-td">
                         <a :href="'https://data.eastmoney.com/zjlx/'+col.code+'.html'" target="_blank" style="color: #494949">
@@ -75,7 +97,7 @@
                         </a>
                     </td>
                     <td class="ve-table-body-td">
-                        <a href="https://data.eastmoney.com/stock/tradedetail.html" target="_blank" style="color: #494949">
+                        <a :href="'https://data.eastmoney.com/stock/lhb,'+col.tradeDate+','+col.code+'.html'" target="_blank" style="color: #494949">
                             <div class="td-flex">
                                 <span class="left" style="width: 60%">买入: <span style="color: red">{{col.buyAmount}}</span></span>
                                 <span class="left" style="width: 40%"><span style="color: red">{{col.buyAmountRatio}}</span></span>
@@ -93,29 +115,6 @@
                                  <span class="left" style="width: 40%">{{col.dealAmountRatio}}</span>
                              </div>-->
                         </a>
-                    </td>
-                    <td class="ve-table-body-td">
-                        <a :href="'https://data.eastmoney.com/stock/lhb,'+col.tradeDate+','+col.code+'.html'" target="_blank" style="color: #494949">
-                            <div class="td-flex">
-                                <span class="left" style="width: 60%">买入: <span style="color: red">{{col.partnerBuyAmount}}</span></span>
-                                <span class="left" style="width: 40%"><span style="color: red">{{col.partnerTotalBuyRatio}}</span></span>
-                            </div>
-                            <div class="td-flex">
-                                <span class="left" style="width: 60%">卖出: <span style="color: green">{{col.partnerSellAmount}}</span></span>
-                                <span class="left" style="width: 40%"><span style="color: green">{{col.partnerTotalSellRatio}}</span></span>
-                            </div>
-                            <div class="td-flex">
-                                <span class="left" style="width: 60%">净额: <span :style="col.partnerNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{col.partnerNetBuyAmount}}</span></span>
-                                <span class="left" style="width: 40%"><span :style="col.partnerNetBuyAmount.startsWith('-') ? 'color: green' : 'color: red'">{{col.partnerTotalNetBuyRatio}}</span></span>
-                            </div>
-                        </a>
-                    </td>
-                    <td class="ve-table-body-td">
-                        <div class="td-flex" v-for="(c, index) in col.partners">
-                            <span class="left" style="width: 40%"> <span style="color: red">{{c.partnerName}}</span></span>
-                            <span class="left" style="width: 30%"><span style="color: red">{{c.partnerNetBuyAmount}}</span></span>
-                            <span class="left" style="width: 30%"><span style="color: red">{{c.partnerNetBuyRatio}}</span></span>
-                        </div>
                     </td>
                     <td class="ve-table-body-td">{{col.explains}}<br>{{col.explanation}}</td>
                 </tr>
