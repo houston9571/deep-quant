@@ -7,12 +7,12 @@ import com.google.common.collect.Lists;
 import com.optimus.base.Result;
 import com.optimus.client.EastMoneyStockApi;
 import com.optimus.client.EastMoneyH5Api;
-import com.optimus.constants.MarketType;
-import com.optimus.constants.StockCodeUtils;
+import com.optimus.components.MarketType;
+import com.optimus.components.StockCodeUtils;
 import com.optimus.enums.DateFormatEnum;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.vo.FundsFlowLine;
-import com.optimus.mysql.entity.StockRealTime;
+import com.optimus.mysql.entity.StockTechMin;
 import com.optimus.mysql.mapper.StockRealtimeMapper;
 import com.optimus.service.StockRealtimeService;
 import com.optimus.utils.DateUtils;
@@ -27,13 +27,13 @@ import java.util.Map;
 
 import static cn.hutool.core.text.StrPool.COMMA;
 import static com.optimus.constant.Constants.LABEL_DATA;
-import static com.optimus.constants.StockConstants.KLINE_1MIN;
+import static com.optimus.components.StockConstants.KLINE_1MIN;
 import static com.optimus.enums.ErrorCode.NOT_GET_PAGE_ERROR;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StockRealtimeServiceImpl extends MybatisBaseServiceImpl<StockRealtimeMapper, StockRealTime> implements StockRealtimeService {
+public class StockRealtimeServiceImpl extends MybatisBaseServiceImpl<StockRealtimeMapper, StockTechMin> implements StockRealtimeService {
 
     private final StockRealtimeMapper stockRealtimeMapper;
 
@@ -47,25 +47,24 @@ public class StockRealtimeServiceImpl extends MybatisBaseServiceImpl<StockRealti
      * @param code
      * @return
      */
-    public Result<StockRealTime> getStockRealtime(String code) {
+    public Result<StockTechMin> getStockRealtime(String code) {
         String fields = "f80,f43,f44,f45,f46,f47,f48,f49,f50,f51,f52,f57,f58,f60,f116,f117,f161,f162,f163,f164,f167,f168,f169,f170,f171,f178";
         JSONObject json = eastMoneyStockApi.getStockTradeRealtime(code, MarketType.getMarketCode(code), fields);
-        StockRealTime stockTradeRealTime = JSONObject.parseObject(json.getString(LABEL_DATA), StockRealTime.class);
+        StockTechMin stockTechMin = JSONObject.parseObject(json.getString(LABEL_DATA), StockTechMin.class);
         String transactionDate = json.getJSONObject(LABEL_DATA).getJSONArray("f80").getJSONObject(1).getString("e");
-        stockTradeRealTime.setTradeDate(DateUtils.parse(transactionDate+"00", DateFormatEnum.DATETIME_SHORT));
-        if(DateUtils.now().isBefore(stockTradeRealTime.getTradeDate())){
-            stockTradeRealTime.setTradeDate(DateUtils.now());
-        }
+        stockTechMin.setTradeDate(DateUtils.parseLocalDate(transactionDate+"00", DateFormatEnum.DATETIME_SHORT));
+        stockTechMin.setTradeDatetime(DateUtils.parse(transactionDate+"00", DateFormatEnum.DATETIME_SHORT));
+//        if(DateUtils.now().isBefore(stockTechMin.getTradeDate())){
+//            stockTechMin.setTradeDate(DateUtils.now());
+//        }
 
-        saveOrUpdate(stockTradeRealTime, new String[]{"code", "trade_date"});
-        return Result.success(stockTradeRealTime);
+        saveOrUpdate(stockTechMin, new String[]{"stock_code", "trade_date"});
+        return Result.success(stockTechMin);
     }
 
 
     /**
      * 获取实时资金流向 1分钟
-     * @param code
-     * @return
      */
     public Result<List<FundsFlowLine>> getFundsFlowLines(String code) {
         JSONObject json = eastMoneyStockApi.getFundsFlowLines(code, MarketType.getMarketCode(code), KLINE_1MIN, 10);

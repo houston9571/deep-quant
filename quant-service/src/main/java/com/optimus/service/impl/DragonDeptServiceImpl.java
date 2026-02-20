@@ -4,30 +4,24 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.optimus.base.Result;
 import com.optimus.client.EastMoneyDragonApi;
 import com.optimus.mysql.MybatisBaseServiceImpl;
-import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.DragonDept;
 import com.optimus.mysql.entity.OrgDept;
 import com.optimus.mysql.mapper.DragonDeptMapper;
-import com.optimus.mysql.vo.DragonDeptDto;
 import com.optimus.service.DragonDeptService;
 import com.optimus.service.OrgDeptService;
 import com.optimus.thread.Threads;
-import com.optimus.utils.DateUtils;
 import com.optimus.utils.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static com.optimus.constant.Constants.*;
@@ -81,9 +75,9 @@ public class DragonDeptServiceImpl extends MybatisBaseServiceImpl<DragonDeptMapp
                         stocks.put(sc[j].substring(0, 6), sn[j]);
                     }
                     d.setBuyStocks(stocks.toJSONString());
-                    d.setName(d.getName().replace("证券营业部", "").replace("营业部", ""));
+                    d.setDeptName(d.getDeptName().replace("证券营业部", "").replace("营业部", ""));
                     list.add(d);
-                    orgDeptSet.add(OrgDept.builder().code(d.getCode()).name(d.getName()).nameFull(d.getNameFull()).build());
+                    orgDeptSet.add(OrgDept.builder().deptCode(d.getDeptCode()).deptName(d.getDeptName()).nameFull(d.getNameFull()).build());
                 } catch (Exception e) {
                     log.error(">>>>>getDragonDeptList JSONObject.parseObject error. {} {}", data.getString(i), e.getMessage());
                 }
@@ -96,7 +90,7 @@ public class DragonDeptServiceImpl extends MybatisBaseServiceImpl<DragonDeptMapp
         log.info(">>>>>getDragonDeptList read finished {} total:{} save:{} ", date, total, list.size());
         try {
             if (!CollectionUtils.isEmpty(list)) {
-                saveOrUpdateBatch(list, new String[]{"code", "trade_date"});
+                saveOrUpdateBatch(list, new String[]{"dept_code", "trade_date"});
                 orgDeptService.saveBatch(orgDeptSet);
             }
         } catch (Exception e) {

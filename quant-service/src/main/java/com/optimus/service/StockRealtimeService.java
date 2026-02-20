@@ -4,14 +4,14 @@ import com.alibaba.fastjson2.JSONObject;
 import com.optimus.base.Result;
 import com.optimus.mysql.MybatisBaseService;
 import com.optimus.mysql.vo.FundsFlowLine;
-import com.optimus.mysql.entity.StockRealTime;
+import com.optimus.mysql.entity.StockTechMin;
 
 import java.util.List;
 
-public interface StockRealtimeService extends MybatisBaseService<StockRealTime> {
+public interface StockRealtimeService extends MybatisBaseService<StockTechMin> {
 
 
-    Result<StockRealTime> getStockRealtime(String code);
+    Result<StockTechMin> getStockRealtime(String code);
 
     Result<List<FundsFlowLine>> getFundsFlowLines(String code);
 

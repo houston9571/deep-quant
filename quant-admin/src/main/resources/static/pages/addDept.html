@@ -28,8 +28,8 @@
             <div class="left" style="font-size: 14px;">
                 <div>
                     <input type="text" v-model="searchQuery" placeholder="输入搜索..." style="height: 25px;"/>
-                    <div v-for="option in filterOptions()" :key="option.code" @click="selectDept(option.code)">
-                        {{ option.name }}
+                    <div v-for="option in filterOptions()" :key="option.partnerCode" @click="selectDept(option.partnerCode)">
+                        {{ option.partnerName }}
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
 
     // 异步请求函数必须要写在外面，然后在vue里面调用
     function asyncLoadDate() {
-        axios.get(url + 'org/partner/dept/nomatch/' + params.code)
+        axios.get(url + 'org/partner/dept/nomatch/' + params.partnerCode)
             .then(function (response) {
                 if (response.status === 200) {
                     vm.fillData(response);
@@ -60,16 +60,16 @@
         el: "#app",
         mounted: function () {
             asyncLoadDate();
-            this.partnerCode = params.code;
-            this.partnerName = params.name;
+            this.partnerCode = params.partnerCode;
+            this.partnerName = params.partnerName;
         },
         methods: {
             fillData: function (response) {
                 let json = response.data;
                 this.tableData = json.data;
             },
-            selectDept(code) {
-                axios.put(url + 'org/partner/dept/' + this.partnerCode + '/' + code, {}).then(function (response) {
+            selectDept(partnerCode) {
+                axios.put(url + 'org/partner/dept/' + this.partnerCode + '/' + partnerCode, {}).then(function (response) {
                     if (response.status === 200) {
                         alert('操作成功', function () {
                             window.close();
@@ -84,7 +84,7 @@
                     return option.name.toLowerCase().includes(this.searchQuery.toLowerCase());
                 });
             },
-            selectDeptssss(code) {
+            selectDeptsss(code) {
                 this.deptCode = code;
                 this.searchQuery = '';
             },

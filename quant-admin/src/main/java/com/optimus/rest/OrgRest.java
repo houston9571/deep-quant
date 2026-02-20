@@ -1,12 +1,8 @@
 package com.optimus.rest;
 
-import com.optimus.base.PageResult;
 import com.optimus.base.Result;
-import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.OrgDept;
 import com.optimus.mysql.entity.OrgPartner;
-import com.optimus.mysql.vo.DragonStockList;
-import com.optimus.service.DragonStockService;
 import com.optimus.service.OrgDeptService;
 import com.optimus.service.OrgPartnerService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.dtflys.forest.backend.ContentType.APPLICATION_JSON;
-import static com.optimus.enums.ErrorCode.DATA_NOT_EXIST;
 
 @Slf4j
 @RestController
@@ -41,25 +36,25 @@ public class OrgRest {
     /**
      * 删除游资的席位
      */
-    @DeleteMapping("partner/dept/{code}/{deptCode}")
-    public Result<Void> deletePartnerDept(@PathVariable String code, @PathVariable String deptCode) {
-        return orgPartnerService.deletePartnerDept(code, deptCode);
+    @DeleteMapping("partner/dept/{partnerCode}/{deptCode}")
+    public Result<Void> deletePartnerDept(@PathVariable String partnerCode, @PathVariable String deptCode) {
+        return orgPartnerService.deletePartnerDept(partnerCode, deptCode);
     }
 
 
     /**
      * 游资未匹配的营业部列表
      */
-    @GetMapping("partner/dept/nomatch/{code}")
-    public Result<List<OrgDept>> queryNomatchPartnerDeptList(@PathVariable String code) {
-        return orgDeptService.queryNomatchPartnerDeptList(code);
+    @GetMapping("partner/dept/nomatch/{partnerCode}")
+    public Result<List<OrgDept>> queryNomatchPartnerDeptList(@PathVariable String partnerCode) {
+        return orgDeptService.queryNomatchPartnerDeptList(partnerCode);
     }
 
     /**
      * 增加游资的席位
      */
-    @PutMapping("partner/dept/{code}/{deptCode}")
-    public Result<Void> addPartnerDept(@PathVariable String code, @PathVariable String deptCode) {
-        return orgPartnerService.addPartnerDept(code, deptCode);
+    @PutMapping("partner/dept/{partnerCode}/{deptCode}")
+    public Result<Void> addPartnerDept(@PathVariable String partnerCode, @PathVariable String deptCode) {
+        return orgPartnerService.addPartnerDept(partnerCode, deptCode);
     }
 }

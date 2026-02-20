@@ -2,7 +2,6 @@ package com.optimus.service.impl;
 
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.TradeCalendar;
-import com.optimus.mysql.mapper.FundInfoMapper;
 import com.optimus.mysql.mapper.TradeCalendarMapper;
 import com.optimus.service.TradeCalendarService;
 import com.optimus.utils.DateUtils;
@@ -26,7 +25,7 @@ import static java.util.Locale.SIMPLIFIED_CHINESE;
 public class TradeCalendarServiceImpl extends MybatisBaseServiceImpl<TradeCalendarMapper, TradeCalendar> implements TradeCalendarService {
 
 
-    private final FundInfoMapper fundInfoMapper;
+    private final TradeCalendarMapper tradeCalendarMapper;
 
     public int genYearCalendar() {
         LocalDate b = DateUtils.parseLocalDate(DateUtils.now().getYear() + "-01-01", DATE);

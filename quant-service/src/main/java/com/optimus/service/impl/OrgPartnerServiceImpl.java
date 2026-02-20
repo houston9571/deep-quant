@@ -29,13 +29,13 @@ public class OrgPartnerServiceImpl extends MybatisBaseServiceImpl<OrgPartnerMapp
         return Result.success(orgPartnerMapper.queryOrgPartnerList());
     }
 
-    public Result<Void> deletePartnerDept(String code, String deptCode) {
-        return Result.isSuccess(orgPartnerMapper.deletePartnerDept(code, deptCode), DATA_NOT_EXIST);
+    public Result<Void> deletePartnerDept(String partnerCode, String deptCode) {
+        return Result.isSuccess(orgPartnerMapper.deletePartnerDept(partnerCode, deptCode), DATA_NOT_EXIST);
     }
 
-    public Result<Void> addPartnerDept(String code, String deptCode) {
-        if (orgPartnerMapper.countPartnerDept(code, deptCode) == 0) {
-            return Result.isSuccess(orgPartnerMapper.addPartnerDept(code, deptCode), DB_ERROR);
+    public Result<Void> addPartnerDept(String partnerCode, String deptCode) {
+        if (orgPartnerMapper.countPartnerDept(partnerCode, deptCode) == 0) {
+            return Result.isSuccess(orgPartnerMapper.addPartnerDept(partnerCode, deptCode), DB_ERROR);
         }
         return Result.fail(DATE_DUPLICATE);
     }

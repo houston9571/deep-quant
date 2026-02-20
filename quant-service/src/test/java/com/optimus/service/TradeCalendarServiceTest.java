@@ -1,6 +1,5 @@
 package com.optimus.service;
 
-import com.optimus.constants.StockCodeUtils;
 import com.optimus.utils.DateUtils;
 import org.junit.Test;
 
@@ -8,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
 
+import static com.optimus.constant.Constants.ROUND_MODE;
 import static com.optimus.enums.DateFormatEnum.DATE;
 import static java.math.RoundingMode.HALF_UP;
 import static java.time.format.TextStyle.SHORT;
@@ -21,7 +21,7 @@ public class TradeCalendarServiceTest {
 
         System.out.println("--->" + DateUtils.now().plusDays(7).getDayOfWeek().getDisplayName(SHORT, SIMPLIFIED_CHINESE));
 
-        MathContext mc = new MathContext(4, HALF_UP);
+        MathContext mc = new MathContext(4, ROUND_MODE);
         System.out.println(BigDecimal.valueOf(4375378432L).divide(BigDecimal.valueOf(61495128151L), mc));
 
 

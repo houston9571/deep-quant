@@ -38,12 +38,12 @@ public class DragonStockDetail extends BaseEntity {
      * 股票代码
      */
     @JSONField(alternateNames = "SECURITY_CODE")
-    private String code;
+    private String stockCode;
 
     /**
      * 股票名称
      */
-    private String name;
+    private String stockName;
 
     @TableField("trade_date")
     @JSONField(alternateNames = "TRADE_DATE", format = "yyyy-MM-dd", deserializeUsing = StringToDateReader.class)
@@ -59,13 +59,13 @@ public class DragonStockDetail extends BaseEntity {
      * 收盘价
      */
     @JSONField(alternateNames = "CLOSE_PRICE"  )
-    private BigDecimal closePrice;
+    private BigDecimal close;
 
     /**
      * 涨幅
      */
     @JSONField(alternateNames = "CHANGE_RATE", serializeUsing = PercentageWriter.class )
-    private BigDecimal changeRate;
+    private BigDecimal changePercent;
 
     /**
      * 净买入
@@ -110,7 +110,7 @@ public class DragonStockDetail extends BaseEntity {
      * 市场总成交额
      */
     @JSONField(alternateNames = "ACCUM_AMOUNT", serializeUsing = CountUtilWriter.class)
-    private Long accumAmount;
+    private Long amount;
 
 
     /**

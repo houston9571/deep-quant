@@ -19,9 +19,9 @@ Deep Think Quant System
    龙虎榜个股列表更新 17:10  127.0.0.1/task/dragon/stock/2026-02-10  -- dragon_stock dragon_stock_detail
 
 2. 板块列表 15：10
-   127.0.0.1/task/board/delay -- board_delay board_stock
+   127.0.0.1/task/concept/daily -- concept_daily concept_stock
 
 3. 全部股票列表 9:31 11:31 15:01
-   127.0.0.1/task/stock/delay -- stock_delay
+   127.0.0.1/task/stock/daily -- stock_daily
 
-4. 板块页面定时更新前20 board_stock  board_stock
+4. 板块页面定时更新前20 concept_stock  concept_stock

@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import static com.optimus.constant.Constants.ID;
 
 /**
- * 股票行情
+ *
  */
 @Data
 @Builder
@@ -35,13 +35,13 @@ public class DragonDept extends BaseEntity {
      * 营业部代码
      */
     @JSONField(alternateNames = "OPERATEDEPT_CODE")
-    private String code;
+    private String deptCode;
 
     /**
      * 营业部名称
      */
     @JSONField(alternateNames = "ORG_NAME_ABBR")
-    private String name;
+    private String deptName;
 
     /**
      * 营业部名称

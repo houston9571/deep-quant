@@ -1,11 +1,9 @@
 package com.optimus.mysql.vo;
 
 import com.alibaba.fastjson2.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
-import com.optimus.ext.StringToDateReader;
-import com.optimus.mysql.entity.StockDelay;
+import com.optimus.mysql.entity.StockDaily;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,7 +13,7 @@ import java.time.LocalDate;
  * 游资榜页面
  */
 @Data
-public class DragonDeptDto {
+public class DragonDeptDto  {
 
 
     /**************************
@@ -27,17 +25,13 @@ public class DragonDeptDto {
 
     private String deptName;
 
-    private String code;
-
-    private String name;
-
     private LocalDate tradeDate;
 
     private String week;
 
     private BigDecimal latestPrice;
 
-    private BigDecimal changeRate;
+    private BigDecimal changePercent;
 
     /**
      * 净买入

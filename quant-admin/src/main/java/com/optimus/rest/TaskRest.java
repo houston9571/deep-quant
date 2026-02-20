@@ -17,16 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static cn.hutool.core.text.StrPool.COMMA;
 import static com.dtflys.forest.backend.ContentType.APPLICATION_JSON;
-import static com.optimus.constant.Constants.DISABLED;
-import static com.optimus.constant.Constants.ENABLE;
 import static com.optimus.enums.DateFormatEnum.DATE;
-import static java.time.format.TextStyle.SHORT;
-import static java.util.Locale.SIMPLIFIED_CHINESE;
 
 
 @Slf4j
@@ -36,11 +31,11 @@ import static java.util.Locale.SIMPLIFIED_CHINESE;
 public class TaskRest {
 
 
-    private final BoardDelayService boardDelayService;
+    private final ConceptDelayService conceptDelayService;
 
     private final StockInfoService stockInfoService;
 
-    private final StockDelayService stockDelayService;
+    private final StockDailyService stockDailyService;
 
     private final StockRealtimeService stockRealtimeService;
 
@@ -55,9 +50,9 @@ public class TaskRest {
     /**
      * 同步概念板块列表
      */
-    @GetMapping("board/delay")
-    public Result<Void> syncBoardTradeList() {
-        Threads.asyncExecute(boardDelayService::syncBoardTradeList);
+    @GetMapping("concept/daily")
+    public Result<Void> syncConceptTradeList() {
+        Threads.asyncExecute(conceptDelayService::syncConceptTradeList);
         return Result.success();
     }
 
@@ -65,11 +60,11 @@ public class TaskRest {
     /**
      * 同步单个股票基本信息，所属概念
      */
-    @GetMapping("stock/{code}}")
-    public Result<StockInfo> stock(@PathVariable String code) {
-        Result<StockInfo> result = stockInfoService.syncStockInfo(code);
+    @GetMapping("stock/{stockCode}}")
+    public Result<StockInfo> stock(@PathVariable String stockCode) {
+        Result<StockInfo> result = stockInfoService.syncStockInfo(stockCode);
         if (result.isSuccess()) {
-            stockInfoService.syncStockBoardList(code);
+            stockInfoService.syncStockConceptList(stockCode);
         }
         return Result.success();
     }
@@ -79,15 +74,15 @@ public class TaskRest {
      */
     @GetMapping("stock/overview")
     public Result<Void> overview() {
-        StockDelay stockDelay = StockDelay.builder().tradeDate(DateUtils.now().toLocalDate()).build();
-        List<StockDelay> list = stockDelayService.queryList(stockDelay);
+        StockDaily stockDaily = StockDaily.builder().tradeDate(DateUtils.now().toLocalDate()).build();
+        List<StockDaily> list = stockDailyService.queryList(stockDaily);
         if (!CollectionUtils.isEmpty(list)) {
             Threads.asyncExecute(() -> {
                 Result<StockInfo> result;
-                for (StockDelay delay : list) {
-                    result = stockInfoService.syncStockInfo(delay.getCode());
+                for (StockDaily daily : list) {
+                    result = stockInfoService.syncStockInfo(daily.getStockCode());
                     if (result.isSuccess()) {
-                        stockInfoService.syncStockBoardList(delay.getCode());
+                        stockInfoService.syncStockConceptList(daily.getStockCode());
                     }
                 }
             });
@@ -99,9 +94,9 @@ public class TaskRest {
     /**
      * 获取所有股票当天交易行情
      */
-    @GetMapping("stock/delay")
+    @GetMapping("stock/daily")
     public Result<Void> syncStockTradeList() {
-        Threads.asyncExecute(stockDelayService::syncStockTradeList);
+        Threads.asyncExecute(stockDailyService::syncStockTradeList);
         return Result.success();
 
     }
@@ -137,11 +132,11 @@ public class TaskRest {
                     List<DragonStock> list = result.getData();
                     int count = 0;
                     for (DragonStock d : list) {
-                        int cc = dragonStockDetailService.syncDragonStockDetail(d.getTradeDate(), d.getCode(), d.getName());
+                        int cc = dragonStockDetailService.syncDragonStockDetail(d.getTradeDate(), d.getStockCode(), d.getStockName());
                         if (cc == 0) {
                             // 连续请求容易超时，重试一次
                             Threads.sleep(NumberUtils.random(5000));
-                            cc = dragonStockDetailService.syncDragonStockDetail(d.getTradeDate(), d.getCode(), d.getName());
+                            cc = dragonStockDetailService.syncDragonStockDetail(d.getTradeDate(), d.getStockCode(), d.getStockName());
                         }
                         count += cc;
                     }
@@ -162,11 +157,11 @@ public class TaskRest {
      * @return
      */
     @GetMapping("stock/realtime/{codes}")
-    public Result<List<StockRealTime>> getStockTradeRealtime(@PathVariable String codes) {
-        List<StockRealTime> list = Lists.newArrayList();
+    public Result<List<StockTechMin>> getStockTradeRealtime(@PathVariable String codes) {
+        List<StockTechMin> list = Lists.newArrayList();
         String[] codeArray = codes.split(COMMA);
         for (String code : codeArray) {
-            Result<StockRealTime> result = stockRealtimeService.getStockRealtime(code);
+            Result<StockTechMin> result = stockRealtimeService.getStockRealtime(code);
             if (result.isSuccess()) {
                 list.add(result.getData());
             }

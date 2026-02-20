@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface OrgDeptMapper extends BaseMapper<OrgDept> {
 
-    @Select("SELECT *  FROM org_dept WHERE `code` NOT IN ( SELECT dept_code FROM org_partner_dept WHERE  partner_code = #{code} )")
-    List<OrgDept> queryNomatchPartnerDeptList(@Param("code") String code);
+    @Select("SELECT *  FROM org_dept WHERE dept_code NOT IN ( SELECT dept_code FROM org_partner_dept WHERE  partner_code = #{partnerCode} )")
+    List<OrgDept> queryNomatchPartnerDeptList(@Param("partnerCode") String partnerCode);
 }

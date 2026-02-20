@@ -1,6 +1,6 @@
 package com.optimus.rest;
 
-import com.optimus.service.StockDelayService;
+import com.optimus.service.StockDailyService;
 import com.optimus.service.StockRealtimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class StockTradeRest {
 
 
 
-    private final StockDelayService stockDelayService;
+    private final StockDailyService stockDailyService;
 
     private final StockRealtimeService stockRealtimeService;
 

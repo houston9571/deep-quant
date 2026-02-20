@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+import static com.optimus.constant.Constants.ROUND_MODE;
 import static java.math.RoundingMode.HALF_UP;
 
 
@@ -48,15 +49,15 @@ public class NumberUtils {
     public static final BigDecimal W =  new BigDecimal("10000");
 
     public static BigDecimal moneyDivide(int fee) {
-        return new BigDecimal(fee).divide(new BigDecimal("100"), 2, HALF_UP);
+        return new BigDecimal(fee).divide(new BigDecimal("100"), 2, ROUND_MODE);
     }
 
     public static BigDecimal moneyDivide(String fee) {
-        return new BigDecimal(fee).divide(new BigDecimal("100"), 2, HALF_UP);
+        return new BigDecimal(fee).divide(new BigDecimal("100"), 2, ROUND_MODE);
     }
 
     public static BigDecimal money(String fee) {
-        return new BigDecimal(fee).setScale(2, HALF_UP);
+        return new BigDecimal(fee).setScale(2, ROUND_MODE);
     }
 
 
@@ -152,25 +153,25 @@ public class NumberUtils {
         if (NumberUtils.isNumeric(count)) {
             BigDecimal b = new BigDecimal(count);
             if (b.compareTo(WY) >= 0) {
-                return fh + b.divide(WY).setScale(1, HALF_UP).toPlainString() + "万亿";
+                return fh + b.divide(WY).setScale(1, ROUND_MODE).toPlainString() + "万亿";
             }
             if (b.compareTo(Y) >= 0) {
                 if (b.compareTo(BY) >= 0) {
-                    return fh + b.divide(Y).setScale(0, HALF_UP).toPlainString() + "亿";
+                    return fh + b.divide(Y).setScale(0, ROUND_MODE).toPlainString() + "亿";
                 }
                 if (b.compareTo(SY) < 0) {
-                    return fh + b.divide(Y).setScale(2, HALF_UP).toPlainString() + "亿";
+                    return fh + b.divide(Y).setScale(2, ROUND_MODE).toPlainString() + "亿";
                 }
-                return fh + b.divide(Y).setScale(1, HALF_UP).toPlainString() + "亿";
+                return fh + b.divide(Y).setScale(1, ROUND_MODE).toPlainString() + "亿";
             }
             if (b.compareTo(W) >= 0) {
                 if (b.compareTo(BW) >= 0) {
-                    return fh + b.divide(W).setScale(0, HALF_UP).toPlainString() + "万";
+                    return fh + b.divide(W).setScale(0, ROUND_MODE).toPlainString() + "万";
                 }
                 if (b.compareTo(SW) >= 0) {
-                    return fh + b.divide(W).setScale(2, HALF_UP).toPlainString() + "万";
+                    return fh + b.divide(W).setScale(2, ROUND_MODE).toPlainString() + "万";
                 }
-                return fh + b.divide(W).setScale(1, HALF_UP).toPlainString() + "万";
+                return fh + b.divide(W).setScale(1, ROUND_MODE).toPlainString() + "万";
             }
         }
         return count;
@@ -185,7 +186,7 @@ public class NumberUtils {
      */
     public static float toFixed(float f, int len) {
         BigDecimal b = new BigDecimal(f);
-        return b.setScale(len, BigDecimal.ROUND_HALF_UP).floatValue();
+        return b.setScale(len, ROUND_MODE).floatValue();
     }
 
     /**

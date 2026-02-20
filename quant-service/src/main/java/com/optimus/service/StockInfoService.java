@@ -6,9 +6,9 @@ import com.optimus.mysql.entity.StockInfo;
 
 public interface StockInfoService extends MybatisBaseService<StockInfo> {
 
-    Result<StockInfo> syncStockInfo(String code);
+    Result<StockInfo> syncStockInfo(String stockCode);
 
-    Result<Void> syncStockBoardList(String code);
+    Result<Void> syncStockConceptList(String stockCode);
 
 
 }

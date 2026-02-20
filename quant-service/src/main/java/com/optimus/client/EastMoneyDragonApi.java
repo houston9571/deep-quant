@@ -40,15 +40,15 @@ public interface EastMoneyDragonApi {
      * 个股龙虎榜详情 卖出列表
      * https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSSELL&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&sortColumns=SELL&sortTypes=-1&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770486329447
      */
-    @Get(url = DATACENTER_WEB_URL + "/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSSELL&filter=(TRADE_DATE='{tradeDate}')(SECURITY_CODE=\"{code}\")&sortColumns=SELL&sortTypes=-1&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770486329447")
-    JSONObject syncDragonStockListSell(@Var("tradeDate") String tradeDate, @Var("code") String code);
+    @Get(url = DATACENTER_WEB_URL + "/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSSELL&filter=(TRADE_DATE='{tradeDate}')(SECURITY_CODE=\"{stockCode}\")&sortColumns=SELL&sortTypes=-1&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770486329447")
+    JSONObject syncDragonStockListSell(@Var("tradeDate") String tradeDate, @Var("stockCode") String stockCode);
 
     /**
      * 个股龙虎榜详情 买入列表
      * https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSBUY&filter=(TRADE_DATE='2026-02-03')(SECURITY_CODE="000547")&sortTypes=-1&sortColumns=BUY&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770542839476
      */
-    @Get(url = DATACENTER_WEB_URL + "/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSBUY&filter=(TRADE_DATE='{tradeDate}')(SECURITY_CODE=\"{code}\")&sortTypes=-1&sortColumns=BUY&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770542839476")
-    JSONObject syncDragonStockListBuy(@Var("tradeDate") String tradeDate, @Var("code") String code);
+    @Get(url = DATACENTER_WEB_URL + "/api/data/v1/get?reportName=RPT_BILLBOARD_DAILYDETAILSBUY&filter=(TRADE_DATE='{tradeDate}')(SECURITY_CODE=\"{stockCode}\")&sortTypes=-1&sortColumns=BUY&pageNumber=1&pageSize=50&columns=ALL&source=WEB&client=WEB&_=1770542839476")
+    JSONObject syncDragonStockListBuy(@Var("tradeDate") String tradeDate, @Var("stockCode") String stockCode);
 
 
     /**

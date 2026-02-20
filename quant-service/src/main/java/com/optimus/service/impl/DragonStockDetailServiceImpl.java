@@ -6,15 +6,11 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.optimus.client.EastMoneyDragonApi;
 import com.optimus.enums.DateFormatEnum;
 import com.optimus.mysql.MybatisBaseServiceImpl;
-import com.optimus.mysql.entity.BoardDelay;
-import com.optimus.mysql.entity.OrgDept;
 import com.optimus.mysql.entity.DragonStockDetail;
 import com.optimus.mysql.mapper.DragonStockDetailMapper;
-import com.optimus.mysql.vo.DragonDeptDto;
 import com.optimus.service.OrgDeptService;
 import com.optimus.service.DragonStockDetailService;
 import com.optimus.utils.DateUtils;
@@ -27,10 +23,8 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.optimus.constant.Constants.*;
-import static java.math.RoundingMode.HALF_UP;
 
 @Slf4j
 @Service
@@ -63,10 +57,10 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
                 totalNet.put(detail.getPartnerCode(), DragonStockDetail.builder().partnerCode(detail.getPartnerCode()).partnerName(detail.getPartnerName()).netBuyAmount(detail.getNetBuyAmount()).totalNetBuyRatio(detail.getTotalNetBuyRatio()).build());
             }
             DragonStockDetail np = DragonStockDetail.builder().partnerCode(detail.getPartnerCode()).partnerName(detail.getPartnerName()).netBuyAmount(detail.getNetBuyAmount()).totalNetBuyRatio(detail.getTotalNetBuyRatio()).build();
-            if (partners.containsKey(detail.getCode())) {
-                partners.get(detail.getCode()).add(np);
+            if (partners.containsKey(detail.getStockCode())) {
+                partners.get(detail.getStockCode()).add(np);
             } else {
-                partners.put(detail.getCode(), new ArrayList<DragonStockDetail>() {{
+                partners.put(detail.getStockCode(), new ArrayList<DragonStockDetail>() {{
                     add(np);
                 }});
             }
@@ -88,7 +82,7 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
             if (!qt.contains(d.getPartnerName())) {
                 List<DragonStockDetail> data = map.get(d.getPartnerCode());
                 for (DragonStockDetail dd : data) {
-                    dd.setPartners(partners.get(dd.getCode()));
+                    dd.setPartners(partners.get(dd.getStockCode()));
                 }
                 grid.add(data);
             }
@@ -101,12 +95,12 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
     /**
      * 龙虎榜个股买卖详情
      */
-    public int syncDragonStockDetail(LocalDate date, String code, String name) {
+    public int syncDragonStockDetail(LocalDate date, String stockCode, String stockName) {
         Map<String, DragonStockDetail> map = Maps.newHashMap();
         String tradeDate = DateUtils.format(date, DateFormatEnum.DATE);
         try {
-            JSONObject buy = eastMoneyDragonApi.syncDragonStockListBuy(tradeDate, code).getJSONObject(LABEL_RESULT);
-            JSONObject sell = eastMoneyDragonApi.syncDragonStockListSell(tradeDate, code).getJSONObject(LABEL_RESULT);
+            JSONObject buy = eastMoneyDragonApi.syncDragonStockListBuy(tradeDate, stockCode).getJSONObject(LABEL_RESULT);
+            JSONObject sell = eastMoneyDragonApi.syncDragonStockListSell(tradeDate, stockCode).getJSONObject(LABEL_RESULT);
             JSONArray data = new JSONArray();
             if (ObjectUtil.isNotNull(buy) && ObjectUtil.isNotNull(sell) && buy.containsKey(LABEL_DATA) && sell.containsKey(LABEL_DATA)) {
                 data = buy.getJSONArray(LABEL_DATA);
@@ -117,9 +111,9 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
                             DragonStockDetail d = JSONObject.parseObject(data.getString(i), DragonStockDetail.class);
                             // 自然人、其他自然人、机构投资者、中小投资者、深股通投资者等，这些code都是0
                             if (!StrUtil.equals(d.getDeptCode(), "0")) {
-                                d.setName(name);
+                                d.setStockName(stockName);
                                 if (!map.containsKey(d.getDeptCode()) || map.get(d.getDeptCode()).getTradeId() < d.getTradeId()) {
-                                    d.setTotalNetBuyRatio(BigDecimal.valueOf(d.getNetBuyAmount()).divide(BigDecimal.valueOf(d.getAccumAmount()), new MathContext(4, HALF_UP)).multiply(HUNDRED));
+                                    d.setTotalNetBuyRatio(BigDecimal.valueOf(d.getNetBuyAmount()).divide(BigDecimal.valueOf(d.getAmount()), new MathContext(4, ROUND_MODE)).multiply(HUNDRED));
                                     map.put(d.getDeptCode(), d);
                                 }
                             }
@@ -129,7 +123,7 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
                     }
                 }
             }
-            log.info(">>>>>getDragonStockDetail: {} {} {} total:{} save:{}", date, code, name, data.size(), map.size());
+            log.info(">>>>>getDragonStockDetail: {} {} {} total:{} save:{}", date, stockCode, stockName, data.size(), map.size());
         } catch (Exception e) {
             log.error(">>>>>getDragonStockDetail request json error. {}", e.getMessage());
         }
@@ -137,7 +131,7 @@ public class DragonStockDetailServiceImpl extends MybatisBaseServiceImpl<DragonS
             if (!CollectionUtils.isEmpty(map)) {
                 ArrayList<DragonStockDetail> list = new ArrayList<>(map.values());
                 list.sort(Comparator.comparingLong(DragonStockDetail::getNetBuyAmount).reversed());
-                saveOrUpdateBatch(list, new String[]{"code", "trade_date", "dept_code"});
+                saveOrUpdateBatch(list, new String[]{"stock_code", "trade_date", "dept_code"});
             }
         } catch (Exception e) {
             log.error(">>>>>getDragonStockDetail saveBatch error. {}", e.getMessage());

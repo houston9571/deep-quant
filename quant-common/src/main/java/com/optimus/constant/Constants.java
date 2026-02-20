@@ -1,8 +1,10 @@
 package com.optimus.constant;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static cn.hutool.core.text.StrPool.COLON;
+import static java.math.RoundingMode.HALF_UP;
 
 
 public interface Constants {
@@ -22,6 +24,10 @@ public interface Constants {
     BigDecimal HUNDRED = new BigDecimal(100);
 
     BigDecimal THOUSAND = new BigDecimal("1000");
+
+
+    // 四舍五入模式
+    RoundingMode ROUND_MODE = HALF_UP;
 
     String DATETIME_REGEXP = "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}";
     String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -49,8 +55,6 @@ public interface Constants {
     String LABEL_DATA = "data";
 
     String LABEL_TOTAL = "total";
-
-
 
 
     int THREE_MINUTES = 180;

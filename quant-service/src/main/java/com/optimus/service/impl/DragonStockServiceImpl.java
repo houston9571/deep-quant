@@ -1,24 +1,21 @@
 package com.optimus.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.optimus.base.Result;
 import com.optimus.client.EastMoneyDragonApi;
-import com.optimus.constants.MarketType;
+import com.optimus.components.MarketType;
 import com.optimus.mysql.MybatisBaseServiceImpl;
-import com.optimus.mysql.entity.BoardDelay;
 import com.optimus.mysql.entity.DragonStock;
-import com.optimus.mysql.entity.DragonStockDetail;
+import com.optimus.mysql.entity.StockDaily;
 import com.optimus.mysql.mapper.DragonStockMapper;
-import com.optimus.mysql.vo.DragonStockList;
+import com.optimus.mysql.vo.DragonDetailPartner;
+import com.optimus.mysql.vo.DragonDetailStock;
 import com.optimus.service.DragonStockService;
 import com.optimus.thread.Threads;
-import com.optimus.utils.DateUtils;
 import com.optimus.utils.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +25,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,22 +46,22 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
     /**
      * 查询当天龙虎榜列表，按游资分类
      */
-    public List<DragonStockList> queryDragonStockList(String tradeDate) {
+    public List<DragonDetailStock> queryDragonStockList(String tradeDate) {
         return dragonStockMapper.queryDragonStockList(tradeDate);
     }
 
-    public List<DragonStockList> queryDragonStockDetail(String code) {
-        List<DragonStockList> list = dragonStockMapper.queryDragonStockDetail(code);
+    public List<DragonDetailStock> queryDragonStockDetail(String stockCode) {
+        List<DragonDetailStock> list = dragonStockMapper.queryDragonStockDetail(stockCode);
         // 将游资按个股合并为一条记录
-        Map<String, DragonStockList> map = Maps.newLinkedHashMap();
-        for (DragonStockList stock : list) {
+        Map<String, DragonDetailStock> map = Maps.newLinkedHashMap();
+        for (DragonDetailStock stock : list) {
             String k = stock.getTradeDate().toString();
-            DragonStockList s = new DragonStockList();
+            DragonDetailStock s = new DragonDetailStock();
             BeanUtils.copyProperties(stock, s);
             if (map.containsKey(k)) {
                 map.get(k).getPartners().add(s);
             } else {
-                stock.setPartners(new ArrayList<DragonStockList>() {{
+                stock.setPartners(new ArrayList<DragonDetailStock>() {{
                     add(s);
                 }});
                 map.put(k, stock);
@@ -74,6 +70,28 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
         return new ArrayList<>(map.values());
     }
 
+
+    public List<DragonDetailPartner> queryDragonPartnerDetail(String partnerCode) {
+        List<DragonDetailStock> list = dragonStockMapper.queryDragonPartnerDetail(partnerCode);
+        // 将游资按个股合并为一条记录
+        Map<String, DragonDetailPartner> map = Maps.newLinkedHashMap();
+        for (DragonDetailStock stock : list) {
+            String k = stock.getTradeDate().toString();
+            StockDaily stockDaily = StockDaily.builder().build();
+            BeanUtils.copyProperties(stock, stockDaily);
+            if (map.containsKey(k)) {
+                map.get(k).getStocks().add(stockDaily);
+            } else {
+                DragonDetailPartner partner = DragonDetailPartner.builder().build();
+                BeanUtils.copyProperties(stock, partner);
+                partner.setStocks(new ArrayList<StockDaily>() {{
+                    add(stockDaily);
+                }});
+                map.put(k, partner);
+            }
+        }
+        return new ArrayList<>(map.values());
+    }
 
     /**
      * 龙虎榜个股列表
@@ -103,20 +121,20 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
                 ++total;
                 try {
                     DragonStock d = JSONObject.parseObject(data.getString(i), DragonStock.class);
-                    if (MarketType.contains(d.getCode())) {
-                        d.setBuyAmountRatio(BigDecimal.valueOf(d.getBuyAmount()).divide(BigDecimal.valueOf(d.getAccumAmount()), new MathContext(4, HALF_UP)).multiply(HUNDRED));
-                        d.setSellAmountRatio(BigDecimal.valueOf(d.getSellAmount()).divide(BigDecimal.valueOf(d.getAccumAmount()), new MathContext(4, HALF_UP)).multiply(HUNDRED));
-                        if (!map.containsKey(d.getCode())) {
-                            map.put(d.getCode(), d);
+                    if (MarketType.contains(d.getStockCode())) {
+                        d.setBuyAmountRatio(BigDecimal.valueOf(d.getBuyAmount()).divide(BigDecimal.valueOf(d.getAmount()), new MathContext(4, ROUND_MODE)).multiply(HUNDRED));
+                        d.setSellAmountRatio(BigDecimal.valueOf(d.getSellAmount()).divide(BigDecimal.valueOf(d.getAmount()), new MathContext(4, ROUND_MODE)).multiply(HUNDRED));
+                        if (!map.containsKey(d.getStockCode())) {
+                            map.put(d.getStockCode(), d);
                         } else {
-                            DragonStock o = map.get(d.getCode());
-                            if (o.getAccumAmount() >= d.getAccumAmount()) {
+                            DragonStock o = map.get(d.getStockCode());
+                            if (o.getAmount() >= d.getAmount()) {
                                 o.setExplains(d.getExplains() + " | " + o.getExplains());
                                 o.setExplanation(d.getExplanation() + " | " + o.getExplanation());
                             } else {
                                 d.setExplains(o.getExplains() + " | " + d.getExplains());
                                 d.setExplanation(o.getExplanation() + " | " + d.getExplanation());
-                                map.put(d.getCode(), d);
+                                map.put(d.getStockCode(), d);
                             }
                         }
                     }

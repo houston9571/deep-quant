@@ -3,7 +3,7 @@ package com.optimus.rest;
 import com.optimus.base.PageInfo;
 import com.optimus.base.PageResult;
 import com.optimus.mysql.entity.StockInfo;
-import com.optimus.service.StockDelayService;
+import com.optimus.service.StockDailyService;
 import com.optimus.service.StockInfoService;
 import com.optimus.service.StockRealtimeService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class StockRest {
 
     private final StockInfoService stockInfoService;
 
-    private final StockDelayService stockDelayService;
+    private final StockDailyService stockDailyService;
 
     private final StockRealtimeService stockRealtimeService;
 

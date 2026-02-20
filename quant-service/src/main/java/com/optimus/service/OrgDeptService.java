@@ -13,7 +13,7 @@ public interface OrgDeptService extends MybatisBaseService<OrgDept> {
 
     int saveBatch(Set<OrgDept> orgDeptSet);
 
-    Result<List<OrgDept>> queryNomatchPartnerDeptList(@Param("code") String code);
+    Result<List<OrgDept>> queryNomatchPartnerDeptList(String partnerCode);
 
 
 }

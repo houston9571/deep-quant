@@ -40,32 +40,32 @@ public interface EastMoneyStockApi {
      * 获取股票实时交易行情
      * http://push2delay.eastmoney.com/api/qt/stock/get?secid=1.600986&ut=fa5fd1943c7b386f172d6893dbfba10b&invt=2&fields=f80,f43,f44,f45,f46,f47,f48,f49,f50,f51,f52,f57,f58,f60,f116,f117,f161,f162,f163,f164,f167,f168,f169,f170,f171,f178
      */
-    @Get(url = PUSH2DELAY_URL + "/api/qt/stock/get?secid={marketCode}.{code}&ut=fa5fd1943c7b386f172d6893dbfba10b&invt=2&fields={fields}",
+    @Get(url = PUSH2DELAY_URL + "/api/qt/stock/get?secid={marketCode}.{stockCode}&ut=fa5fd1943c7b386f172d6893dbfba10b&invt=2&fields={fields}",
             headers = {PUSH2DELAY_HOST}
     )
-    JSONObject getStockTradeRealtime(@Var("code") String code, @Var("marketCode") String marketCode, @Var("fields") String fields);
+    JSONObject getStockTradeRealtime(@Var("stockCode") String stockCode, @Var("marketCode") String marketCode, @Var("fields") String fields);
 
     /**
      * 获取实时klines数组
      * klt=1 K线类型 secid可以是股票、板块
      * http://push2delay.eastmoney.com/api/qt/stock/fflow/kline/get?klt=1&secid=1.600986&lmt=0&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65
      */
-    @Get(url = PUSH2DELAY_URL + "/api/qt/stock/fflow/kline/get?klt={klt}&secid={marketCode}.{code}&lmt={lmt}" +
+    @Get(url = PUSH2DELAY_URL + "/api/qt/stock/fflow/kline/get?klt={klt}&secid={marketCode}.{stockCode}&lmt={lmt}" +
             "&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65",
             headers = { PUSH2DELAY_HOST}
     )
-    JSONObject getFundsFlowLines(@Var("code") String code, @Var("marketCode") String marketCode, @Var("klt") int klt, @Var("lmt") int lmt);
+    JSONObject getFundsFlowLines(@Var("stockCode") String stockCode, @Var("marketCode") String marketCode, @Var("klt") int klt, @Var("lmt") int lmt);
 
     /**
      * 获取最新资金流向
      * secid可以是股票、板块
      *  https://push2.eastmoney.com/api/qt/stock/get?secid=90.BK1172&fields=f135,f136,f137,f138,f139,f140,f141,f142,f143,f144,f145,f146,f147,f148,f149&invt=2&fltt=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=4363375817489466|0|1|0|web&dect=1&_=1770693880163
      */
-    @Get(url = PUSH2DELAY_URL + "/api/qt/stock/get?secid={marketCode}.{code}&fields=f135,f136,f137,f138,f139,f140,f141,f142,f143,f144,f145,f146,f147,f148,f149" +
+    @Get(url = PUSH2DELAY_URL + "/api/qt/stock/get?secid={marketCode}.{stockCode}&fields=f135,f136,f137,f138,f139,f140,f141,f142,f143,f144,f145,f146,f147,f148,f149" +
             "&invt=2&fltt=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=4363375817489466|0|1|0|web&dect=1&_={ts}",
             headers = { PUSH2DELAY_HOST}
     )
-    JSONObject getFundsFlow(@Var("code") String code, @Var("marketCode") String marketCode, @Var("ts") long ts);
+    JSONObject getFundsFlow(@Var("stockCode") String stockCode, @Var("marketCode") String marketCode, @Var("ts") long ts);
 
 
 
@@ -74,10 +74,10 @@ public interface EastMoneyStockApi {
      * https://datacenter.eastmoney.com/securities/api/data/get?type=RPT_F10_CORETHEME_BOARDTYPE&sty=ALL&filter=(SECUCODE="600986.SH")&p=1&ps=&sr=1&st=BOARD_RANK&source=HSF10&client=PC&v=04715492084049595
      */
     @Get(url = DATACENTER_URL + "/securities/api/data/get?type=RPT_F10_CORETHEME_BOARDTYPE&sty=ALL" +
-            "&filter=(SECUCODE=\"{code}.{market}\")&p=1&ps=&sr=1&st=BOARD_RANK&source=HSF10&client=PC&v=04715492084049595",
+            "&filter=(SECUCODE=\"{stockCode}.{market}\")&p=1&ps=&sr=1&st=BOARD_RANK&source=HSF10&client=PC&v=04715492084049595",
             headers = { DATACENTER_HOST}
     )
-    JSONObject syncStockBoards(@Var("code") String code, @Var("market") String market);
+    JSONObject syncStockConcepts(@Var("stockCode") String stockCode, @Var("market") String market);
 
 
 
@@ -85,7 +85,7 @@ public interface EastMoneyStockApi {
      * 实时访问主要指数 fs指定指数代码
      * https://push2.eastmoney.com/api/qt/clist/get?_=1770608220902&fs=i:1.000001,i:0.399001,i:0.399006,i:1.000300,i:100.HSI,i:100.UDI,i:100.DJIA,i:100.SPX,i:100.NDX,i:100.MCX,i:100.FCHI,i:100.GDAXI&fields=f2,f4,f3,f12,f13,f14&np=1&invt=2&pn=1&pz=100&po=1&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=4363375817489466|0|1|0|web
      */
-    JSONObject getStockMarketIndex(@Var("tradeDate") String tradeDate, @Var("code") String code);
+    JSONObject getStockMarketIndex(@Var("tradeDate") String tradeDate, @Var("stockCode") String stockCode);
 
 
 }

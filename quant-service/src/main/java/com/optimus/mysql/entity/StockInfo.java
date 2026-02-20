@@ -22,13 +22,13 @@ public class StockInfo extends BaseEntity {
     /**
      * 股票代码
      */
-    @TableId(value = "code", type = IdType.INPUT)
-    private String code;
+    @TableId(value = "stock_code", type = IdType.INPUT)
+    private String stockCode;
 
     /**
      * 股票名称
      */
-    private String name;
+    private String stockName;
 
     /**
      * 上市交易所

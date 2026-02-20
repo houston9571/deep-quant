@@ -39,7 +39,7 @@
                     <td class="ve-table-body-td" style="text-align: center;">{{index+1}}</td>
                     <td class="ve-table-body-td">
                         <div class="td-flex">
-                            <span class="center" style="font-size: 20px; width: 100%">{{col.name}}
+                            <span class="center" style="font-size: 20px; width: 100%">{{col.partnerName}}
                             </span>
                         </div>
                         <div class="td-flex">
@@ -47,10 +47,10 @@
                         </div>
                     </td>
                     <td class="ve-table-body-td">
-                        <div class="td-flex" v-if="col.boardCount > 0">
-                            <span class="center" style=" width: 100%">{{col.boardCount}}次</span>
+                        <div class="td-flex" v-if="col.conceptCount > 0">
+                            <span class="center" style=" width: 100%">{{col.conceptCount}}次</span>
                         </div>
-                        <div class="td-flex" v-if="col.boardCount > 0">
+                        <div class="td-flex" v-if="col.conceptCount > 0">
                             <span class="center" style=" width: 100%">{{col.tradeAmount}}亿</span>
                         </div>
                     </td>
@@ -61,11 +61,11 @@
                     </td>
                     <td class="ve-table-body-td">
                         <div class="td-flex">
-                            <a href="#" class="em-totop" style="font-size: 10px;" @click="showPartnerDept(col.code, col.name)"> 新增</a>
+                            <a href="#" class="em-totop" style="font-size: 10px;" @click="showPartnerDept(col.partnerCode, col.partnerName)"> 新增</a>
                         </div>
                         <div class="td-flex" v-for="(c, index) in col.deptArray">
                             <span class="left">{{c.deptName}}
-                                <a v-if="c.deptName != null" href="#" class="em-totop" style="font-size: 10px;" @click="deleteDept(col.code, c.deptCode)"> 删除</a>
+                                <a v-if="c.deptName != null" href="#" class="em-totop" style="font-size: 10px;" @click="deleteDept(col.partnerCode, c.deptCode)"> 删除</a>
                             </span>
                         </div>
                     </td>
@@ -113,16 +113,16 @@
                 this.tableData = json.data;
                 // console.log(this.tableData);
             },
-            showPartnerDept: function (code, name) {
+            showPartnerDept: function (partnerCode, partnerName) {
                 MyDiv.style.width = '600px';
                 MyDiv.style.height = '400px';
                 MyDiv.style.display = 'block';
                 fade.style.display = 'block';
-                MyDiv.innerHTML = '<object type="text/html" data="addDept.html?code=' + code + '&name=' + name + '" width="100%" height="99%"></object>';
+                MyDiv.innerHTML = '<object type="text/html" data="addDept.html?partnerCode=' + partnerCode + '&partnerName=' + partnerName + '" width="100%" height="99%"></object>';
             },
-            deleteDept: function (code, deptCode) {
+            deleteDept: function (partnerCode, deptCode) {
                 if (confirm('确定删除席位吗？')) {
-                    axios.delete(url + 'org/partner/dept/' + code + "/" + deptCode).then(function (response) {
+                    axios.delete(url + 'org/partner/dept/' + partnerCode + "/" + deptCode).then(function (response) {
                         if (response.status === 200) {
                             alert('操作成功', function () {
                                 this.reload();
@@ -131,7 +131,7 @@
                     }).catch(function (error) {
                         alert("删除席位系统异常");
                     });
-                    console.log('确认操作 ' + code + deptCode);
+                    console.log('确认操作 ' + partnerCode + deptCode);
                 } else {
                     console.log('取消操作');
                 }

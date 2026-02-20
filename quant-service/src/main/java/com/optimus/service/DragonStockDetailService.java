@@ -11,6 +11,6 @@ public interface DragonStockDetailService {
 
     List<List<DragonStockDetail>> queryDragonStockDetailWithPartner(String tradeDate);
 
-    int syncDragonStockDetail(LocalDate date, String code, String name) ;
+    int syncDragonStockDetail(LocalDate date, String stockCode, String stockName) ;
 
 }

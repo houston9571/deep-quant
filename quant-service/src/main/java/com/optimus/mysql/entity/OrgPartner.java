@@ -6,10 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @Builder
@@ -20,21 +18,21 @@ import java.util.List;
 public class OrgPartner extends BaseEntity {
 
 
-    @TableId(value = "code", type = IdType.INPUT)
-    private String code;
+    @TableId(value = "partner_code", type = IdType.INPUT)
+    private String partnerCode;
 
-    private String name;
+    private String partnerName;
 
 
     /**
      * 一年上榜次数
      */
-    private Integer boardCount;
+    private Integer count;
 
     /**
      * 一年成交额
      */
-    private Integer tradeAmount;
+    private Integer amount;
 
     /**
      * 最优持仓期
@@ -53,6 +51,8 @@ public class OrgPartner extends BaseEntity {
     private String fundSize;
 
     private String remark;
+
+    private Integer order;
 
     @TableField(exist = false)
     private String deptList;

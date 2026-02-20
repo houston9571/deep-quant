@@ -27,7 +27,7 @@ public class OrgDeptServiceImpl extends MybatisBaseServiceImpl<OrgDeptMapper, Or
     public int saveBatch(Set<OrgDept> orgDeptSet) {
         int count = 0;
         for (OrgDept o : orgDeptSet) {
-            if (!exist(new LambdaQueryWrapper<OrgDept>().eq(OrgDept::getCode, o.getCode()))) {
+            if (!exist(new LambdaQueryWrapper<OrgDept>().eq(OrgDept::getDeptCode, o.getDeptCode()))) {
                 save(o);
                 count++;
             }
@@ -36,8 +36,8 @@ public class OrgDeptServiceImpl extends MybatisBaseServiceImpl<OrgDeptMapper, Or
         return count;
     }
 
-    public Result<List<OrgDept>> queryNomatchPartnerDeptList(String code) {
-        return Result.success(orgDeptMapper.queryNomatchPartnerDeptList(code));
+    public Result<List<OrgDept>> queryNomatchPartnerDeptList(String partnerCode) {
+        return Result.success(orgDeptMapper.queryNomatchPartnerDeptList(partnerCode));
     }
 
 }

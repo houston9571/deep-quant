@@ -32,22 +32,22 @@
                 <tr style="height: 0px;"></tr>
                 <tr class="ve-table-body-tr" style="width: 70px" v-for="col in tableData">
                     <td class="ve-table-body-td" style="text-align: center;font-size: medium">{{col.partnerName}}</td>
-                    <td class="ve-table-body-td" :class="col.code" @mouseenter="isHover(col.code)" @mouseleave="isLeave(col.code)">
-                        <a :href="'https://data.eastmoney.com/stockdata/'+col.code+'.html'" target="_blank" style="color: #494949">
+                    <td class="ve-table-body-td" :class="col.stockCode" @mouseenter="isHover(col.stockCode)" @mouseleave="isLeave(col.stockCode)">
+                        <a :href="'https://data.eastmoney.com/stockdata/'+col.stockCode+'.html'" target="_blank" style="color: #494949">
                             <div class="td-flex">
-                                <span class="center" style="width: 65%; font-size: 20px; ">{{col.name}}</span>
+                                <span class="center" style="width: 65%; font-size: 20px; ">{{col.stockCode}}</span>
                                 <span class="center" style="width: 35%">{{col.freeMarketCap}}</span>
                             </div>
                             <div class="td-flex">
-                                <span class="center" style="width: 50%; font-size: 15px;" :style="col.changeRate.startsWith('-') ? 'color: green' : 'color: red'">{{col.closePrice}}</span>
-                                <span class="center" style="width: 50%; font-size: 15px;" :style="col.changeRate.startsWith('-') ? 'color: green' : 'color: red'">{{col.changeRate}}</span>
+                                <span class="center" style="width: 50%; font-size: 15px;" :style="col.changePercent.startsWith('-') ? 'color: green' : 'color: red'">{{col.close}}</span>
+                                <span class="center" style="width: 50%; font-size: 15px;" :style="col.changePercent.startsWith('-') ? 'color: green' : 'color: red'">{{col.changePercent}}</span>
                             </div>
                         </a>
                     </td>
                     <td class="ve-table-body-td">
                         <div class="td-flex">
-                            <span class="left" style="width: 45%">换手: {{col.turnoverRate}}</span>
-                            <span class="left" style="width: 55%">成交额: {{col.accumAmount}}</span>
+                            <span class="left" style="width: 45%">换手: {{col.turnover}}</span>
+                            <span class="left" style="width: 55%">成交额: {{col.amount}}</span>
                         </div>
                         <div class="td-flex">
                             <span class="left" style="width: 45%">量比: {{col.volumeRatio}}</span>
@@ -59,7 +59,7 @@
                         </div>
                     </td>
                     <td class="ve-table-body-td">
-                        <a :href="'https://data.eastmoney.com/zjlx/'+col.code+'.html'" target="_blank" style="color: #494949">
+                        <a :href="'https://data.eastmoney.com/zjlx/'+col.stockCode+'.html'" target="_blank" style="color: #494949">
                             <div class="td-flex">
                                 <span class="left" style="width: 50%">主力流入: <span style="color: red">{{col.mainIn}}</span></span>
                                 <span class="left" style="width: 50%">散户流入: <span style="color: red">{{col.retailIn}}</span></span>
@@ -95,7 +95,7 @@
                         </a>
                     </td>
                     <td class="ve-table-body-td">
-                        <a :href="'https://data.eastmoney.com/stock/lhb,'+col.tradeDate+','+col.code+'.html'" target="_blank" style="color: #494949">
+                        <a :href="'https://data.eastmoney.com/stock/lhb,'+col.tradeDate+','+col.stockCode+'.html'" target="_blank" style="color: #494949">
                             <div class="td-flex">
                                 <span class="left" style="width: 60%">买入: <span style="color: red">{{col.deptBuyAmount}}</span></span>
                                 <span class="left" style="width: 40%"><span style="color: red">{{col.deptTotalBuyRatio}}</span></span>
@@ -159,13 +159,13 @@
                 this.tableData = json.data;
                 // console.log(JSON.stringify(this.tableData))
             },
-            isHover: function (code) {
-                document.getElementById('vTable').querySelectorAll('.' + code).forEach(function (el) {
+            isHover: function (stockCode) {
+                document.getElementById('vTable').querySelectorAll('.' + stockCode).forEach(function (el) {
                     el.style.backgroundColor = 'yellow';
                 });
             },
-            isLeave: function (code) {
-                document.getElementById('vTable').querySelectorAll('.' + code).forEach(function (el) {
+            isLeave: function (stockCode) {
+                document.getElementById('vTable').querySelectorAll('.' + stockCode).forEach(function (el) {
                     el.style.backgroundColor = ''; // 或者设置回默认颜色或其他颜色
                 });
             },

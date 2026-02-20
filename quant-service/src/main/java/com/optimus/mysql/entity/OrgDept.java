@@ -17,13 +17,13 @@ public class OrgDept extends BaseEntity {
     /**
      * 营业厅代码
      */
-    @TableId(value = "code", type = IdType.INPUT)
-    private String code;
+    @TableId(value = "dept_code", type = IdType.INPUT)
+    private String deptCode;
 
     /**
      * 营业厅名称
      */
-    private String name;
+    private String deptName;
     
     private String nameFull;
 

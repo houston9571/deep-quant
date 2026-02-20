@@ -18,7 +18,7 @@ import java.time.LocalDate;
 
 import static com.optimus.constant.Constants.HUNDRED;
 import static com.optimus.constant.Constants.ID;
-import static java.math.RoundingMode.HALF_UP;
+import static java.math.RoundingMode.ROUND_MODE;
 
 /**
  * 股票行情
@@ -39,13 +39,13 @@ public class DragonStock extends BaseEntity {
      * 股票代码
      */
     @JSONField(ordinal = 2, alternateNames = "SECURITY_CODE")
-    private String code;
+    private String stockCode;
 
     /**
      * 股票名称
      */
     @JSONField(ordinal = 3, alternateNames = "SECURITY_NAME_ABBR")
-    private String name;
+    private String stockName;
 
 
     @TableField("trade_date")
@@ -57,13 +57,13 @@ public class DragonStock extends BaseEntity {
      * 收盘价
      */
     @JSONField(alternateNames = "CLOSE_PRICE")
-    private BigDecimal closePrice;
+    private BigDecimal close;
 
     /**
      * 涨跌幅
      */
     @JSONField(alternateNames = "CHANGE_RATE", serializeUsing = PercentageWriter.class)
-    private BigDecimal changeRate;
+    private BigDecimal changePercent;
 
     /**
      * 龙虎榜 净买额
@@ -111,7 +111,7 @@ public class DragonStock extends BaseEntity {
      * 市场总成交额
      */
     @JSONField(alternateNames = "ACCUM_AMOUNT", serializeUsing = CountUtilWriter.class)
-    private Long accumAmount;
+    private Long amount;
 
 
     /**

@@ -13,9 +13,9 @@ public interface OrgPartnerService extends MybatisBaseService<OrgPartner> {
 
     Result<List<OrgPartner>> queryOrgPartnerList();
 
-    Result<Void> deletePartnerDept(String code, String deptCode);
+    Result<Void> deletePartnerDept(String partnerCode, String deptCode);
 
-    Result<Void> addPartnerDept(String code, String deptCode);
+    Result<Void> addPartnerDept(String partnerCode, String deptCode);
 
 
 

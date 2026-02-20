@@ -1,10 +1,7 @@
 package com.optimus;
 
-import com.google.common.collect.Maps;
-import com.optimus.constants.StockCodeUtils;
+import com.optimus.components.StockCodeUtils;
 import org.junit.Test;
-
-import java.util.Map;
 
 public class NTest   {
 
