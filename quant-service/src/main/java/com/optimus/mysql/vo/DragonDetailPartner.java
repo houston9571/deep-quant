@@ -3,10 +3,9 @@ package com.optimus.mysql.vo;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
-import com.optimus.mysql.entity.StockDaily;
+import com.optimus.mysql.entity.StockKlineDaily;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -60,6 +59,6 @@ public class DragonDetailPartner  {
     @JSONField(serializeUsing = PercentageWriter.class)
     private BigDecimal partnerSellRatio;
 
-    private List<StockDaily> stocks;
+    private List<StockKlineDaily> stocks;
 
 }

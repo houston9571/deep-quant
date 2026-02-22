@@ -135,7 +135,7 @@ thead tr th {
   transition: all 0.3s;
 }
 .ve-checkbox-content .ve-checkbox-inner:after {
-  transform: rotate(45deg) scale(0);
+  transform: rotate(45deg) SCALE4(0);
   position: absolute;
   left: 4px;
   top: 2px;

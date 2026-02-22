@@ -3,7 +3,7 @@ package com.optimus.rest;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.optimus.base.Result;
-import com.optimus.service.StockDailyService;
+import com.optimus.service.StockKlineDailyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +23,7 @@ public class OpenController extends BaseController {
 
     private final HttpServletRequest request;
 
-    private final StockDailyService stockDailyService;
+    private final StockKlineDailyService stockKlineDailyService;
 
 
     @GetMapping("getFirstRequest2Data/{code}")

@@ -9,16 +9,11 @@ import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
 import com.optimus.ext.StringToDateReader;
 import lombok.*;
-import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 
-import static com.optimus.constant.Constants.HUNDRED;
 import static com.optimus.constant.Constants.ID;
-import static java.math.RoundingMode.ROUND_MODE;
 
 /**
  * 股票行情

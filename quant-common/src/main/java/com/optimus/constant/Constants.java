@@ -26,6 +26,9 @@ public interface Constants {
     BigDecimal THOUSAND = new BigDecimal("1000");
 
 
+    // 默认精度：4位小数
+    int SCALE2 = 2;
+    int SCALE4 = 4;
     // 四舍五入模式
     RoundingMode ROUND_MODE = HALF_UP;
 

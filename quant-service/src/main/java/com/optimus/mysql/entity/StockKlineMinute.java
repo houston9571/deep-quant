@@ -13,6 +13,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static com.optimus.constant.Constants.ID;
 
@@ -24,8 +25,8 @@ import static com.optimus.constant.Constants.ID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_tech_min")
-public class StockTechMin extends BaseEntity {
+@TableName("stock_tech_minute")
+public class StockKlineMinute extends BaseEntity {
 
 
     @TableId(value = ID, type = IdType.AUTO)
@@ -34,7 +35,7 @@ public class StockTechMin extends BaseEntity {
     /**
      * 股票代码
      */
-    @JSONField( alternateNames = "f57")
+    @JSONField(alternateNames = "f57")
     private String stockCode;
 
     /**
@@ -47,8 +48,8 @@ public class StockTechMin extends BaseEntity {
     @JSONField(format = "yyyy-MM-dd")
     private LocalDate tradeDate;
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime tradeDatetime;
+    @JSONField(format = "HH:mm:ss")
+    private LocalTime tradeTime;
 
     /**
      * 周期类型：15min,30min,60min
@@ -199,37 +200,29 @@ public class StockTechMin extends BaseEntity {
 
 
     /**
-     * 5周期均线
+     * 主力净流入 = 超大单净流入 + 大单净流入
+     * 散户净流入 = 中单净流入 + 小单净流入
      */
-    private BigDecimal ma5;
-    /**
-     * 10周期均线
-     */
-    private BigDecimal ma10;
-    /**
-     * MACD-DIF
-     */
-    private BigDecimal macdDif;
-    /**
-     * MACD-DEA
-     */
-    private BigDecimal macdDea;
-    /**
-     * 6周期RSI
-     */
-    private BigDecimal rsi6;
-    /**
-     * KDJ-J值
-     */
-    private BigDecimal kdjJ;
-    /**
-     * 当前ATR/昨日ATR
-     */
-    private BigDecimal atrRatio;
-    /**
-     * 布林带状态：1=收口,2=开口,3=正常
-     */
-    private Integer bollStatus;
+    private String mainNetInflow;
 
+    /**
+     * 超大单净流入	Super Large Net Inflow	> 100万元	机构、顶级大户
+     */
+    private String superLargeNetInflow;
+
+    /**
+     * 大单净流入	Large Net Inflow	20万 - 100万元	大户、部分机构
+     */
+    private String largeNetInflow;
+
+    /**
+     * 中单净流入	Medium Net Inflow	4万 - 20万元	中户
+     */
+    private String mediumNetInflow;
+
+    /**
+     * 小单净流入	Small Net Inflow	< 4万元	散户
+     */
+    private String smallNetInflow;
 
 }

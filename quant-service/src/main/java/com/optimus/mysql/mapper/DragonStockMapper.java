@@ -3,7 +3,7 @@ package com.optimus.mysql.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.optimus.mysql.entity.DragonStock;
-import com.optimus.mysql.vo.DragonDetailStock;
+import com.optimus.mysql.vo.DragonDetailStockKline;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -19,9 +19,9 @@ public interface DragonStockMapper extends BaseMapper<DragonStock> {
             "FROM org_partner a LEFT JOIN org_partner_dept b ON a.partner_code=b.partner_code LEFT JOIN org_dept dept ON b.dept_code=dept.dept_code " +
             "LEFT JOIN dragon_stock_detail c on b.dept_code=c.dept_code " +
             "LEFT JOIN dragon_stock d on c.stock_code=d.stock_code AND c.trade_date=d.trade_date " +
-            "LEFT JOIN stock_daily e on c.stock_code=e.stock_code AND c.trade_date=e.trade_date " +
+            "LEFT JOIN stock_kline_daily e on c.stock_code=e.stock_code AND c.trade_date=e.trade_date " +
             "WHERE c.trade_date=#{tradeDate}")
-    List<DragonDetailStock> queryDragonStockList(@Param("tradeDate") String tradeDate);
+    List<DragonDetailStockKline> queryDragonStockList(@Param("tradeDate") String tradeDate);
 
     @Select("SELECT y.*, d.*, e.* " +
             "FROM ( " +
@@ -35,9 +35,9 @@ public interface DragonStockMapper extends BaseMapper<DragonStock> {
             " ORDER BY trade_date DESC " +
             ") y " +
             "LEFT JOIN dragon_stock d on y.stock_code=d.stock_code AND y.trade_date=d.trade_date " +
-            "LEFT JOIN stock_daily e on y.stock_code=e.stock_code AND y.trade_date=e.trade_date " +
+            "LEFT JOIN stock_kline_daily e on y.stock_code=e.stock_code AND y.trade_date=e.trade_date " +
             "LIMIT 30")
-    List<DragonDetailStock> queryDragonStockDetail(@Param("stockCode") String stockCode);
+    List<DragonDetailStockKline> queryDragonStockDetail(@Param("stockCode") String stockCode);
 
     @Select("SELECT y.*, d.*, e.* " +
             "FROM ( " +
@@ -50,9 +50,9 @@ public interface DragonStockMapper extends BaseMapper<DragonStock> {
             " ORDER BY trade_date DESC " +
             ") y " +
             "LEFT JOIN dragon_stock d on y.code=d.code AND y.trade_date=d.trade_date " +
-            "LEFT JOIN stock_daily e on y.code=e.code AND y.trade_date=e.trade_date " +
+            "LEFT JOIN stock_kline_daily e on y.code=e.code AND y.trade_date=e.trade_date " +
             "LIMIT 30")
-    List<DragonDetailStock> queryDragonPartnerDetail(@Param("stockCode") String stockCode);
+    List<DragonDetailStockKline> queryDragonPartnerDetail(@Param("stockCode") String stockCode);
 
 
 }

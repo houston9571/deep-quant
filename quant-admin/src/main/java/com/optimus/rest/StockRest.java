@@ -3,9 +3,9 @@ package com.optimus.rest;
 import com.optimus.base.PageInfo;
 import com.optimus.base.PageResult;
 import com.optimus.mysql.entity.StockInfo;
-import com.optimus.service.StockDailyService;
+import com.optimus.service.StockKlineDailyService;
 import com.optimus.service.StockInfoService;
-import com.optimus.service.StockRealtimeService;
+import com.optimus.service.StockKlineMinuteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,9 +26,9 @@ public class StockRest {
 
     private final StockInfoService stockInfoService;
 
-    private final StockDailyService stockDailyService;
+    private final StockKlineDailyService stockKlineDailyService;
 
-    private final StockRealtimeService stockRealtimeService;
+    private final StockKlineMinuteService stockKlineMinuteService;
 
 
 

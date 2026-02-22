@@ -37,7 +37,7 @@ public interface EastMoneyStockApi {
     JSONObject getStockTradeList(@Var("fields") String fields, @Var("pageNum") int pageNum, @Var("pageSize") int pageSize, @Var("ts") long ts);
 
     /**
-     * 获取股票实时交易行情
+     * 获取实时股票交易行情
      * http://push2delay.eastmoney.com/api/qt/stock/get?secid=1.600986&ut=fa5fd1943c7b386f172d6893dbfba10b&invt=2&fields=f80,f43,f44,f45,f46,f47,f48,f49,f50,f51,f52,f57,f58,f60,f116,f117,f161,f162,f163,f164,f167,f168,f169,f170,f171,f178
      */
     @Get(url = PUSH2DELAY_URL + "/api/qt/stock/get?secid={marketCode}.{stockCode}&ut=fa5fd1943c7b386f172d6893dbfba10b&invt=2&fields={fields}",
@@ -46,7 +46,7 @@ public interface EastMoneyStockApi {
     JSONObject getStockTradeRealtime(@Var("stockCode") String stockCode, @Var("marketCode") String marketCode, @Var("fields") String fields);
 
     /**
-     * 获取实时klines数组
+     * 获取实时资金流向
      * klt=1 K线类型 secid可以是股票、板块
      * http://push2delay.eastmoney.com/api/qt/stock/fflow/kline/get?klt=1&secid=1.600986&lmt=0&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65
      */

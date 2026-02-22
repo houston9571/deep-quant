@@ -22,6 +22,6 @@ Deep Think Quant System
    127.0.0.1/task/concept/daily -- concept_daily concept_stock
 
 3. 全部股票列表 9:31 11:31 15:01
-   127.0.0.1/task/stock/daily -- stock_daily
+   127.0.0.1/task/stock/daily -- stock_kline_daily
 
 4. 板块页面定时更新前20 concept_stock  concept_stock

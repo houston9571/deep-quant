@@ -3,7 +3,6 @@ package com.optimus.rest;
 import com.google.common.collect.Lists;
 import com.optimus.base.Result;
 import com.optimus.mysql.entity.*;
-import com.optimus.mysql.vo.FundsFlowLine;
 import com.optimus.service.*;
 import com.optimus.thread.Threads;
 import com.optimus.utils.DateUtils;
@@ -35,9 +34,9 @@ public class TaskRest {
 
     private final StockInfoService stockInfoService;
 
-    private final StockDailyService stockDailyService;
+    private final StockKlineDailyService stockKlineDailyService;
 
-    private final StockRealtimeService stockRealtimeService;
+    private final StockKlineMinuteService stockKlineMinuteService;
 
     private final TradeCalendarService tradeCalendarService;
 
@@ -74,12 +73,12 @@ public class TaskRest {
      */
     @GetMapping("stock/overview")
     public Result<Void> overview() {
-        StockDaily stockDaily = StockDaily.builder().tradeDate(DateUtils.now().toLocalDate()).build();
-        List<StockDaily> list = stockDailyService.queryList(stockDaily);
+        StockKlineDaily stockKlineDaily = StockKlineDaily.builder().tradeDate(DateUtils.now().toLocalDate()).build();
+        List<StockKlineDaily> list = stockKlineDailyService.queryList(stockKlineDaily);
         if (!CollectionUtils.isEmpty(list)) {
             Threads.asyncExecute(() -> {
                 Result<StockInfo> result;
-                for (StockDaily daily : list) {
+                for (StockKlineDaily daily : list) {
                     result = stockInfoService.syncStockInfo(daily.getStockCode());
                     if (result.isSuccess()) {
                         stockInfoService.syncStockConceptList(daily.getStockCode());
@@ -96,7 +95,7 @@ public class TaskRest {
      */
     @GetMapping("stock/daily")
     public Result<Void> syncStockTradeList() {
-        Threads.asyncExecute(stockDailyService::syncStockTradeList);
+        Threads.asyncExecute(stockKlineDailyService::syncStockTradeList);
         return Result.success();
 
     }
@@ -151,33 +150,22 @@ public class TaskRest {
 
 
     /**
-     * 获取股票实时交易行情
+     * 获取股票实时交易行情 资金流向
      *
      * @param codes
      * @return
      */
-    @GetMapping("stock/realtime/{codes}")
-    public Result<List<StockTechMin>> getStockTradeRealtime(@PathVariable String codes) {
-        List<StockTechMin> list = Lists.newArrayList();
+    @GetMapping("stock/kline/{codes}")
+    public Result<List<StockKlineMinute>> getStockTradeRealtime(@PathVariable String codes) {
+        List<StockKlineMinute> list = Lists.newArrayList();
         String[] codeArray = codes.split(COMMA);
         for (String code : codeArray) {
-            Result<StockTechMin> result = stockRealtimeService.getStockRealtime(code);
+            Result<StockKlineMinute> result = stockKlineMinuteService.getStockRealtime(code);
             if (result.isSuccess()) {
                 list.add(result.getData());
             }
         }
         return Result.success(list);
-    }
-
-    /**
-     * 获取实时资金流向，按分钟返回列表, kline
-     *
-     * @param code
-     * @return
-     */
-    @GetMapping("/flow/kline/{code}")
-    public Result<List<FundsFlowLine>> getFundsFlowLines(@PathVariable String code) {
-        return stockRealtimeService.getFundsFlowLines(code);
     }
 
 

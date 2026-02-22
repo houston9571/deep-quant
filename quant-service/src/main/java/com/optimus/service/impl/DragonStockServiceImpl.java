@@ -10,10 +10,10 @@ import com.optimus.client.EastMoneyDragonApi;
 import com.optimus.components.MarketType;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.DragonStock;
-import com.optimus.mysql.entity.StockDaily;
+import com.optimus.mysql.entity.StockKlineDaily;
 import com.optimus.mysql.mapper.DragonStockMapper;
 import com.optimus.mysql.vo.DragonDetailPartner;
-import com.optimus.mysql.vo.DragonDetailStock;
+import com.optimus.mysql.vo.DragonDetailStockKline;
 import com.optimus.service.DragonStockService;
 import com.optimus.thread.Threads;
 import com.optimus.utils.NumberUtils;
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.optimus.constant.Constants.*;
-import static java.math.RoundingMode.HALF_UP;
 
 @Slf4j
 @Service
@@ -46,22 +45,22 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
     /**
      * 查询当天龙虎榜列表，按游资分类
      */
-    public List<DragonDetailStock> queryDragonStockList(String tradeDate) {
+    public List<DragonDetailStockKline> queryDragonStockList(String tradeDate) {
         return dragonStockMapper.queryDragonStockList(tradeDate);
     }
 
-    public List<DragonDetailStock> queryDragonStockDetail(String stockCode) {
-        List<DragonDetailStock> list = dragonStockMapper.queryDragonStockDetail(stockCode);
+    public List<DragonDetailStockKline> queryDragonStockDetail(String stockCode) {
+        List<DragonDetailStockKline> list = dragonStockMapper.queryDragonStockDetail(stockCode);
         // 将游资按个股合并为一条记录
-        Map<String, DragonDetailStock> map = Maps.newLinkedHashMap();
-        for (DragonDetailStock stock : list) {
+        Map<String, DragonDetailStockKline> map = Maps.newLinkedHashMap();
+        for (DragonDetailStockKline stock : list) {
             String k = stock.getTradeDate().toString();
-            DragonDetailStock s = new DragonDetailStock();
+            DragonDetailStockKline s = new DragonDetailStockKline();
             BeanUtils.copyProperties(stock, s);
             if (map.containsKey(k)) {
                 map.get(k).getPartners().add(s);
             } else {
-                stock.setPartners(new ArrayList<DragonDetailStock>() {{
+                stock.setPartners(new ArrayList<DragonDetailStockKline>() {{
                     add(s);
                 }});
                 map.put(k, stock);
@@ -72,20 +71,20 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
 
 
     public List<DragonDetailPartner> queryDragonPartnerDetail(String partnerCode) {
-        List<DragonDetailStock> list = dragonStockMapper.queryDragonPartnerDetail(partnerCode);
+        List<DragonDetailStockKline> list = dragonStockMapper.queryDragonPartnerDetail(partnerCode);
         // 将游资按个股合并为一条记录
         Map<String, DragonDetailPartner> map = Maps.newLinkedHashMap();
-        for (DragonDetailStock stock : list) {
+        for (DragonDetailStockKline stock : list) {
             String k = stock.getTradeDate().toString();
-            StockDaily stockDaily = StockDaily.builder().build();
-            BeanUtils.copyProperties(stock, stockDaily);
+            StockKlineDaily stockKlineDaily = StockKlineDaily.builder().build();
+            BeanUtils.copyProperties(stock, stockKlineDaily);
             if (map.containsKey(k)) {
-                map.get(k).getStocks().add(stockDaily);
+                map.get(k).getStocks().add(stockKlineDaily);
             } else {
                 DragonDetailPartner partner = DragonDetailPartner.builder().build();
                 BeanUtils.copyProperties(stock, partner);
-                partner.setStocks(new ArrayList<StockDaily>() {{
-                    add(stockDaily);
+                partner.setStocks(new ArrayList<StockKlineDaily>() {{
+                    add(stockKlineDaily);
                 }});
                 map.put(k, partner);
             }

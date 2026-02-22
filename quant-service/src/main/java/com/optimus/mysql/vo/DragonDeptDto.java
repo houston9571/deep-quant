@@ -3,7 +3,6 @@ package com.optimus.mysql.vo;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
-import com.optimus.mysql.entity.StockDaily;
 import lombok.Data;
 
 import java.math.BigDecimal;

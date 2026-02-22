@@ -3,7 +3,7 @@ package com.optimus.mysql.vo;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.optimus.ext.CountUtilWriter;
 import com.optimus.ext.PercentageWriter;
-import com.optimus.mysql.entity.StockDaily;
+import com.optimus.mysql.entity.StockKlineDaily;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -13,7 +13,7 @@ import java.util.List;
  * 龙虎榜页面
  */
 @Data
-public class DragonDetailStock extends StockDaily {
+public class DragonDetailStockKline extends StockKlineDaily {
 
 
     /**************************
@@ -118,6 +118,6 @@ public class DragonDetailStock extends StockDaily {
     @JSONField(  serializeUsing = PercentageWriter.class)
     private BigDecimal partnerSellRatio;
 
-    private List<DragonDetailStock> partners;
+    private List<DragonDetailStockKline> partners;
 
 }
