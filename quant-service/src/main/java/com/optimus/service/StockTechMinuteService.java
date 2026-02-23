@@ -9,9 +9,7 @@ import java.util.List;
 
 public interface StockTechMinuteService extends MybatisBaseService<StockTechMinute> {
 
-    void   calcMinuteIndicatorAndSave(List<StockKlineMinute> last10);
-
-
+    void calculateMinuteIndicatorAndSave(List<StockKlineMinute> last10);
 
 
 }

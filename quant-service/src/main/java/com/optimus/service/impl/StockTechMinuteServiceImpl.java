@@ -1,30 +1,18 @@
 package com.optimus.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.optimus.mysql.MybatisBaseServiceImpl;
-import com.optimus.mysql.entity.StockKlineDaily;
 import com.optimus.mysql.entity.StockKlineMinute;
-import com.optimus.mysql.entity.StockTechDaily;
 import com.optimus.mysql.entity.StockTechMinute;
-import com.optimus.mysql.mapper.StockTechDailyMapper;
 import com.optimus.mysql.mapper.StockTechMinuteMapper;
-import com.optimus.service.StockKlineDailyService;
-import com.optimus.service.StockKlineMinuteService;
-import com.optimus.service.StockTechDailyService;
 import com.optimus.service.StockTechMinuteService;
-import com.optimus.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.optimus.constant.Constants.ROUND_MODE;
-import static com.optimus.service.impl.StockIndicatorDailyCalculator.*;
 import static com.optimus.service.impl.StockIndicatorMinuteCalculator.*;
 
 @Slf4j
@@ -42,48 +30,54 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
      * 双重共振：胜率可达 70%~85%（超短线 1-3 天）
      * 所有指标周期统一，无滞后、无冲突，完全适配你的系统
      */
-    public void calcMinuteIndicatorAndSave(List<StockKlineMinute> prev10MinuteList) {
+    public void calculateMinuteIndicatorAndSave(List<StockKlineMinute> prev10MinuteList) {
         // 至少需要10分钟数据（适配分时MA10/BOLL10）
         if (prev10MinuteList.size()  < 10) {
             log.warn("分时数据不足不计算，必须满足10条");
             return;
         }
 
-        // 1. 从数据库读取日线数据（按时间升序）
+        // 读取分时线数据（按时间升序）
         int last = prev10MinuteList.size() - 1;
         // 抽取核心序列（分时简化：高低价用最新价，实际可替换为真实分时高低价）
-        List<BigDecimal> closes = new ArrayList<>();
+        List<BigDecimal> prices = new ArrayList<>();
         List<BigDecimal> highs = new ArrayList<>();
         List<BigDecimal> lows = new ArrayList<>();
         List<Long> volumes = new ArrayList<>();
         for (StockKlineMinute m : prev10MinuteList) {
-            closes.add(m.getPrice());
-            highs.add(m.getPrice());
-            lows.add(m.getPrice());
+            prices.add(m.getPrice());
+            highs.add(m.getHigh());
+            lows.add(m.getLow());
             volumes.add(m.getVolume());
         }
 
         // 1. 计算基础指标
-        List<BigDecimal> ma3 = calcMa(closes, 3);
-        List<BigDecimal> ma5 = calcMa(closes, 5);
-        List<BigDecimal> ma10 = calcMa(closes, 10);
-        List<BigDecimal[]> macd = calcMacd(closes);
-        List<BigDecimal> rsi3 = calcRsi(closes, 3);
-        List<BigDecimal> rsi9 = calcRsi(closes, 9);
-        List<BigDecimal[]> kdj = calcKdj(highs, lows, closes);
-        List<BigDecimal> wr6 = calcWr6(highs, lows, closes);
-        List<BigDecimal[]> boll = calcBoll(closes);
+        List<BigDecimal> ma3 = calcMa(prices, 3);
+        List<BigDecimal> ma5 = calcMa(prices, 5);
+        List<BigDecimal> ma10 = calcMa(prices, 10);
+        List<BigDecimal[]> macd = calcMacd(prices);
+        List<BigDecimal> rsi3 = calcRsi(prices, 3);
+        List<BigDecimal> rsi9 = calcRsi(prices, 9);
+        List<BigDecimal[]> kdj = calcKdj(highs, lows, prices);
+        List<BigDecimal> wr6 = calcWr6(highs, lows, prices);
+        List<BigDecimal[]> boll = calcBoll(prices);
         List<BigDecimal[]> vmacd = calcVmacd(volumes);
-        List<Long> obv = calcObv(closes, volumes);
+        List<Long> obv = calcObv(prices, volumes);
         List<Long> obvMa5 = calcObvMa5(obv);
 
         // 2. 组装最新分时指标
         StockKlineMinute lastBar = prev10MinuteList.get(last);
         StockTechMinute tech = new StockTechMinute();
         tech.setStockCode(lastBar.getStockCode());
+        tech.setStockName(lastBar.getStockName());
         tech.setTradeDate(lastBar.getTradeDate());
         tech.setTradeTime(lastBar.getTradeTime());
         tech.setPrice(lastBar.getPrice());
+        tech.setHigh(lastBar.getHigh());
+        tech.setLow(lastBar.getLow());
+        tech.setOpen(lastBar.getOpen());
+        tech.setClose(lastBar.getClose());
+
         tech.setMa3(ma3.get(last));
         tech.setMa5(ma5.get(last));
         tech.setMa10(ma10.get(last));

@@ -26,9 +26,15 @@ public class StockTechMinute extends BaseEntity {
     private Integer id;
 
     private String stockCode;
+    private String stockName;
+
     private LocalDate tradeDate;
     private LocalTime tradeTime;
     private BigDecimal price;
+    private BigDecimal high;
+    private BigDecimal low;
+    private BigDecimal open;
+    private BigDecimal close;
 
     private BigDecimal ma3;
     private BigDecimal ma5;

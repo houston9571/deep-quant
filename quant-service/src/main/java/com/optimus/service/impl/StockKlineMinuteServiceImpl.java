@@ -44,16 +44,22 @@ public class StockKlineMinuteServiceImpl extends MybatisBaseServiceImpl<StockKli
     private final StockTechMinuteService stockTechMinuteService;
 
     /**
+     * 根据股票池更新个股分时数据 1分钟
+     */
+    public void syncStockKlineMinutePools() {
+
+    }
+
+
+
+    /**
      * 获取股票实时交易行情和资金流向 1分钟
      */
-    public Result<StockKlineMinute> getStockRealtime(String stockCode) {
+    public Result<StockKlineMinute> syncStockKlineMinute(String stockCode) {
         String fields = "f80,f43,f44,f45,f46,f47,f48,f49,f50,f51,f52,f57,f58,f60,f116,f117,f161,f162,f163,f164,f167,f168,f169,f170,f171,f178";
         JSONObject kline = eastMoneyStockApi.getStockTradeRealtime(stockCode, MarketType.getMarketCode(stockCode), fields);
         StockKlineMinute stockKlineMinute = JSONObject.parseObject(kline.getString(LABEL_DATA), StockKlineMinute.class);
-        String transactionDate = kline.getJSONObject(LABEL_DATA).getJSONArray("f80").getJSONObject(1).getString("e");
-//        if(DateUtils.now().isBefore(stockTechMin.getTradeDate())){
-//            stockTechMin.setTradeDate(DateUtils.now());
-//        }
+//        String transactionDate = kline.getJSONObject(LABEL_DATA).getJSONArray("f80").getJSONObject(1).getString("e");
 
         JSONObject flow = eastMoneyStockApi.getFundsFlowLines(stockCode, MarketType.getMarketCode(stockCode), KLINE_1MIN, 1);
         JSONObject data = flow.getJSONObject(LABEL_DATA);
@@ -76,7 +82,7 @@ public class StockKlineMinuteServiceImpl extends MybatisBaseServiceImpl<StockKli
         saveOrUpdate(stockKlineMinute, new String[]{"stock_code", "trade_date", "trade_time"});
 
         List<StockKlineMinute> prev10MinuteList = stockKlineMinuteMapper.queryPrevious10Minute(stockCode);
-        stockTechMinuteService.calcMinuteIndicatorAndSave(prev10MinuteList);
+        stockTechMinuteService.calculateMinuteIndicatorAndSave(prev10MinuteList);
 
         return Result.success(stockKlineMinute);
     }

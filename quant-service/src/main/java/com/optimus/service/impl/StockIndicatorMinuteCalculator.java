@@ -258,14 +258,13 @@ public class StockIndicatorMinuteCalculator {
      * @return [共振信号, 共振评分]
      */
     public static Object[] judgeMinuteResonance(StockTechMinute currTech, StockTechMinute prevTech, List<StockKlineMinute> barMinuteList) {
-        int lastIdx = barMinuteList.size() - 1;
-        if (lastIdx < 10) {
+        if (barMinuteList.size() < 10) {
             return new Object[]{RESONANCE_NONE, BigDecimal.ZERO};
         }
+        int lastIdx = barMinuteList.size() - 1;
         StockKlineMinute currBar = barMinuteList.get(lastIdx);
 
         int signal = RESONANCE_NONE;
-        BigDecimal score = BigDecimal.ZERO;
         int totalBuyRule = 10;  // 分时简化：10条买入规则（日线13条）
         int buyMatch = 0;
         int totalSellRule = 8;  // 分时简化：8条卖出规则（日线11条）
@@ -379,7 +378,7 @@ public class StockIndicatorMinuteCalculator {
 
         // ---------------------- 分时共振信号判定（超短线规则） ----------------------
         // 计算买入评分
-        score = new BigDecimal(buyMatch * 100 / totalBuyRule);
+        BigDecimal score = new BigDecimal(buyMatch * 100 / totalBuyRule);
         // 强力买入：≥7条匹配 + 评分≥70（分时更激进）
         if (buyMatch >= 7 && score.compareTo(new BigDecimal(70)) >= 0) {
             signal = RESONANCE_BUY;

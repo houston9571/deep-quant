@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface StockKlineDailyService extends MybatisBaseService<StockKlineDaily> {
 
-    List<StockKlineDaily>  syncStockTradeList();
+    List<StockKlineDaily>  syncStockKlineDailyList();
 
 
 

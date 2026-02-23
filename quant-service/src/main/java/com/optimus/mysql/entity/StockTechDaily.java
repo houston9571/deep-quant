@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import static com.optimus.constant.Constants.ID;
 
 /**
- * 股票日线技术指标表（衍生）
+ * 股票日线技术指标表
  */
 @Data
 @Builder
@@ -32,12 +32,15 @@ public class StockTechDaily extends BaseEntity {
     private Integer id;
 
     private String stockCode;
-
     private String stockName;
-
 
     @JSONField(format = "yyyy-MM-dd")
     private LocalDate tradeDate;
+    private BigDecimal price;
+    private BigDecimal high;
+    private BigDecimal low;
+    private BigDecimal open;
+    private BigDecimal close;
 
     // 超短线均线：3/5/10/20
     private BigDecimal ma3;

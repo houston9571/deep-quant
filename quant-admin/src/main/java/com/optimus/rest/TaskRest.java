@@ -81,7 +81,7 @@ public class TaskRest {
      */
     @GetMapping("stock/daily")
     public Result<Void> syncStockTradeList() {
-        Threads.asyncExecute(stockKlineDailyService::syncStockTradeList);
+        Threads.asyncExecute(stockKlineDailyService::syncStockKlineDailyList);
         return Result.success();
 
     }
@@ -146,7 +146,7 @@ public class TaskRest {
         List<StockKlineMinute> list = Lists.newArrayList();
         String[] codeArray = codes.split(COMMA);
         for (String code : codeArray) {
-            Result<StockKlineMinute> result = stockKlineMinuteService.getStockRealtime(code);
+            Result<StockKlineMinute> result = stockKlineMinuteService.syncStockKlineMinute(code);
             if (result.isSuccess()) {
                 list.add(result.getData());
             }

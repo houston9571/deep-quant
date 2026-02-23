@@ -1185,40 +1185,22 @@ public class StockIndicatorDailyCalculator {
 
     /**
      * ====================== 16. 多指标共振筛选（超短线1-3天专用规则） ======================
-     * 批量筛选全量股票的共振信号
-     *
-     * @param stockCode 股票代码
-     * @param barList   日线数据
-     * @param techList  技术指标列表
-     */
-    public static void batchJudgeResonance(String stockCode, List<StockKlineDaily> barList, List<StockTechDaily> techList) {
-        for (int i = 0; i < techList.size(); i++) {
-            Object[] resonance = judgeResonance(barList, techList, i);
-            techList.get(i).setResonanceSignal((int) resonance[0]);
-            techList.get(i).setResonanceScore((BigDecimal) resonance[1]);
-        }
-    }
-
-
     /**
      * 短线多指标共振筛选（全指标版）
      *
-     * @param barList  日线数据
-     * @param techList 技术指标列表（StockTechDaily）
-     * @param idx      当前索引
+     * @param currTech 最新分时指标
+     * @param prevTech 前一分钟分时指标
+     * @param barList  按时间正序的日线数据
      * @return 数组：[resonanceSignal, resonanceScore]
      */
-    private static Object[] judgeResonance(List<StockKlineDaily> barList, List<StockTechDaily> techList, int idx) {
-        if (idx < 10) { // 短线参数最小数据量从20→10（适配MA3/5/10）
+    public static Object[] judgeResonance( StockTechDaily currTech, StockTechDaily prevTech , List<StockKlineDaily> barList ) {
+        if (barList.size() < 10) { // 短线参数最小数据量从20→10（适配MA3/5/10）
             return new Object[]{RESONANCE_NONE, ZERO};
         }
-
-        StockTechDaily currTech = techList.get(idx);
-        StockTechDaily prevTech = techList.get(idx - 1);
-        StockKlineDaily currBar = barList.get(idx);
+        int lastIdx = barList.size() - 1;
+        StockKlineDaily currBar = barList.get(lastIdx);
 
         int signal = RESONANCE_NONE;
-        BigDecimal score = ZERO;
         int totalBuyRule = 13; // 新增1条量能规则，总买入规则从12→13
         int buyMatch = 0;
         int totalSellRule = 11; // 同步新增1条量能卖出规则，总卖出规则从10→11
@@ -1227,7 +1209,7 @@ public class StockIndicatorDailyCalculator {
         // ---------------------- 新增：计算5日均量（用于放量验证） ----------------------
         long ma5Vol = 0; // 至少5天数据计算5日均量
         long volSum = 0;
-        for (int i = idx - 4; i <= idx; i++) {
+        for (int i = lastIdx - 4; i <= lastIdx; i++) {
             volSum += barList.get(i).getVolume();
         }
         ma5Vol = volSum / 5;
@@ -1326,7 +1308,7 @@ public class StockIndicatorDailyCalculator {
 
         // ---------------------- 超短线信号判定（核心调整：提高买入门槛，加入评分≥75） ----------------------
         // 强力买入：≥8条匹配 + 评分≥75, 评分不足75，降级为趋势走强
-        score = new BigDecimal(buyMatch * 100 / totalBuyRule);
+        BigDecimal score = new BigDecimal(buyMatch * 100 / totalBuyRule);
         if (buyMatch >= 8 && score.compareTo(new BigDecimal(75)) >= 0) {
             signal = RESONANCE_BUY;
         } else if (sellMatch >= 4) {

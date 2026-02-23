@@ -44,17 +44,11 @@ public class StockKlineMinute extends BaseEntity {
     @JSONField(alternateNames = "f58")
     private String stockName;
 
-
     @JSONField(format = "yyyy-MM-dd")
     private LocalDate tradeDate;
 
     @JSONField(format = "HH:mm:ss")
     private LocalTime tradeTime;
-
-    /**
-     * 周期类型：15min,30min,60min
-     */
-    private Integer periodType;
 
     /**
      * f43 最新价/100

@@ -10,12 +10,14 @@ public interface StockTechMinuteMapper extends BaseMapper<StockTechMinute> {
 
     /**
      * 最新分时数据视图
-     * CREATE OR REPLACE VIEW v_stock_latest_minute AS
+     * CREATE OR REPLACE VIEW v_stock_kline_minute_latest AS
      * SELECT
      *     m.stock_code,
      *     m.trade_date,
      *     m.trade_time,
      *     m.price,
+     *     m.open,
+     *     m.close,
      *     m.volume,
      *     m.volume_ratio
      * FROM stock_kline_minute m
@@ -30,7 +32,7 @@ public interface StockTechMinuteMapper extends BaseMapper<StockTechMinute> {
      * 超短线双重共振买入 (优化为5分钟持续验证)
      * 买入核心：只做「日线高分共振 + 分时高分共振 + 放量 + 筹码集中」的票，只选 “双重强力买入” 的股票
      */
-    @Select("SELECT m.stock_code, base.stock_name, b.close, m.price,t.resonance_score AS daily_score, tm.resonance_score AS minute_score, m.volume_ratio, " +
+    @Select("SELECT m.stock_code, m.close, m.price,t.resonance_score AS daily_score, tm.resonance_score AS minute_score, m.volume_ratio, " +
             "   CASE WHEN t.resonance_signal = 1 AND tm.resonance_signal = 1 THEN '双重强力买入（核心）' " +
             "        WHEN t.resonance_signal = 1 AND tm.resonance_signal = 3 THEN '日线强+分时趋势向上（备选）' " +
             "        ELSE '弱共振（过滤）' " +
@@ -41,7 +43,7 @@ public interface StockTechMinuteMapper extends BaseMapper<StockTechMinute> {
             "         WHERE m2.stock_code = m.stock_code AND m2.trade_date = CURDATE()  " +
             "         AND (t.resonance_signal IN (1,3) AND tm.resonance_signal IN (1,3) AND m2.volume_ratio > 1.5)" +
             "        ), m.trade_time) AS keep_minutes " +    // 信号持续时长(分钟)
-            "FROM v_stock_latest_minute m LEFT JOIN stock_kline_daily b ON m.stock_code = b.stock_code AND m.trade_date = b.trade_date " +
+            "FROM v_stock_kline_minute_latest m " +
             "    LEFT JOIN stock_tech_daily t ON m.stock_code = t.stock_code AND m.trade_date = t.trade_date " +
             "    LEFT JOIN stock_tech_minute tm ON m.stock_code = tm.stock_code AND m.trade_date = tm.trade_date AND m.trade_time = tm.trade_time " +
             "WHERE t.resonance_signal IN (1, 3) " +         // 核心条件1：日线强信号（买入基础）
@@ -60,7 +62,7 @@ public interface StockTechMinuteMapper extends BaseMapper<StockTechMinute> {
             "    AND t.cost_concentration < 12 " +              // 强化筹码筛选（主力控盘，胜率更高）,原15%→12%，更严格
             "    AND m.price > 8 " +                            // 原5元→8元，剔除低价垃圾股
             "    AND m.volume > 80000  " +                      // 原5万→8万，剔除低成交股
-            "    AND (m.price - b.close) / b.close < 0.03 " +   // 高开<3%  剔除高开过多（避免追高）
+            "    AND (m.price - m.close) / m.close < 0.03 " +   // 高开<3%  剔除高开过多（避免追高）
             "ORDER BY " +
             "    CASE WHEN t.resonance_signal = 1 AND tm.resonance_signal = 1 THEN 1 ELSE 2 END ASC, " +
             "    (t.resonance_score + tm.resonance_score) DESC,  " +    // 双重评分之和
@@ -163,7 +165,7 @@ public interface StockTechMinuteMapper extends BaseMapper<StockTechMinute> {
             "           )), " +
             "        m.trade_time) AS keep_minutes  " +         // 信号持续时长_分钟
             "FROM stock_position p " +
-            "       LEFT JOIN v_stock_latest_minute m ON p.stock_code = m.stock_code " +
+            "       LEFT JOIN v_stock_kline_minute_latest m ON p.stock_code = m.stock_code " +
             "       LEFT JOIN stock_tech_daily t ON p.stock_code = t.stock_code AND t.trade_date = CURDATE() " +
             "       LEFT JOIN stock_tech_minute tm ON p.stock_code = tm.stock_code AND tm.trade_date = CURDATE() AND tm.trade_time = m.trade_time " +
             "WHERE p.status = 1 AND p.strategy = 2 " +          // 1=隔夜持仓 2=日内短线

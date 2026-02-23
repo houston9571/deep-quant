@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.StockKlineDaily;
 import com.optimus.mysql.entity.StockTechDaily;
+import com.optimus.mysql.entity.StockTechMinute;
 import com.optimus.mysql.mapper.StockTechDailyMapper;
 import com.optimus.service.StockKlineDailyService;
 import com.optimus.service.StockTechDailyService;
@@ -58,13 +59,14 @@ public class StockTechDailyServiceImpl extends MybatisBaseServiceImpl<StockTechD
      * <p>
      * 价格跌破5日线=强制止损
      */
-    public void calculateTechAndSave(String stockCode) {
-        // 1. 从数据库读取日线数据（按时间升序）
-        List<StockKlineDaily> barList = stockKlineDailyService.queryList(null, new QueryWrapper<StockKlineDaily>().eq("stock_code", stockCode).ge("trade_date", "2025-10-01"));
-        if (barList.size() < 60) { // 至少60天数据才能计算全量指标
-            System.out.println("股票" + stockCode + "日线数据不足，跳过计算");
+    public void calculateDailyIndicatorAndSave(List<StockKlineDaily> barList) {
+        // 至少10天数据才能计算全量指标
+        if (barList.size() < 10) {
+            log.warn("日线数据不足不计算，必须满足10条");
             return;
         }
+        // 读取日线数据（按时间升序）
+        int last = barList.size() - 1;
 
         // 2. 计算各指标
         List<BigDecimal> ma3List = calculateMA(barList, 3);
@@ -87,112 +89,111 @@ public class StockTechDailyServiceImpl extends MybatisBaseServiceImpl<StockTechD
         List<BigDecimal> costConcentrationList = calculateCostConcentration(barList, avgCostList);
 
         // 3. 组装指标数据
-        List<StockTechDaily> techList = new ArrayList<>();
-        for (int i = 0; i < barList.size(); i++) {
-            StockKlineDaily bar = barList.get(i);
-            StockTechDaily tech = new StockTechDaily();
-            tech.setStockCode(stockCode);
-            tech.setTradeDate(bar.getTradeDate());
+        StockKlineDaily lastBar = barList.get(last);
+        StockTechDaily tech = new StockTechDaily();
+        tech.setStockCode(lastBar.getStockCode());
+        tech.setStockName(lastBar.getStockName());
+        tech.setTradeDate(lastBar.getTradeDate());
+        tech.setPrice(lastBar.getPrice());
+        tech.setHigh(lastBar.getHigh());
+        tech.setLow(lastBar.getLow());
+        tech.setOpen(lastBar.getOpen());
+        tech.setClose(lastBar.getClose());
 
-            // 均线
-            tech.setMa3(ma3List.get(i));
-            tech.setMa5(ma5List.get(i));
-            tech.setMa10(ma10List.get(i));
-            tech.setMa20(ma20List.get(i));
+        // 均线
+        tech.setMa3(ma3List.get(last));
+        tech.setMa5(ma5List.get(last));
+        tech.setMa10(ma10List.get(last));
+        tech.setMa20(ma20List.get(last));
 
-            // MACD
-            if (macdList.get(i) != null) {
-                tech.setMacdDif(macdList.get(i)[0]);
-                tech.setMacdDea(macdList.get(i)[1]);
-                tech.setMacdBar(macdList.get(i)[2]);
-                tech.setMacdDiff(tech.getMacdDif().subtract(tech.getMacdDea()));
-            }
+        // MACD
+        if (macdList.get(last) != null) {
+            tech.setMacdDif(macdList.get(last)[0]);
+            tech.setMacdDea(macdList.get(last)[1]);
+            tech.setMacdBar(macdList.get(last)[2]);
+            tech.setMacdDiff(tech.getMacdDif().subtract(tech.getMacdDea()));
+        }
 
-            // RSI
-            tech.setRsi3(rsi3List.get(i));
-            tech.setRsi9(rsi9List.get(i));
+        // RSI
+        tech.setRsi3(rsi3List.get(last));
+        tech.setRsi9(rsi9List.get(last));
 
-            // KDJ
-            if (kdjList.get(i) != null) {
-                tech.setKdjK(kdjList.get(i)[0]);
-                tech.setKdjD(kdjList.get(i)[1]);
-                tech.setKdjJ(kdjList.get(i)[2]);
-            }
+        // KDJ
+        if (kdjList.get(last) != null) {
+            tech.setKdjK(kdjList.get(last)[0]);
+            tech.setKdjD(kdjList.get(last)[1]);
+            tech.setKdjJ(kdjList.get(last)[2]);
+        }
 
-            // 布林带
-            if (bollList.get(i) != null) {
-                tech.setBollMid(bollList.get(i)[0]);
-                tech.setBollUpper(bollList.get(i)[1]);
-                tech.setBollLower(bollList.get(i)[2]);
-                // 计算布林带状态（1=收口,2=开口,3=正常）
-                BigDecimal width = bollList.get(i)[1].subtract(bollList.get(i)[2]);
-                if (i > 0 && bollList.get(i - 1) != null) {
-                    BigDecimal prevWidth = bollList.get(i - 1)[1].subtract(bollList.get(i - 1)[2]);
-                    if (width.compareTo(prevWidth.multiply(BigDecimal.valueOf(0.9))) < 0) {
-                        tech.setBollStatus(1); // 收口
-                    } else if (width.compareTo(prevWidth.multiply(BigDecimal.valueOf(1.1))) > 0) {
-                        tech.setBollStatus(2); // 开口
-                    } else {
-                        tech.setBollStatus(3); // 正常
-                    }
+        // 布林带
+        if (bollList.get(last) != null) {
+            tech.setBollMid(bollList.get(last)[0]);
+            tech.setBollUpper(bollList.get(last)[1]);
+            tech.setBollLower(bollList.get(last)[2]);
+            // 计算布林带状态（1=收口,2=开口,3=正常）
+            BigDecimal width = bollList.get(last)[1].subtract(bollList.get(last)[2]);
+            if (bollList.get(last - 1) != null) {
+                BigDecimal prevWidth = bollList.get(last - 1)[1].subtract(bollList.get(last - 1)[2]);
+                if (width.compareTo(prevWidth.multiply(BigDecimal.valueOf(0.9))) < 0) {
+                    tech.setBollStatus(1); // 收口
+                } else if (width.compareTo(prevWidth.multiply(BigDecimal.valueOf(1.1))) > 0) {
+                    tech.setBollStatus(2); // 开口
+                } else {
+                    tech.setBollStatus(3); // 正常
                 }
             }
-
-            // ATR
-            tech.setAtr(atrList.get(i));
-            // ATRRatio（当日ATR/昨日ATR）
-            if (i > 0 && atrList.get(i) != null && atrList.get(i - 1) != null && atrList.get(i - 1).compareTo(BigDecimal.ZERO) > 0) {
-                tech.setAtrRatio(atrList.get(i).divide(atrList.get(i - 1), 4, ROUND_MODE));
-            }
-
-            tech.setObv(obvList.get(i));
-            tech.setObvMa10(obvMa10List.get(i));
-            tech.setObvDiff(tech.getObv() - tech.getObvMa10());
-            tech.setWr6(wr6List.get(i));
-            tech.setCci(cciList.get(i));
-            tech.setMfi(mfiList.get(i));
-
-            // VMACD
-            if (vmacdList.get(i) != null) {
-                tech.setVmacdDif(vmacdList.get(i)[0]);
-                tech.setVmacdDea(vmacdList.get(i)[1]);
-                tech.setVmacdBar(vmacdList.get(i)[2]);
-                tech.setVmacdDiff(tech.getVmacdDif().subtract(tech.getVmacdDea()));
-            }
-            // 筹码指标
-            tech.setAvgCost(avgCostList.get(i));
-            tech.setCostConcentration(costConcentrationList.get(i));
-            techList.add(tech);
         }
+
+        // ATR
+        tech.setAtr(atrList.get(last));
+        // ATRRatio（当日ATR/昨日ATR）
+        if (atrList.get(last) != null && atrList.get(last - 1) != null && atrList.get(last - 1).compareTo(BigDecimal.ZERO) > 0) {
+            tech.setAtrRatio(atrList.get(last).divide(atrList.get(last - 1), 4, ROUND_MODE));
+        }
+
+        tech.setObv(obvList.get(last));
+        tech.setObvMa10(obvMa10List.get(last));
+        tech.setObvDiff(tech.getObv() - tech.getObvMa10());
+        tech.setWr6(wr6List.get(last));
+        tech.setCci(cciList.get(last));
+        tech.setMfi(mfiList.get(last));
+
+        // VMACD
+        if (vmacdList.get(last) != null) {
+            tech.setVmacdDif(vmacdList.get(last)[0]);
+            tech.setVmacdDea(vmacdList.get(last)[1]);
+            tech.setVmacdBar(vmacdList.get(last)[2]);
+            tech.setVmacdDiff(tech.getVmacdDif().subtract(tech.getVmacdDea()));
+        }
+        // 筹码指标
+        tech.setAvgCost(avgCostList.get(last));
+        tech.setCostConcentration(costConcentrationList.get(last));
 
         // ===================== 计算顶底背离 =====================
         List<Object[]> divergenceResult = batchJudgeDivergence(barList, macdList, rsi9List, kdjList, cciList);
         // 给每个指标对象赋值背离信息
-        for (int i = 0; i < techList.size(); i++) {
-            if (i < divergenceResult.size()) {
-                techList.get(i).setDivergenceType((Integer) divergenceResult.get(i)[0]);
-                techList.get(i).setDivergenceStrength((BigDecimal) divergenceResult.get(i)[1]);
-            } else {
-                techList.get(i).setDivergenceType(DIVERGENCE_NONE);
-                techList.get(i).setDivergenceStrength(BigDecimal.ZERO);
-            }
-        }
+        tech.setDivergenceType((Integer) divergenceResult.get(last)[0]);
+        tech.setDivergenceStrength((BigDecimal) divergenceResult.get(last)[1]);
 
         // ===================== 多指标共振筛选 =====================
-        batchJudgeResonance(stockCode, barList, techList);
+
+        StockTechDaily prevTech = findOne(StockTechDaily.builder().stockCode(tech.getStockCode()).tradeDate(tech.getTradeDate().plusDays(-1)).build());
+        Object[] resonance = judgeResonance(tech, prevTech, barList);
+        tech.setResonanceSignal((Integer) resonance[0]);
+        tech.setResonanceScore((BigDecimal) resonance[1]);
 
         // 4. 批量写入数据库
-        saveOrUpdateBatch(techList, new String[]{"stock_code", "trade_date"});
-        log.info("股票" + stockCode + "指标计算完成，共写入" + techList.size() + "条数据");
+        saveOrUpdate(tech, new String[]{"stock_code", "trade_date"});
+        log.info("股票" + tech.getStockCode() + tech.getStockName() + "指标计算完成");
 
 
         // 7. 策略回测
-        BigDecimal[] backTestResult = backTestResonanceSignal(stockCode, barList, techList);
-        System.out.println("===== " + stockCode + " 回测结果 =====");
-        System.out.println("买入信号总数：" + backTestResult[0]);
-        System.out.println("盈利信号数：" + backTestResult[1]);
-        System.out.println("胜率：" + backTestResult[2] + "%");
-        System.out.println("平均盈亏比：" + backTestResult[3]);
+//        BigDecimal[] backTestResult = backTestResonanceSignal(stockCode, barList, techList);
+//        System.out.println("===== " + stockCode + " 回测结果 =====");
+//        System.out.println("买入信号总数：" + backTestResult[0]);
+//        System.out.println("盈利信号数：" + backTestResult[1]);
+//        System.out.println("胜率：" + backTestResult[2] + "%");
+//        System.out.println("平均盈亏比：" + backTestResult[3]);
     }
 
 }

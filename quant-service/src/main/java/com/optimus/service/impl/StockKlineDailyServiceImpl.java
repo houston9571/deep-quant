@@ -36,7 +36,7 @@ public class StockKlineDailyServiceImpl extends MybatisBaseServiceImpl<StockKlin
      * 获取股票实时交易列表，排除688 920 ST
      *
      */
-    public List<StockKlineDaily> syncStockTradeList() {
+    public List<StockKlineDaily> syncStockKlineDailyList() {
         String fields = "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f14,f15,f16,f17,f18,f20,f21,f23,f24,f34,f35,f37,f40,f41,f45,f46,f48,f49,f57,f64,f65,f66,f69,f70,f71,f72,f75,f76,f77,f78,f81,f82,f83,f84,f87,f109,f129,f297";
         int total = 0, pageNum = 0, pageSize = 100;
         List<StockKlineDaily> list = new ArrayList<>(4500);
@@ -57,14 +57,14 @@ public class StockKlineDailyServiceImpl extends MybatisBaseServiceImpl<StockKlin
                             d.setLimitUp(d.getOpen().add(d.getOpen().multiply(MarketType.getChangeLimit(d.getStockCode()))));
                             d.setLimitDown(d.getOpen().subtract(d.getOpen().multiply(MarketType.getChangeLimit(d.getStockCode()))));
                         }
-//                        d.setMainIn(d.getSuperLargeIn() + d.getLargeIn());
-//                        d.setMainOut(d.getSuperLargeOut() + d.getLargeOut());
-//                        d.setMainNetIn(d.getSuperLargeNetIn() + d.getLargeNetIn());
-//                        d.setMainNetRatio(d.getSuperLargeNetRatio().add(d.getLargeNetRatio()));
-//                        d.setRetailIn(d.getMediumIn() + d.getSmallIn());
-//                        d.setRetailOut(d.getMediumOut() + d.getSmallOut());
-//                        d.setRetailNetIn(d.getMediumNetIn() + d.getSmallNetIn());
-//                        d.setRetailNetRatio(d.getMediumNetRatio().add(d.getSmallNetRatio()));
+                        d.setMainIn(d.getSuperLargeIn() + d.getLargeIn());
+                        d.setMainOut(d.getSuperLargeOut() + d.getLargeOut());
+                        d.setMainNetIn(d.getSuperLargeNetIn() + d.getLargeNetIn());
+                        d.setMainNetRatio(d.getSuperLargeNetRatio().add(d.getLargeNetRatio()));
+                        d.setRetailIn(d.getMediumIn() + d.getSmallIn());
+                        d.setRetailOut(d.getMediumOut() + d.getSmallOut());
+                        d.setRetailNetIn(d.getMediumNetIn() + d.getSmallNetIn());
+                        d.setRetailNetRatio(d.getMediumNetRatio().add(d.getSmallNetRatio()));
                         list.add(d);
                     }
                 } catch (Exception e) {
