@@ -1,5 +1,6 @@
 package com.optimus.service.impl;
 
+import com.optimus.enums.DateFormatEnum;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.TradeCalendar;
 import com.optimus.mysql.mapper.TradeCalendarMapper;
@@ -10,8 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.optimus.constant.Constants.DISABLED;
 import static com.optimus.constant.Constants.ENABLE;
@@ -27,6 +31,23 @@ public class TradeCalendarServiceImpl extends MybatisBaseServiceImpl<TradeCalend
 
     private final TradeCalendarMapper tradeCalendarMapper;
 
+
+    public boolean isTradeDate() {
+        return isTradeDate(LocalDate.now());
+    }
+
+    public boolean isTradeDate(LocalDate date) {
+        return (date.getDayOfWeek().getValue() <= 5) && !holidays.containsKey(DateUtils.format(date, DATE));
+    }
+
+    public boolean isTradeTime() {
+        return isTradeTime(LocalTime.now());
+    }
+
+    public boolean isTradeTime(LocalTime time) {
+        return isTradeDate() && (time.isAfter(MORNING_OPEN) && time.isBefore(MORNING_CLOSE)) || (time.isAfter(AFTERNOON_OPEN) && time.isBefore(AFTERNOON_CLOSE));
+    }
+
     public int genYearCalendar() {
         LocalDate b = DateUtils.parseLocalDate(DateUtils.now().getYear() + "-01-01", DATE);
         LocalDate e = DateUtils.parseLocalDate((DateUtils.now().getYear() + 1) + "-01-01", DATE);
@@ -35,12 +56,12 @@ public class TradeCalendarServiceImpl extends MybatisBaseServiceImpl<TradeCalend
             list.add(TradeCalendar.builder()
                     .date(b)
                     .week(b.getDayOfWeek().getDisplayName(SHORT, SIMPLIFIED_CHINESE))
-                    .isTrade(b.getDayOfWeek().getValue() <= 5 ? ENABLE : DISABLED)
+                    .isTrade((b.getDayOfWeek().getValue() <= 5) && !holidays.containsKey(DateUtils.format(b, DATE)) ? ENABLE : DISABLED)
+                    .holiday(holidays.getOrDefault(DateUtils.format(b, DATE), ""))
                     .build());
             b = b.plusDays(1);
         }
-       return saveOrUpdateBatch(list, new String[]{"date"});
+        return saveOrUpdateBatch(list, new String[]{"date"});
     }
-
 
 }

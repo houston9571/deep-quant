@@ -15,12 +15,12 @@
       "subsets": [
         {
           "description": "股票代码",
-          "property": "code",
+          "property": "stockCode",
           "xPath": "$.SecurityCode"
         },
         {
           "description": "股票名称",
-          "property": "name",
+          "property": "stockName",
           "xPath": "$.SecurityShortName"
         },
         {

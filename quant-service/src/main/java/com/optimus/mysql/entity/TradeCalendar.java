@@ -26,6 +26,8 @@ public class TradeCalendar extends BaseEntity {
 
     private Integer isTrade;
 
+    private String holiday;
+
     private String sh;
 
     private String shName;

@@ -209,14 +209,14 @@ public class ConceptDelay extends BaseEntity {
 
     /**
      * 主力流入 = 超大单流入 + 大单流入
-     */    @JSONField(serializeUsing = CountUtilWriter.class)
-
+     */
+    @JSONField(serializeUsing = CountUtilWriter.class)
     private Long mainIn;
 
     /**
      * 主力流出
-     */    @JSONField(serializeUsing = CountUtilWriter.class)
-
+     */
+    @JSONField(serializeUsing = CountUtilWriter.class)
     private Long mainOut;
 
     /**

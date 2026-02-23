@@ -25,7 +25,7 @@ import static com.optimus.constant.Constants.ID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stock_tech_minute")
+@TableName("stock_kline_minute")
 public class StockKlineMinute extends BaseEntity {
 
 
@@ -203,26 +203,26 @@ public class StockKlineMinute extends BaseEntity {
      * 主力净流入 = 超大单净流入 + 大单净流入
      * 散户净流入 = 中单净流入 + 小单净流入
      */
-    private String mainNetInflow;
+    private String mainNetIn;
 
     /**
-     * 超大单净流入	Super Large Net Inflow	> 100万元	机构、顶级大户
+     * 超大单净流入 Super Large Net Inflow	> 100万元	机构、顶级大户
      */
-    private String superLargeNetInflow;
+    private String superLargeNetIn;
 
     /**
      * 大单净流入	Large Net Inflow	20万 - 100万元	大户、部分机构
      */
-    private String largeNetInflow;
+    private String largeNetIn;
 
     /**
      * 中单净流入	Medium Net Inflow	4万 - 20万元	中户
      */
-    private String mediumNetInflow;
+    private String mediumNetIn;
 
     /**
      * 小单净流入	Small Net Inflow	< 4万元	散户
      */
-    private String smallNetInflow;
+    private String smallNetIn;
 
 }

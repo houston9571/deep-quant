@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ConceptDelayMapper extends BaseMapper<ConceptDelay> {
 
-    @Select("SELECT DISTINCT trade_date FROM concept_daily  ORDER BY trade_date DESC LIMIT #{days}")
+    @Select("SELECT DISTINCT trade_date FROM concept_daily ORDER BY trade_date DESC LIMIT #{days}")
     List<ConceptDelay> queryConceptTradeDate(int days);
 
 

@@ -61,11 +61,12 @@ public class ConceptDelayServiceImpl extends MybatisBaseServiceImpl<ConceptDelay
 
     /**
      * 概念板块列表，按涨跌幅排序
+     * all=false,只更新涨幅前tops的板块
      */
-    public void syncConceptTradeList() {
-        int total = 0, pageNum = 0, pageSize = 100;
+    public void syncConceptTradeList(boolean all, int top) {
+        int total = 0, pageNum = 0, pageSize = all ? 100 : top;
         List<ConceptDelay> list = new ArrayList<>();
-        while (true) {
+        do {
             JSONObject json = eastMoneyConceptApi.syncConceptTradeList(++pageNum, pageSize, System.currentTimeMillis());
             JSONObject data = json.getJSONObject(LABEL_DATA);
             if (Objects.isNull(data) || !data.containsKey("diff")) {
@@ -87,7 +88,7 @@ public class ConceptDelayServiceImpl extends MybatisBaseServiceImpl<ConceptDelay
             if (array.size() < pageSize) {
                 break;
             }
-        }
+        } while (all);
         log.info(">>>>>syncConceptTradeList finished total:{} list:{} ", total, list.size());
     }
 

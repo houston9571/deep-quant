@@ -12,11 +12,14 @@ import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.ConceptInfo;
 import com.optimus.mysql.entity.ConceptStock;
 import com.optimus.mysql.entity.StockInfo;
+import com.optimus.mysql.entity.StockKlineDaily;
 import com.optimus.mysql.mapper.StockInfoMapper;
 import com.optimus.service.ConceptInfoService;
 import com.optimus.service.ConceptStockService;
 import com.optimus.service.StockInfoService;
 import com.optimus.sprider.SpriderTemplateParser;
+import com.optimus.thread.Threads;
+import com.optimus.utils.DateUtils;
 import com.optimus.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +55,29 @@ public class StockInfoServiceImpl extends MybatisBaseServiceImpl<StockInfoMapper
 
     @Autowired
     SpriderTemplateParser spiderTemplateParser;
+
+    public Result<Integer> syncStockInfoAll() {
+        List<StockInfo> inserts = stockInfoMapper.queryStockInfoNotIn();
+        log.error(">>>>>syncStockInfoAll start. 新增：{}", inserts.size());
+        for (StockInfo daily : inserts) {
+            Result<StockInfo> result = syncStockInfo(daily.getStockCode());
+            if (result.isSuccess()) {
+                syncStockConceptList(daily.getStockCode());
+            }
+        }
+        log.error(">>>>>syncStockInfoAll end. 新增：{}", inserts.size());
+
+        List<StockInfo> updates = findAll();
+        log.error(">>>>>syncStockInfoAll start. 更新：{}", updates.size());
+        for (StockInfo daily : updates) {
+            Result<StockInfo> result = syncStockInfo(daily.getStockCode());
+            if (result.isSuccess()) {
+                syncStockConceptList(daily.getStockCode());
+            }
+        }
+        log.error(">>>>>syncStockInfoAll end. 更新：{}", updates.size());
+        return Result.success(inserts.size() + updates.size());
+    }
 
 
     /**

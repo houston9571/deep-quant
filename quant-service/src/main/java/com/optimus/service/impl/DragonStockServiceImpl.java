@@ -120,7 +120,7 @@ public class DragonStockServiceImpl extends MybatisBaseServiceImpl<DragonStockMa
                 ++total;
                 try {
                     DragonStock d = JSONObject.parseObject(data.getString(i), DragonStock.class);
-                    if (MarketType.contains(d.getStockCode())) {
+                    if (MarketType.contains(d.getStockCode(), d.getStockName())) {
                         d.setBuyAmountRatio(BigDecimal.valueOf(d.getBuyAmount()).divide(BigDecimal.valueOf(d.getAmount()), new MathContext(4, ROUND_MODE)).multiply(HUNDRED));
                         d.setSellAmountRatio(BigDecimal.valueOf(d.getSellAmount()).divide(BigDecimal.valueOf(d.getAmount()), new MathContext(4, ROUND_MODE)).multiply(HUNDRED));
                         if (!map.containsKey(d.getStockCode())) {

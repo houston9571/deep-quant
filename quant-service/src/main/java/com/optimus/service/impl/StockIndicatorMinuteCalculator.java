@@ -252,21 +252,16 @@ public class StockIndicatorMinuteCalculator {
     /**
      * 计算单只股票最新分时共振信号
      *
-     * @param techMinuteList 按时间正序的分时指标列表
+     * @param currTech 最新分时指标
+     * @param prevTech 前一分钟分时指标
      * @param barMinuteList  按时间正序的分时行情列表
      * @return [共振信号, 共振评分]
      */
-    public static Object[] judgeMinuteResonance(List<StockTechMinute> techMinuteList,
-                                                List<StockKlineMinute> barMinuteList) {
-        int lastIdx = techMinuteList.size() - 1;
-        // 至少需要10分钟数据（适配分时MA10/BOLL10）
+    public static Object[] judgeMinuteResonance(StockTechMinute currTech, StockTechMinute prevTech, List<StockKlineMinute> barMinuteList) {
+        int lastIdx = barMinuteList.size() - 1;
         if (lastIdx < 10) {
             return new Object[]{RESONANCE_NONE, BigDecimal.ZERO};
         }
-
-        // 获取最新/前一分钟数据
-        StockTechMinute currTech = techMinuteList.get(lastIdx);
-        StockTechMinute prevTech = techMinuteList.get(lastIdx - 1);
         StockKlineMinute currBar = barMinuteList.get(lastIdx);
 
         int signal = RESONANCE_NONE;

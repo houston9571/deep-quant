@@ -1,5 +1,6 @@
 package com.optimus.components;
 
+import com.optimus.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class MarketType {
     public static final BigDecimal LIMIT_TWENTY = BigDecimal.valueOf(0.2);
     public static final BigDecimal LIMIT_THIRTY = BigDecimal.valueOf(0.3);
 
+
     /**
      * 第1位标识证券大类，第2位标识该大类下的衍生证券
      * 新股申购：以730打头。配股代码：沪市以700打头，深市以080打头。
@@ -33,12 +35,12 @@ public class MarketType {
         put("601", StockExchange.builder().name("上证A股").market(MARKET_SH).marketCode(MARKET_CODE_SH).changeLimits(LIMIT_TEN).build());
         put("603", StockExchange.builder().name("上证A股").market(MARKET_SH).marketCode(MARKET_CODE_SH).changeLimits(LIMIT_TEN).build());
         put("605", StockExchange.builder().name("上证A股").market(MARKET_SH).marketCode(MARKET_CODE_SH).changeLimits(LIMIT_TEN).build());
-        put("688", StockExchange.builder().name("科创板").market(MARKET_SH).marketCode(MARKET_CODE_SH).changeLimits(LIMIT_TWENTY).build());
-        put("920", StockExchange.builder().name("北证A股").market(MARKET_BJ).marketCode(MARKET_CODE_BJ).changeLimits(LIMIT_THIRTY).build());
+//        put("688", StockExchange.builder().name("科创板").market(MARKET_SH).marketCode(MARKET_CODE_SH).changeLimits(LIMIT_TWENTY).build());
+//        put("920", StockExchange.builder().name("北证A股").market(MARKET_BJ).marketCode(MARKET_CODE_BJ).changeLimits(LIMIT_THIRTY).build());
     }};
 
-    public static boolean contains(String stockCode) {
-        return markets.containsKey(stockCode.substring(0, 3));
+    public static boolean contains(String stockCode, String stockName) {
+        return markets.containsKey(stockCode.substring(0, 3)) && !StringUtil.contains(stockName, "ST");
     }
 
     public static String getMarket(String stockCode) {

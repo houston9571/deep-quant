@@ -34,7 +34,6 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
 
     private final StockTechMinuteMapper stockTechMinuteMapper;
 
-    private final StockKlineMinuteService stockKlineMinuteService;
 
     /**
      * ================= 实时计算分时指标 ====================
@@ -43,18 +42,21 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
      * 双重共振：胜率可达 70%~85%（超短线 1-3 天）
      * 所有指标周期统一，无滞后、无冲突，完全适配你的系统
      */
-    public void calcMinuteIndicatorAndSave(String stockCode) {
-        // 1. 从数据库读取日线数据（按时间升序）
-        List<StockKlineMinute> minuteList = stockKlineMinuteService.queryList(null, new QueryWrapper<StockKlineMinute>().eq("stock_code", stockCode).eq("trade_date", LocalDate.now()));
-        int last = minuteList.size() - 1;
-        if (last < 10) return; // 数据不足不计算
+    public void calcMinuteIndicatorAndSave(List<StockKlineMinute> prev10MinuteList) {
+        // 至少需要10分钟数据（适配分时MA10/BOLL10）
+        if (prev10MinuteList.size()  < 10) {
+            log.warn("分时数据不足不计算，必须满足10条");
+            return;
+        }
 
+        // 1. 从数据库读取日线数据（按时间升序）
+        int last = prev10MinuteList.size() - 1;
         // 抽取核心序列（分时简化：高低价用最新价，实际可替换为真实分时高低价）
         List<BigDecimal> closes = new ArrayList<>();
         List<BigDecimal> highs = new ArrayList<>();
         List<BigDecimal> lows = new ArrayList<>();
         List<Long> volumes = new ArrayList<>();
-        for (StockKlineMinute m : minuteList) {
+        for (StockKlineMinute m : prev10MinuteList) {
             closes.add(m.getPrice());
             highs.add(m.getPrice());
             lows.add(m.getPrice());
@@ -76,12 +78,12 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
         List<Long> obvMa5 = calcObvMa5(obv);
 
         // 2. 组装最新分时指标
-        StockKlineMinute lastBar = minuteList.get(last);
+        StockKlineMinute lastBar = prev10MinuteList.get(last);
         StockTechMinute tech = new StockTechMinute();
-        tech.setStockCode(stockCode);
+        tech.setStockCode(lastBar.getStockCode());
         tech.setTradeDate(lastBar.getTradeDate());
         tech.setTradeTime(lastBar.getTradeTime());
-
+        tech.setPrice(lastBar.getPrice());
         tech.setMa3(ma3.get(last));
         tech.setMa5(ma5.get(last));
         tech.setMa10(ma10.get(last));
@@ -103,9 +105,9 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
         tech.setObvMa5(obvMa5.get(last));
 
         // 3. 计算分时共振信号
-        List<StockTechMinute> techList = new ArrayList<>();
-        techList.add(tech); // 简化：仅传入最新指标，实际可传入历史列表
-        Object[] resonanceResult = judgeMinuteResonance(techList, minuteList);
+        StockTechMinute prevTech = findOne(StockTechMinute.builder().stockCode(tech.getStockCode()).tradeDate(tech.getTradeDate())
+                .tradeTime(tech.getTradeTime().plusMinutes(-1)).build());
+        Object[] resonanceResult = judgeMinuteResonance(tech, prevTech, prev10MinuteList);
         tech.setResonanceSignal((Integer) resonanceResult[0]);
         tech.setResonanceScore((BigDecimal) resonanceResult[1]);
 

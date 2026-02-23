@@ -17,10 +17,9 @@ import lombok.*;
 @TableName("concept_info")
 public class ConceptInfo extends BaseEntity {
 
-    @TableId(value = "code", type = IdType.INPUT)
+    @TableId(value = "concept_code", type = IdType.INPUT)
     private String conceptCode;
 
-    @TableField("name")
     private String conceptName;
 
     private String type;

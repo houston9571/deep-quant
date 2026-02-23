@@ -81,8 +81,8 @@ public class DateUtils {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern(df.getFormat()));
     }
 
-    public static LocalTime parseLocalTime(String date, DateFormatEnum df) {
-        return LocalTime.parse(date, DateTimeFormatter.ofPattern(df.getFormat()));
+    public static LocalTime parseLocalTime(String time, DateFormatEnum df) {
+        return LocalTime.parse(time, DateTimeFormatter.ofPattern(df.getFormat()));
     }
 
     public static Date parseDate(String date) {

@@ -126,7 +126,7 @@ public interface StockTechMinuteMapper extends BaseMapper<StockTechMinute> {
             "                          AND (SELECT MAX(trade_time) FROM stock_tech_minute WHERE trade_date = CURDATE()) " +
             "       QUALIFY ROW_NUMBER() OVER (PARTITION BY stock_code ORDER BY trade_time DESC) = 1 " +
             "   ) tech_min_15 ON p.stock_code = tech_min_15.stock_code" +  // 15分钟级共振信号（1/3=多头，2/4=空头）
-            "WHERE p.status = 1" +
+            "WHERE p.status = 1 AND p.strategy = 2 " +          // 1=隔夜持仓 2=日内短线
             "ORDER BY " +
             "    CASE " +
             "        WHEN ROUND((latest_min.price - p.buy_price)/p.buy_price*100,2) <= -2 " +

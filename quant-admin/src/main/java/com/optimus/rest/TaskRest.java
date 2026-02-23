@@ -7,6 +7,7 @@ import com.optimus.service.*;
 import com.optimus.thread.Threads;
 import com.optimus.utils.DateUtils;
 import com.optimus.utils.NumberUtils;
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -47,48 +48,33 @@ public class TaskRest {
     private final DragonDeptService dragonDeptService;
 
     /**
-     * 同步概念板块列表
+     * 同步更新所有股票基本信息，所属概念
      */
-    @GetMapping("concept/daily")
-    public Result<Void> syncConceptTradeList() {
-        Threads.asyncExecute(conceptDelayService::syncConceptTradeList);
-        return Result.success();
+    @GetMapping("stock/overview")
+    public Result<Integer> overview() {
+        return stockInfoService.syncStockInfoAll();
     }
-
 
     /**
      * 同步单个股票基本信息，所属概念
      */
-    @GetMapping("stock/{stockCode}}")
+/*    @GetMapping("stock/{stockCode}}")
     public Result<StockInfo> stock(@PathVariable String stockCode) {
         Result<StockInfo> result = stockInfoService.syncStockInfo(stockCode);
         if (result.isSuccess()) {
             stockInfoService.syncStockConceptList(stockCode);
         }
         return Result.success();
-    }
+    }*/
 
     /**
-     * 同步更新所有股票基本信息，所属概念
+     * 同步概念板块列表
      */
-    @GetMapping("stock/overview")
-    public Result<Void> overview() {
-        StockKlineDaily stockKlineDaily = StockKlineDaily.builder().tradeDate(DateUtils.now().toLocalDate()).build();
-        List<StockKlineDaily> list = stockKlineDailyService.queryList(stockKlineDaily);
-        if (!CollectionUtils.isEmpty(list)) {
-            Threads.asyncExecute(() -> {
-                Result<StockInfo> result;
-                for (StockKlineDaily daily : list) {
-                    result = stockInfoService.syncStockInfo(daily.getStockCode());
-                    if (result.isSuccess()) {
-                        stockInfoService.syncStockConceptList(daily.getStockCode());
-                    }
-                }
-            });
-        }
+    @GetMapping("concept/daily")
+    public Result<Void> syncConceptTradeList() {
+        Threads.asyncExecute(() -> conceptDelayService.syncConceptTradeList(true, 100));
         return Result.success();
     }
-
 
     /**
      * 获取所有股票当天交易行情
@@ -169,8 +155,8 @@ public class TaskRest {
     }
 
 
-    @GetMapping("genYearCalendar")
-    public Result<Integer> genYearCalendar() {
+    @GetMapping("genCalendar")
+    public Result<Integer> genCalendar() {
         return Result.success(tradeCalendarService.genYearCalendar());
     }
 

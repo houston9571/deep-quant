@@ -29,8 +29,9 @@ public class ConceptRest {
     /**
      * 查询每日排名前10的板块，竖型列表，第一行是表头信息
      */
-    @GetMapping("{days}/{top}")
-    public Result<List<ConceptDelay>> conceptList(@PathVariable int days, @PathVariable int top) {
+    @GetMapping("list")
+    public Result<List<ConceptDelay>> conceptList() {
+        int days = 10, top = 10;
         List<List<ConceptDelay>> grid = conceptDelayService.queryConceptTradeList(days, top);
         return PageResult.success(grid);
     }

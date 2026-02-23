@@ -19,13 +19,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static cn.hutool.core.text.StrPool.COMMA;
 import static com.optimus.constant.Constants.LABEL_DATA;
 import static com.optimus.components.StockConstants.KLINE_1MIN;
 import static com.optimus.enums.ErrorCode.NOT_GET_PAGE_ERROR;
+import static com.optimus.service.TradeCalendarService.MORNING_OPEN;
 
 @Slf4j
 @Service
@@ -61,21 +64,22 @@ public class StockKlineMinuteServiceImpl extends MybatisBaseServiceImpl<StockKli
         JSONArray lines = data.getJSONArray("klines");
 
         String[] line = lines.getString(0).split(COMMA);
-        String[] t = line[0].split("  ");
+        String[] t = line[0].split("\\s+");
         stockKlineMinute.setTradeDate(DateUtils.parseLocalDate(t[0], DateFormatEnum.DATE));
         stockKlineMinute.setTradeTime(DateUtils.parseLocalTime(t[1] + ":00", DateFormatEnum.TIME));
-        stockKlineMinute.setMainNetInflow(line[1]);
-        stockKlineMinute.setSmallNetInflow(line[2]);
-        stockKlineMinute.setMediumNetInflow(line[3]);
-        stockKlineMinute.setLargeNetInflow(line[4]);
-        stockKlineMinute.setSuperLargeNetInflow(line[5]);
+        stockKlineMinute.setMainNetIn(line[1]);
+        stockKlineMinute.setSmallNetIn(line[2]);
+        stockKlineMinute.setMediumNetIn(line[3]);
+        stockKlineMinute.setLargeNetIn(line[4]);
+        stockKlineMinute.setSuperLargeNetIn(line[5]);
 
-        saveOrUpdate(stockKlineMinute, new String[]{"stock_code", "trade_date"});
+        saveOrUpdate(stockKlineMinute, new String[]{"stock_code", "trade_date", "trade_time"});
 
-        stockTechMinuteService.calcMinuteIndicatorAndSave(stockCode);
+        List<StockKlineMinute> prev10MinuteList = stockKlineMinuteMapper.queryPrevious10Minute(stockCode);
+        stockTechMinuteService.calcMinuteIndicatorAndSave(prev10MinuteList);
+
         return Result.success(stockKlineMinute);
     }
-
 
 
     public Result<JSONObject> getFirstRequest2Data(String code) {
