@@ -71,6 +71,11 @@
             <version>2.46.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.ta4j</groupId>
+            <artifactId>ta4j-core</artifactId>
+            <version>0.22.2</version>
+        </dependency>
     </dependencies>
 
 

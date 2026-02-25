@@ -12,11 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@Lazy
+//@Lazy
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -40,10 +41,12 @@ public class SyncTask {
     @Scheduled(cron = "0 0/1 9-12,13-15 ? * 1-5")
     void syncStockKlineMinutePools(){
         if (tradeCalendarService.isTradeTime()) {
-            Threads.sleep(1200);
             log.info(" --> 同步个股分时数据及指标计算【stock_kline_minute、stock_tech_minute】开始 ");
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
             stockKlineMinuteService.syncStockKlineMinutePools();
-            log.info(" --> 同步个股分时数据及指标计算【stock_kline_minute、stock_tech_minute】结束 ");
+            stopWatch.stop();
+            log.info(" --> 同步个股分时数据及指标计算【stock_kline_minute、stock_tech_minute】结束 {}", DateUtils.formatDateTime(stopWatch.getTotalTimeMillis()));
         }
     }
 

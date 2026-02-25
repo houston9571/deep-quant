@@ -1,5 +1,6 @@
 package com.optimus.service.impl;
 
+import com.google.common.collect.Lists;
 import com.optimus.mysql.MybatisBaseServiceImpl;
 import com.optimus.mysql.entity.StockKlineMinute;
 import com.optimus.mysql.entity.StockTechMinute;
@@ -66,42 +67,45 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
         List<Long> obvMa5 = calcObvMa5(obv);
 
         // 2. 组装最新分时指标
-        StockKlineMinute lastBar = prev10MinuteList.get(last);
-        StockTechMinute tech = new StockTechMinute();
-        tech.setStockCode(lastBar.getStockCode());
-        tech.setStockName(lastBar.getStockName());
-        tech.setTradeDate(lastBar.getTradeDate());
-        tech.setTradeTime(lastBar.getTradeTime());
-        tech.setPrice(lastBar.getPrice());
-        tech.setHigh(lastBar.getHigh());
-        tech.setLow(lastBar.getLow());
-        tech.setOpen(lastBar.getOpen());
-        tech.setClose(lastBar.getClose());
+        List<StockTechMinute> techList = Lists.newArrayList();
+        for (int i = last-1; i < prev10MinuteList.size(); i++) {
+            StockKlineMinute bar = prev10MinuteList.get(i);
+            StockTechMinute tech = new StockTechMinute();
+            tech.setStockCode(bar.getStockCode());
+            tech.setStockName(bar.getStockName());
+            tech.setTradeDate(bar.getTradeDate());
+            tech.setTradeTime(bar.getTradeTime());
+            tech.setPrice(bar.getPrice());
+            tech.setHigh(bar.getHigh());
+            tech.setLow(bar.getLow());
+            tech.setOpen(bar.getOpen());
+            tech.setClose(bar.getClose());
 
-        tech.setMa3(ma3.get(last));
-        tech.setMa5(ma5.get(last));
-        tech.setMa10(ma10.get(last));
-        tech.setMacdDif(macd.get(last)[0]);
-        tech.setMacdDea(macd.get(last)[1]);
-        tech.setMacdBar(macd.get(last)[2]);
-        tech.setRsi3(rsi3.get(last));
-        tech.setRsi9(rsi9.get(last));
-        tech.setKdjK(kdj.get(last)[0]);
-        tech.setKdjD(kdj.get(last)[1]);
-        tech.setKdjJ(kdj.get(last)[2]);
-        tech.setWr6(wr6.get(last));
-        tech.setBollMid(boll.get(last)[0]);
-        tech.setBollUpper(boll.get(last)[1]);
-        tech.setBollLower(boll.get(last)[2]);
-        tech.setVmacdDif(vmacd.get(last)[0]);
-        tech.setVmacdDea(vmacd.get(last)[1]);
-        tech.setObv(obv.get(last));
-        tech.setObvMa5(obvMa5.get(last));
+            tech.setMa3(ma3.get(i));
+            tech.setMa5(ma5.get(i));
+            tech.setMa10(ma10.get(i));
+            tech.setMacdDif(macd.get(i)[0]);
+            tech.setMacdDea(macd.get(i)[1]);
+            tech.setMacdBar(macd.get(i)[2]);
+            tech.setRsi3(rsi3.get(i));
+            tech.setRsi9(rsi9.get(i));
+            tech.setKdjK(kdj.get(i)[0]);
+            tech.setKdjD(kdj.get(i)[1]);
+            tech.setKdjJ(kdj.get(i)[2]);
+            tech.setWr6(wr6.get(i));
+            tech.setBollMid(boll.get(i)[0]);
+            tech.setBollUpper(boll.get(i)[1]);
+            tech.setBollLower(boll.get(i)[2]);
+            tech.setVmacdDif(vmacd.get(i)[0]);
+            tech.setVmacdDea(vmacd.get(i)[1]);
+            tech.setObv(obv.get(i));
+            tech.setObvMa5(obvMa5.get(i));
+            techList.add(tech);
+        }
 
         // 3. 计算分时共振信号
-        StockTechMinute prevTech = findOne(StockTechMinute.builder().stockCode(tech.getStockCode()).tradeDate(tech.getTradeDate())
-                .tradeTime(tech.getTradeTime().plusMinutes(-1)).build());
-        Object[] resonanceResult = judgeMinuteResonance(tech, prevTech, prev10MinuteList);
+        StockTechMinute tech = techList.get(1);
+        Object[] resonanceResult = judgeMinuteResonance(tech, techList.get(0), prev10MinuteList);
         tech.setResonanceSignal((Integer) resonanceResult[0]);
         tech.setResonanceScore((BigDecimal) resonanceResult[1]);
 

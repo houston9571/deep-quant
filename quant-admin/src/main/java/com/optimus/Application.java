@@ -24,6 +24,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static com.optimus.constant.Constants.ZONE_ID;
+
 @SpringBootApplication(exclude = {
 //        WebMvcAutoConfiguration.class,          // 如果不用WebMVC
         DataSourceAutoConfiguration.class,      // 如果不用数据库
@@ -41,7 +43,7 @@ public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
+        TimeZone.setDefault(TimeZone.getTimeZone(ZONE_ID));
         Locale.setDefault(Locale.CHINA);
 
         ApplicationContext ctx = SpringApplication.run(Application.class, args);

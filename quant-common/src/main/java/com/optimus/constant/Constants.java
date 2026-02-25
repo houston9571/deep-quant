@@ -14,12 +14,20 @@ public interface Constants {
 
     String APP_INFO = "APP_INFO";
 
+    String ZONE_ID = "Asia/Shanghai";
 
     int MAX_PAGE_SIZE = 10000;
 
-    int ENABLE = 1;
-    int DISABLED = 0;
-    int DELETED = -1;
+    Short YES = 1;
+    Short NO = 0;
+
+    Short ENABLE = 1;
+    Short DISABLED = 0;
+    Short DELETED = -1;
+
+    Short GOLDEN_CROSS = 1;
+    Short DEATH_CROSS = -1;
+
 
     BigDecimal HUNDRED = new BigDecimal(100);
 

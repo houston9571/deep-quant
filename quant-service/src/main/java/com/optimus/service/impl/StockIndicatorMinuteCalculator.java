@@ -29,6 +29,7 @@ public class StockIndicatorMinuteCalculator {
     public static final int RESONANCE_TREND_DOWN = 4;// 趋势走弱
 
 
+
     // ==================== 1. 分时MA ====================
     public static List<BigDecimal> calcMa(List<BigDecimal> prices, int period) {
         List<BigDecimal> maList = new ArrayList<>();
@@ -272,8 +273,8 @@ public class StockIndicatorMinuteCalculator {
 
         // ---------------------- 分时买入规则（10条，超短线核心） ----------------------
         // 1. 分时MA3上穿MA5（核心短线趋势）
-        if (currTech.getMa3() != null && currTech.getMa5() != null && prevTech.getMa3() != null && prevTech.getMa5() != null
-                && currTech.getMa3().compareTo(currTech.getMa5()) > 0 && prevTech.getMa3().compareTo(prevTech.getMa5()) <= 0) {
+        if (currTech.getEma5() != null && currTech.getEma10() != null && prevTech.getEma5() != null && prevTech.getEma10() != null
+                && currTech.getEma5().compareTo(currTech.getEma10()) > 0 && prevTech.getEma5().compareTo(prevTech.getEma10()) <= 0) {
             buyMatch++;
         }
 
@@ -317,8 +318,8 @@ public class StockIndicatorMinuteCalculator {
             buyMatch++;
         }
 
-        // 9. 最新价 > 分时MA3（即时趋势向上）
-        if (currTech.getMa3() != null && currBar.getPrice().compareTo(currTech.getMa3()) > 0) {
+        // 9. 最新价 > 分时MA5（即时趋势向上）
+        if (currTech.getEma5() != null && currBar.getPrice().compareTo(currTech.getEma5()) > 0) {
             buyMatch++;
         }
 
@@ -334,9 +335,9 @@ public class StockIndicatorMinuteCalculator {
         }
 
         // ---------------------- 分时卖出规则（8条，超短线核心） ----------------------
-        // 1. 分时MA3下穿MA5
-        if (currTech.getMa3() != null && currTech.getMa5() != null && prevTech.getMa3() != null && prevTech.getMa5() != null
-                && currTech.getMa3().compareTo(currTech.getMa5()) < 0 && prevTech.getMa3().compareTo(prevTech.getMa5()) >= 0) {
+        // 1. 分时MA5下穿MA10
+        if (currTech.getEma5() != null && currTech.getEma10() != null && prevTech.getEma5() != null && prevTech.getEma10() != null
+                && currTech.getEma5().compareTo(currTech.getEma10()) < 0 && prevTech.getEma5().compareTo(prevTech.getEma10()) >= 0) {
             sellMatch++;
         }
 

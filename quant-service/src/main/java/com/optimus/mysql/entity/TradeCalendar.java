@@ -24,7 +24,7 @@ public class TradeCalendar extends BaseEntity {
 
     private String week;
 
-    private Integer isTrade;
+    private Short isTrade;
 
     private String holiday;
 
