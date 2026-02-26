@@ -7,6 +7,7 @@ import com.optimus.enums.ErrorCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.assertj.core.util.Lists;
 
 import java.beans.Transient;
@@ -15,6 +16,7 @@ import java.util.List;
 import static com.optimus.constant.Constants.OK;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 @ApiModel(value = "PageResult", description = "分页查询结果")
 public class PageResult<T> extends Result<T> {
 

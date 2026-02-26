@@ -285,8 +285,8 @@ public class StockIndicatorMinuteCalculator {
         }
 
         // 3. 分时RSI9在30~70之间且向上
-        if (currTech.getRsi9() != null && prevTech.getRsi9() != null && currTech.getRsi9().compareTo(new BigDecimal(30)) > 0
-                && currTech.getRsi9().compareTo(new BigDecimal(70)) < 0 && currTech.getRsi9().compareTo(prevTech.getRsi9()) > 0) {
+        if (currTech.getRsi6() != null && prevTech.getRsi6() != null && currTech.getRsi6().compareTo(new BigDecimal(30)) > 0
+                && currTech.getRsi6().compareTo(new BigDecimal(70)) < 0 && currTech.getRsi6().compareTo(prevTech.getRsi6()) > 0) {
             buyMatch++;
         }
 
@@ -347,7 +347,7 @@ public class StockIndicatorMinuteCalculator {
         }
 
         // 3. 分时RSI9>80 或 KDJ J>90（超买）
-        if ((currTech.getRsi9() != null && currTech.getRsi9().compareTo(new BigDecimal(80)) > 0)
+        if ((currTech.getRsi6() != null && currTech.getRsi6().compareTo(new BigDecimal(80)) > 0)
                 || (currTech.getKdjJ() != null && currTech.getKdjJ().compareTo(new BigDecimal(90)) > 0)) {
             sellMatch++;
         }

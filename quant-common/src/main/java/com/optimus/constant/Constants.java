@@ -18,16 +18,21 @@ public interface Constants {
 
     int MAX_PAGE_SIZE = 10000;
 
-    Short YES = 1;
-    Short NO = 0;
+    short YES = 1;
+    short NO = 0;
 
-    Short ENABLE = 1;
-    Short DISABLED = 0;
-    Short DELETED = -1;
+    short ENABLE = 1;
+    short DISABLED = 0;
+    short DELETED = -1;
 
-    Short GOLDEN_CROSS = 1;
-    Short DEATH_CROSS = -1;
+    short GOLDEN_CROSS_RED = 2;
+    short GOLDEN_CROSS = 1;
+    short DEATH_CROSS = -1;
+    short DEATH_CROSS_GREEN = -2;
 
+    short EXPAND_UP = 2;
+    short EXPAND_DOWN = 1;
+    short SHRINK = -1;
 
     BigDecimal HUNDRED = new BigDecimal(100);
 

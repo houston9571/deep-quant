@@ -36,6 +36,10 @@ public class StockTechMinute extends BaseEntity {
     private BigDecimal low;
     private BigDecimal open;
     private BigDecimal close;
+    private Long volume;
+    private BigDecimal volumeRatio;
+    private BigDecimal volumeRising;
+    private Short priceUp;
 
     private BigDecimal ema3;
     private BigDecimal ema5;
@@ -47,9 +51,9 @@ public class StockTechMinute extends BaseEntity {
     private BigDecimal macdBar;
     private Short macdGolden;
 
-    private BigDecimal rsi3;
+//    private BigDecimal rsi3;
     private BigDecimal rsi6;
-    private BigDecimal rsi9;
+//    private BigDecimal rsi9;
 
     private BigDecimal kdjK;
     private BigDecimal kdjD;
@@ -61,8 +65,7 @@ public class StockTechMinute extends BaseEntity {
     private BigDecimal bollMid;
     private BigDecimal bollUpper;
     private BigDecimal bollLower;
-    private BigDecimal bollBandWidthPct;
-    private Integer bollExpandStatus;
+    private Short bollExpandStatus;
 
     private BigDecimal vmacdDif;
     private BigDecimal vmacdDea;

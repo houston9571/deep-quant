@@ -13,6 +13,7 @@ import java.util.List;
  * 龙虎榜页面
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class DragonDetailStockKline extends StockKlineDaily {
 
 
