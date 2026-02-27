@@ -34,6 +34,11 @@ public interface Constants {
     short EXPAND_DOWN = 1;
     short SHRINK = -1;
 
+    // 背离类型常量
+    short DIVERGENCE_NONE = 0;
+    short DIVERGENCE_TOP = 1;
+    short DIVERGENCE_BOTTOM = 2;
+
     BigDecimal HUNDRED = new BigDecimal(100);
 
     BigDecimal THOUSAND = new BigDecimal("1000");

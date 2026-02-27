@@ -15,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.ta4j.core.*;
-import org.ta4j.core.indicators.MACDIndicator;
-import org.ta4j.core.indicators.RSIIndicator;
-import org.ta4j.core.indicators.StochasticOscillatorKIndicator;
-import org.ta4j.core.indicators.WilliamsRIndicator;
+import org.ta4j.core.indicators.*;
 import org.ta4j.core.indicators.averages.EMAIndicator;
 import org.ta4j.core.indicators.averages.SMAIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsLowerIndicator;
@@ -57,7 +54,7 @@ public class Ta4jMinuteIndicatorCalculator {
         tech.setClose(curr.getClose());
         tech.setVolume(curr.getVolume());
         tech.setVolumeRatio(curr.getVolumeRatio());
-        tech.setVolumeRising(calcVolumeAvgRising(barList));
+
 
         BaseBarSeries series = new BaseBarSeriesBuilder().withName(curr.getStockCode() + curr.getStockName()).build();
         Instant begin = barList.get(0).getTradeDate().atTime(barList.get(0).getTradeTime()).atZone(ZoneId.of(ZONE_ID)).toInstant();
@@ -74,8 +71,6 @@ public class Ta4jMinuteIndicatorCalculator {
 
         int lastIndex = series.getEndIndex();
         ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
-        HighPriceIndicator highPrice = new HighPriceIndicator(series);
-        LowPriceIndicator lowPrice = new LowPriceIndicator(series);
         VolumeIndicator volume = new VolumeIndicator(series);
 
         int buyScore = 0;
@@ -92,7 +87,6 @@ public class Ta4jMinuteIndicatorCalculator {
         tech.setEma3(ema3.getValue(lastIndex).bigDecimalValue());
         tech.setEma5(ema5Num.bigDecimalValue());
         tech.setEma10(ema10Num.bigDecimalValue());
-        tech.setPriceUp(isPriceUp(barList, tech.getEma5()) ? YES : NO);
 
         // 金叉: 当前 MA5 > MA10; 前一刻 MA5 <= MA10
         if (ema5Num.isGreaterThan(ema10Num) && ema5.getValue(lastIndex - 1).isLessThanOrEqual(ema10.getValue(lastIndex - 1))) {      // 金叉
@@ -102,7 +96,7 @@ public class Ta4jMinuteIndicatorCalculator {
             tech.setEmaGolden(DEATH_CROSS);
         }
 
-        // 2. MACD（指数平滑异同移动平均）（趋势+动能） 短线参数(5, 13, 1)   零轴确定长短周期动量方向    -- 隔夜条件：MACD红柱、DIF > DEA。
+        // 2. MACD（平滑异同移动平均指数）（趋势+动能） 短线参数(5, 13, 1)   零轴确定长短周期动量方向    -- 隔夜条件：MACD红柱、DIF > DEA。
         MACDIndicator dif = new MACDIndicator(closePrice, 5, 13);       // DIF快线
         EMAIndicator dea = new EMAIndicator(dif, 1);                    // 信号线 DEA慢线
         Num difNum = dif.getValue(lastIndex);
@@ -124,7 +118,7 @@ public class Ta4jMinuteIndicatorCalculator {
             }
         }
 
-        // 3. BOLL（布林带）短线参数：10  衡量价格相对于波动的边界位置   -- 隔夜条件：价格在中轨之上，可持仓过夜，若跌破中轨则需离场
+        // 3. BOLL（布林带）短线参数：10 2  衡量价格相对于波动的边界位置   -- 隔夜条件：价格在中轨之上，可持仓过夜，若跌破中轨则需离场
         StandardDeviationIndicator stdDev = new StandardDeviationIndicator(closePrice, 10);
         BollingerBandsMiddleIndicator middleBB = new BollingerBandsMiddleIndicator(new SMAIndicator(closePrice, 10));
         BollingerBandsUpperIndicator upperBB = new BollingerBandsUpperIndicator(middleBB, stdDev, DecimalNum.valueOf(2));
@@ -146,13 +140,13 @@ public class Ta4jMinuteIndicatorCalculator {
             }
             avgBand = avgBand.dividedBy(DecimalNum.valueOf(5));
             if (currBand.isGreaterThan(avgBand)) {              // 开口: 当带宽指标增大，超过前5期平均带宽
-                if (tech.getPrice().compareTo(mid.bigDecimalValue()) > 0 && mid.isGreaterThan(middleBB.getValue(lastIndex - 1))) {
+                if (tech.getPrice().compareTo(mid.bigDecimalValue()) > 0 || mid.isGreaterThan(middleBB.getValue(lastIndex - 1))) {
                     tech.setBollExpandStatus(EXPAND_UP);        // 开口扩大向上：价格位于中轨上方，或中轨向上倾斜, 开口扩大向上：上涨趋势加速
                 } else {
                     tech.setBollExpandStatus(EXPAND_DOWN);      // 开口扩大向下：价格位于中轨下方，或中轨向下倾斜, 开口扩大向下：下跌趋势加速
                 }
             } else {                                            // 收口: 当带宽指标降至极低水平（通常认为带宽10%）时，意味着市场进入极度萎缩的盘整期
-                if (tech.getPrice().compareTo(mid.bigDecimalValue()) > 0 && mid.isGreaterThan(middleBB.getValue(lastIndex - 1))) {
+                if (tech.getPrice().compareTo(mid.bigDecimalValue()) > 0 || mid.isGreaterThan(middleBB.getValue(lastIndex - 1))) {
                     tech.setBollExpandStatus(SHRINK);
                 }
             }
@@ -174,7 +168,7 @@ public class Ta4jMinuteIndicatorCalculator {
         SMAIndicator d = new SMAIndicator(k, 2);            // D = SMA(K, dPeriod)
         Num kNum = k.getValue(lastIndex);
         Num dNum = d.getValue(lastIndex);
-        Num jNum = kNum.multipliedBy(DecimalNum.valueOf(3)).minus(dNum.multipliedBy(DecimalNum.valueOf(2)));    // J = 3*K - 2*D
+        Num jNum = calcKdjJNum(k, d, lastIndex);                     // J = 3*K - 2*D
         tech.setKdjK(kNum.bigDecimalValue());
         tech.setKdjD(dNum.bigDecimalValue());
         tech.setKdjJ(jNum.bigDecimalValue());
@@ -234,37 +228,90 @@ public class Ta4jMinuteIndicatorCalculator {
         Num wrNum = wr.getValue(lastIndex);
         tech.setWr6(wrNum.bigDecimalValue());
 
+        long sumVolume = 0;
+        BigDecimal sumPrice = ZERO;
+        BigDecimal highestPrice = tech.getHigh();
+        BigDecimal lowestPrice = tech.getLow();
+        BigDecimal maxVdif = tech.getVmacdDif();
+        BigDecimal minVdif = tech.getVmacdDif();
+        BigDecimal highestKdjk = tech.getKdjK();
+        BigDecimal lowestKdjk = tech.getKdjK();
+        BigDecimal highestKdjJ = tech.getKdjJ();
+        BigDecimal lowKestdjJ = tech.getKdjJ();
+        BigDecimal highestRsi = tech.getRsi6();
+        BigDecimal lowestRsi = tech.getRsi6();
+        long highestObv = tech.getObv();
+        long lowestObv = tech.getObv();
+        for (int i = size / 2; i < size; i++) {     //  计算前5个周期
+            StockKlineMinute kline = barList.get(i);
+            BigDecimal j = calcKdjJNum(k, d, i).bigDecimalValue();
+            sumVolume += kline.getVolume();
+            sumPrice = sumPrice.add(kline.getPrice());
+            highestPrice = highestPrice.max(kline.getPrice());
+            lowestPrice = lowestPrice.min(kline.getPrice());
+            highestKdjJ = highestKdjJ.max(j);
+            lowKestdjJ = lowKestdjJ.min(j);
+            maxVdif = maxVdif.max(vDif.getValue(i).bigDecimalValue());
+            minVdif = minVdif.min(vDif.getValue(i).bigDecimalValue());
+            highestKdjk = highestKdjk.max(k.getValue(i).bigDecimalValue());
+            lowestKdjk = lowestKdjk.min(k.getValue(i).bigDecimalValue());
+            highestRsi = highestRsi.max(rsi6.getValue(i).bigDecimalValue());
+            lowestRsi = lowestRsi.min(rsi6.getValue(i).bigDecimalValue());
+            highestObv = Math.max(highestObv, obv.getValue(i).longValue());
+            lowestObv = Math.min(lowestObv, obv.getValue(i).longValue());
+        }
+        long avgVolume = sumVolume / (size / 2);
+        BigDecimal avgPrice = sumPrice.divide(BigDecimal.valueOf(size / 2), SCALE4, ROUND_MODE);
+
+        tech.setVolumeRising(BigDecimal.valueOf(tech.getVolume()).divide(BigDecimal.valueOf(avgVolume), SCALE4, ROUND_MODE));
+        tech.setPriceUp((tech.getPrice().compareTo(avgPrice) > 0 && tech.getPrice().compareTo(ema5Num.bigDecimalValue()) > 0) ? YES : NO);
+
+
+        // ----------- 计算顶底背离 ---------------
+        tech.setDivergenceType(DIVERGENCE_NONE);
+        short divergenceStrength = 0;
+        if (tech.getPrice().compareTo(highestPrice) == 0 && tech.getVmacdDif().compareTo(maxVdif) < 0) {    // 基础分：VMACD顶背离
+            tech.setDivergenceType(DIVERGENCE_TOP);
+            divergenceStrength++;
+            if (vHistNum.isLessThan(vPrevHist)) {               // VMACD 柱线长度缩
+                divergenceStrength++;
+            }
+            if (tech.getKdjK().compareTo(highestKdjk) == 0 || tech.getKdjJ().compareTo(highestKdjJ) < 0) {   // KDJ-K顶背离 KDJ-J未新高 → +1分
+                divergenceStrength++;
+            }
+            if (tech.getRsi6().compareTo(highestRsi) == 0 || tech.getRsi6().compareTo(BigDecimal.valueOf(70)) > 0) {     // RSI顶背离或超买
+                divergenceStrength++;
+            }
+            if (tech.getKdjK().compareTo(highestKdjk) == 0) {   // OBV顶背离
+                divergenceStrength++;
+            }
+
+        } else if (tech.getPrice().compareTo(lowestPrice) == 0 && tech.getVmacdDif().compareTo(minVdif) > 0) {
+            tech.setDivergenceType(DIVERGENCE_BOTTOM);
+            if (vHistNum.isGreaterThan(vPrevHist)) {            // VMACD 柱线长度扩大
+                divergenceStrength++;
+            }
+            if (tech.getKdjK().compareTo(lowestKdjk) == 0 || tech.getKdjJ().compareTo(lowestKdjk) > 0) {    // KDJ-K底背离 KDJ-J未新低 → +1分
+                divergenceStrength++;
+            }
+            if (tech.getRsi6().compareTo(lowestRsi) == 0 || tech.getRsi6().compareTo(BigDecimal.valueOf(30)) < 0) {     // RSI顶背离或超买
+                divergenceStrength++;
+            }
+            if (tech.getObv().compareTo(lowestObv) == 0) {      // OBV底背离
+                divergenceStrength++;
+            }
+        }
+        tech.setDivergenceStrength(divergenceStrength);
+
         return tech;
     }
 
-
     /**
-     * 成交量放大（当前分钟成交量/前5分钟均量）> 1.2
+     * KDJ  J = 3*K - 2*D
      */
-    private BigDecimal calcVolumeAvgRising(List<StockKlineMinute> barList) {
-        int lastIdx = barList.size() - 1;
-        long sum = 0;
-        for (int i = lastIdx - 4; i <= lastIdx; i++) {
-            sum += barList.get(i).getVolume();
-        }
-        BigDecimal avgVol5 = BigDecimal.valueOf(sum).divide(BigDecimal.valueOf(5), SCALE4, ROUND_MODE);
-        return BigDecimal.valueOf(barList.get(lastIdx).getVolume()).divide(avgVol5, SCALE4, ROUND_MODE);
+    private Num calcKdjJNum(SMAIndicator k, SMAIndicator d, int idx) {
+        return k.getValue(idx).multipliedBy(DecimalNum.valueOf(3)).minus(d.getValue(idx).multipliedBy(DecimalNum.valueOf(2)));
     }
-
-    /**
-     * 价格上升（当前价格>前3分钟均价 且 当前价格站上EMA5）
-     */
-    private boolean isPriceUp(List<StockKlineMinute> barList, BigDecimal ema5) {
-        int lastIdx = barList.size() - 1;
-        BigDecimal sum = ZERO;
-        for (int i = lastIdx - 2; i <= lastIdx; i++) {
-            sum = sum.add(barList.get(i).getPrice());
-        }
-        BigDecimal avgPrice3 = sum.divide(BigDecimal.valueOf(3), SCALE4, ROUND_MODE);
-        BigDecimal price = barList.get(lastIdx).getPrice();
-        return price.compareTo(avgPrice3) > 0 && price.compareTo(ema5) > 0;
-    }
-
 
     public void judgeMinuteResonance(StockTechMinute tech) {
         int buyScore = 0;
@@ -272,175 +319,160 @@ public class Ta4jMinuteIndicatorCalculator {
         List<String> buyReasons = new ArrayList<>();
         List<String> sellReasons = new ArrayList<>();
 
-        // ---------------------- 分时共振买入信号判定（10条，超短线核心） ----------------------
+        // -------------- 分时多因子共振信号:EMA、MACD、RSI、KDJ、WR、BOLL、VMACD、OBVMA及量价关系（买入和评分）----------------------
         // 一. 趋势类指标（权重40%）
-        // 1. EMA 多头排列 10%
+        // 1. EMA 多头排列  10%
         if (tech.getPrice().compareTo(tech.getEma5()) > 0 && tech.getEma5().compareTo(tech.getEma10()) > 0) {
-            buyScore++;
+            buyScore += 10;
             buyReasons.add("EMA多头排列,短期强势(价格>EMA5>EMA10);");
-        }
-        // 2. EMA金叉
-        if (tech.getEmaGolden() == GOLDEN_CROSS) {
-            buyScore++;
+        } else if (tech.getEmaGolden() == GOLDEN_CROSS) {
+            buyScore += 5;
             buyReasons.add("EMA金叉;");
         }
 
-        // 3. MACD 零轴上金叉 20%
+        // 2. MACD 零轴上金叉 15%
         if (tech.getMacdDif().compareTo(ZERO) >= 0 && tech.getMacdGolden() == GOLDEN_CROSS) {
-            buyScore++;
+            buyScore += 10;
             buyReasons.add("MACD零轴上金叉;");
         } else if (tech.getMacdDif().compareTo(ZERO) >= 0 && tech.getMacdGolden() == GOLDEN_CROSS_RED) {
-            buyScore += 2;
+            buyScore += 15;
             buyReasons.add("MACD零轴上金叉且红柱放大(动能强);");
         }
 
-        // 4. BOLL 突破下轨支撑 在短线分时系统中，开口的突然放大（尤其是 5 分钟 BOLL）通常被视为短线爆发的买入时机。
-        if (tech.getPrice().compareTo(tech.getBollLower()) < 0) {
-            buyScore += 2;
+        // 3. BOLL 突破下轨支撑 15%
+        if (tech.getPrice().compareTo(tech.getBollLower()) <= 0) {
+            buyScore += 10;
             buyReasons.add("价格突破BOLL下轨(买入信号);");
-        } else if (tech.getPrice().compareTo(tech.getBollLower()) == 0) {
-            buyScore += 1;
-            buyReasons.add("价格触及BOLL下轨(买入信号);");
         }
-        // 5. BOll 开口扩大向上：价格位于中轨上方，或中轨向上倾斜, 开口扩大向上：上涨趋势加速
+        //   BOll 开口扩大向上：价格位于中轨上方，或中轨向上倾斜, 上涨趋势加速
         if (tech.getBollExpandStatus() == EXPAND_UP) {
-            buyScore += 1;
+            buyScore += 15;
             buyReasons.add("开口扩大向上且价格位于中轨上方(上涨趋势);");
         }
 
-        // 二 动能类指标（权重30%）
-        // 6. RSI 衡量市场强弱与超买超卖 -- 隔夜条件：RSI6 在 50~70 之间最强；>80 不隔夜。
-        if (tech.getRsi6().compareTo(BigDecimal.valueOf(30)) <= 0) {     // 向上反转信号
-            buyScore += 2;
-            buyReasons.add("RSI超卖(≤30);");
+        // 二 动能类指标 40%
+        // 4. RSI 衡量市场强弱与超买超卖 -- 隔夜条件：RSI6 在 50~70 之间最强；>80 不隔夜。
+        if (tech.getRsi6().compareTo(BigDecimal.valueOf(30)) < 0) {     // 向上反转信号
+            buyScore += 10;
+            buyReasons.add("RSI超卖(<30);");
         }
-        // 7.  KDJ 对短线拐点极其灵敏 低位金叉（K<20）：代表价格超跌后的动能反转，此时买入信号最为准确。
+
+        // 5. KDJ 对短线拐点极其灵敏 低位金叉（K<20）：代表价格超跌后的动能反转，此时买入信号最为准确。
         if (tech.getKdjGolden() == GOLDEN_CROSS_RED) {
-            buyScore += 2;
+            buyScore += 10;
             buyReasons.add("(KDJ低位金叉，强烈买入信号(K≤20);");
         } else if (tech.getKdjGolden() == GOLDEN_CROSS) {
-            buyScore += 2;
+            buyScore += 5;
             buyReasons.add("(KDJ金叉;");
         }
-        // 8. KDJ超卖区（机会显现） 精准买卖点（J值比K/D更准）
+        //    KDJ超卖区（机会显现） 精准买卖点（J值比K/D更准）
         if (tech.getKdjJ().compareTo(BigDecimal.valueOf(10)) <= 0) {
-            buyScore += 2;
+            buyScore += 10;
             buyReasons.add("(KDJ严重超卖，买入信号(J≤10);");
         } else if (tech.getKdjJ().compareTo(BigDecimal.valueOf(20)) <= 0) {
-            buyScore++;
+            buyScore += 5;
             buyReasons.add("(KDJ超卖，买入信号(J≤20);");
         }
 
+        // 6. WR 指标在 -80 以下（超卖区）盘整后，上穿 -80 回到常规区时。等待信号确认,股价重新站上分时均价线时，才是安全的低吸时点。
+        if (tech.getWr6().compareTo(BigDecimal.valueOf(-80)) <= 0) {
+            buyScore += 10;
+            buyReasons.add("WR超卖区，买入机会(≤-80);");
+        }
 
-        // 三 量价类指标（权重20%）
-        // 9. VMACD（成交量MACD） -- 隔夜条件：VMACD 红柱 → 量价配合
+
+        // 三 量价类指标 25%
+        // 7. VMACD（成交量MACD） -- 隔夜条件：VMACD 红柱 → 量价配合
         if (tech.getVmacdGolden() == GOLDEN_CROSS_RED) {
-            buyScore += 3;
+            buyScore += 15;
             buyReasons.add("VMACD零轴金叉且红柱放大(放量);");
         } else if (tech.getVmacdGolden() == GOLDEN_CROSS) {
-            buyScore++;
+            buyScore+=10;
             buyReasons.add("VMACD金叉(放量)");
         }
-        // 10. OBVMA 能量潮均线   -- 隔夜条件：OBV > OBV_MA5
+        // 8. OBVMA 能量潮均线   -- 隔夜条件：OBV > OBV_MA5
         if (tech.getObvGolden() == GOLDEN_CROSS) {
-            buyScore++;
+            buyScore+=10;
             buyReasons.add("OBV金叉 资金流入(买入信号)");
         }
 
-        // 四 风险控制（权重10%）
-        // 11. WR 指标在 -80 以下（超卖区）盘整后，上穿 -80 回到常规区时。等待信号确认,股价重新站上分时均价线时，才是安全的低吸时点。
-        if (tech.getWr6().compareTo(BigDecimal.valueOf(-80)) < 0) {
-            buyScore += 1;
-            buyReasons.add("WR超卖区，买入机会(<-80);");
-        }
-        // 12. 成交量上升 大于1.2倍
-        if (tech.getVolumeRising().compareTo(BigDecimal.valueOf(1.2)) >= 0) {
-            buyScore += 1;
-            buyReasons.add("成交量上升(>1.2倍);");
-        }
-
-        // 13. 股价上升
-
-
-        // ---------------------- 分时共振卖出信号判定（超短线规则） ----------------------
+        // -------------- 分时多因子共振信号:EMA、MACD、RSI、KDJ、WR、BOLL、VMACD、OBVMA及量价关系（卖出和评分）----------------------
         // 一 趋势类指标（权重40%）
         // 1. EMA空头排列 10%
         if (tech.getPrice().compareTo(tech.getEma5()) < 0 && tech.getEma5().compareTo(tech.getEma10()) <= 0) {
-            sellScore++;
+            sellScore+= 10;
             sellReasons.add("EMA空头排列,短期弱势(价格<EMA5<EMA10);");
         }
-        // 2. EMA死叉
         if (tech.getEmaGolden() == DEATH_CROSS) {
-            sellScore++;
+            sellScore+= 5;
             sellReasons.add("EMA死叉;");
         }
 
-        // 3. MACD 零轴下死叉 20%
+        // 2. MACD 零轴下死叉 15%
         if (tech.getMacdDif().compareTo(ZERO) < 0 && tech.getMacdGolden() == DEATH_CROSS) {
-            sellScore++;
+            sellScore+= 10;
             sellReasons.add("MACD零轴下死叉;");
         } else if (tech.getMacdDif().compareTo(ZERO) < 0 && tech.getMacdGolden() == DEATH_CROSS_GREEN) {
-            sellScore += 2;
+            sellScore += 15;
             sellReasons.add("MACD零轴下死叉且绿柱放大(动能弱);");
         }
 
-        // 4. BOLL 突破上轨压力 短线止盈离场点
-        if (tech.getPrice().compareTo(tech.getBollUpper()) > 0) {
-            sellScore += 2;
+        // 3. BOLL 突破上轨压力 15%   -- 短线止盈离场点
+        if (tech.getPrice().compareTo(tech.getBollUpper()) >= 0) {
+            sellScore += 10;
             sellReasons.add("价格突破BOLL上轨(卖出信号);");
-        } else if (tech.getPrice().compareTo(tech.getBollUpper()) == 0) {
-            sellScore += 1;
-            sellReasons.add("价格触及BOLL上轨(卖出信号);");
         }
-        // 5. 开口扩大向下：价格位于中轨下方，或中轨向下倾斜, 开口扩大向下：下跌趋势加速
+        //    BOLL 开口扩大向下：价格位于中轨下方，或中轨向下倾斜, 下跌趋势加速
         if (tech.getBollExpandStatus() == EXPAND_UP) {
-            buyScore += 1;
-            buyReasons.add("开口扩大向下且价格位于中轨下方(下跌趋势);");
+            sellScore += 15;
+            sellReasons.add("开口扩大向下且价格位于中轨下方(下跌趋势);");
         }
 
-        // 二 动能类指标（权重30%）
-        // 6. RSI -- 隔夜条件：RSI6 在 50~70 之间最强；>80 不隔夜。
+        // 二 动能类指标 40%
+        // 4. RSI -- 隔夜条件：RSI6 在 50~70 之间最强；>80 不隔夜。
         if (tech.getRsi6().compareTo(BigDecimal.valueOf(80)) >= 0) {        // 向下反转信号
-            sellScore += 2;
+            sellScore += 10;
             sellReasons.add("RSI超买(≥80);");
         }
-        // 7. KDJ高位死叉
+
+        // 5. KDJ高位死叉
         if (tech.getKdjGolden() == DEATH_CROSS_GREEN) {
-            sellScore += 3;
+            sellScore += 10;
             sellReasons.add("(KDJ高位死叉，强烈卖出信号(K≥80);");
         } else if (tech.getKdjGolden() == DEATH_CROSS) {
-            sellScore++;
+            sellScore += 5;
             sellReasons.add("(KDJ死叉;");
         }
-        // 8. KDJ超买区（风险积聚）
+        //   KDJ超买区（风险积聚）
         if (tech.getKdjJ().compareTo(BigDecimal.valueOf(90)) >= 0) {
-            sellScore += 2;
+            sellScore += 10;
             sellReasons.add("(KDJ严重超买，卖出信号(J≥90);");
         } else if (tech.getKdjJ().compareTo(BigDecimal.valueOf(80)) >= 0) {
-            sellScore++;
+            sellScore += 5;
             sellReasons.add("(KDJ超买，卖出信号(J≥80);");
         }
 
+        // 6. WR 指标在 -20 以上（超买区）盘整后，下穿 -20 回到常规区时。
+        if (tech.getWr6().compareTo(BigDecimal.valueOf(-20)) > 0) {
+            sellScore +=  10;
+            sellReasons.add("WR超买区，卖出信号(>-20);");
+        }
 
-        // 三 量价类指标（权重20%）
-        // 9. VMACD（成交量MACD）
+        // 三 量价类指标  25%
+        // 7. VMACD（成交量MACD）
         if (tech.getVmacdGolden() == DEATH_CROSS_GREEN) {
-            sellScore += 3;
+            sellScore += 15;
             sellReasons.add("VMACD零轴死叉且绿柱放大(缩量);");
         } else if (tech.getVmacdGolden() == DEATH_CROSS) {
-            sellScore++;
+            sellScore+=10;
             sellReasons.add("VMACD死叉(缩量);");
         }
-        // 10. OBVMA 能量潮均线   -- 隔夜条件：OBV > OBV_MA5
+        // 8. OBVMA 能量潮均线   -- 隔夜条件：OBV > OBV_MA5
         if (tech.getObvGolden() == DEATH_CROSS) {
             sellScore++;
             sellReasons.add("OBV死叉 资金流出(卖出信号)");
         }
-        // 11. WR 指标在 -20 以上（超买区）盘整后，下穿 -20 回到常规区时。
-        if (tech.getWr6().compareTo(BigDecimal.valueOf(-20)) > 0) {
-            sellScore += 1;
-            sellReasons.add("WR超买区，卖出信号(>-20);");
-        }
+
         // 12. 成交量缩量 小于0.8倍
         if (tech.getVolumeRising().compareTo(BigDecimal.valueOf(0.8)) <= 0) {
             sellScore += 1;
@@ -448,9 +480,6 @@ public class Ta4jMinuteIndicatorCalculator {
         }
 
     }
-
-
-
 
 
 }

@@ -76,8 +76,13 @@ public class StockTechMinute extends BaseEntity {
     private Long obvMa5;
     private Short obvGolden;
 
-    private Integer resonanceSignal;
-    private BigDecimal resonanceScore;
+    // 背离类型：0=无背离,1=MACD顶背离,2=MACD底背离
+    private Short divergenceType;
+    // 背离强度：0~5（值越大背离越明显）
+    private Short divergenceStrength;
+
+    private Short resonanceSignal;
+    private Short resonanceScore;
 
 
 }
