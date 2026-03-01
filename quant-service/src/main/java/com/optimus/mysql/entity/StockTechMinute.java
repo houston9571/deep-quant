@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static com.optimus.constant.Constants.ID;
+import static com.optimus.constant.Constants.OPERATING_BUY;
 
 /**
  * 股票分钟线行情
@@ -38,20 +39,23 @@ public class StockTechMinute extends BaseEntity {
     private BigDecimal close;
     private Long volume;
     private BigDecimal volumeRatio;
-    private BigDecimal volumeRising;
-    private Short priceUp;
+    private short signalType;
+    private short signalLevel;
+    private String signalResult;
 
     private BigDecimal ema3;
     private BigDecimal ema5;
     private BigDecimal ema10;
     private Short emaGolden;
+    private BigDecimal bias;       // 乖离率
+
 
     private BigDecimal macdDif;
     private BigDecimal macdDea;
     private BigDecimal macdBar;
     private Short macdGolden;
 
-//    private BigDecimal rsi3;
+    //    private BigDecimal rsi3;
     private BigDecimal rsi6;
 //    private BigDecimal rsi9;
 
@@ -81,8 +85,10 @@ public class StockTechMinute extends BaseEntity {
     // 背离强度：0~5（值越大背离越明显）
     private Short divergenceStrength;
 
-    private Short resonanceSignal;
-    private Short resonanceScore;
+    private Short buyScore;
+    private String buyReason;
+    private Short sellScore;
+    private String sellReason;
 
 
 }

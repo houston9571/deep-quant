@@ -46,6 +46,12 @@ public interface EastMoneyStockApi {
     JSONObject getStockTradeRealtime(@Var("stockCode") String stockCode, @Var("marketCode") String marketCode, @Var("fields") String fields);
 
     /**
+     * https://push2delay.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65&klt=5&secid=1.600986
+     */
+    JSONObject getStockTrends();
+
+
+    /**
      * 获取实时资金流向
      * klt=1 K线类型 secid可以是股票、板块
      * http://push2delay.eastmoney.com/api/qt/stock/fflow/kline/get?klt=1&secid=1.600986&lmt=0&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65
