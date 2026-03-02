@@ -28,9 +28,9 @@ public class DateUtils {
      */
     public static String toUTC(String date) {
         if (date.length() > 20) {
-            return parse(date, DateFormatEnum.TIMESTAMP).atZone(ZoneId.systemDefault()).withZoneSameInstant(UTC).format(DateTimeFormatter.ofPattern(TIMESTAMPZ.getFormat()));
+            return parse(date, DateFormatEnum.TIMESTAMP).atZone(ZoneId.systemDefault()).withZoneSameInstant(UTC).format(DateTimeFormatter.ofPattern(TIMESTAMP_Z.getFormat()));
         } else {
-            return parse(date).atZone(ZoneId.systemDefault()).withZoneSameInstant(UTC).format(DateTimeFormatter.ofPattern(DATETIMEZ.getFormat()));
+            return parse(date).atZone(ZoneId.systemDefault()).withZoneSameInstant(UTC).format(DateTimeFormatter.ofPattern(DATETIME_Z.getFormat()));
         }
     }
 

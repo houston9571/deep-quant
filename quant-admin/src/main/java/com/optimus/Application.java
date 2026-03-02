@@ -3,6 +3,7 @@ package com.optimus;
 import com.dtflys.forest.springboot.annotation.ForestScan;
 import com.google.common.collect.Maps;
 import com.optimus.filter.CorsFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -38,9 +39,10 @@ import static com.optimus.constant.Constants.ZONE_ID;
 @ForestScan(basePackages = {"com.optimus.client"})
 @EnableAsync
 @EnableScheduling
+@Slf4j
 public class Application {
 
-    private static final Logger logger = LoggerFactory.getLogger(Application.class);
+//    private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone(ZONE_ID));
@@ -54,9 +56,9 @@ public class Application {
         for (int i = 0; i < str.length(); i++) {
             sb.append("#");
         }
-        logger.info(sb.toString());
-        logger.info(str);
-        logger.info(sb.toString());
+        log.info(sb.toString());
+        log.info(str);
+        log.info(sb.toString());
 //        Properties p = System.getProperties();
 //        SortedMap<String, String> m = Maps.newTreeMap();
 //        p.keySet().forEach(e -> m.put(String.valueOf(e), p.getProperty(String.valueOf(e))));

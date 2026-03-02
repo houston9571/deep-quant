@@ -12,8 +12,4 @@ public class NetWorkException extends ServiceException {
         log.error("code:{} msg:{}", super.getCode(), super.getMsg());
     }
 
-    public NetWorkException(int code, String msg) {
-        super(code, msg);
-        log.error("code:{} msg:{}", super.getCode(), super.getMsg());
-    }
 }

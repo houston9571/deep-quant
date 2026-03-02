@@ -57,8 +57,8 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
         List<BigDecimal> ma5 = calcMa(prices, 5);
         List<BigDecimal> ma10 = calcMa(prices, 10);
         List<BigDecimal[]> macd = calcMacd(prices);
-        List<BigDecimal> rsi3 = calcRsi(prices, 3);
-        List<BigDecimal> rsi9 = calcRsi(prices, 9);
+        List<BigDecimal> rsi6 = calcRsi(prices, 6);
+//        List<BigDecimal> rsi9 = calcRsi(prices, 9);
         List<BigDecimal[]> kdj = calcKdj(highs, lows, prices);
         List<BigDecimal> wr6 = calcWr6(highs, lows, prices);
         List<BigDecimal[]> boll = calcBoll(prices);
@@ -81,14 +81,13 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
             tech.setOpen(bar.getOpen());
             tech.setClose(bar.getClose());
 
-            tech.setMa3(ma3.get(i));
-            tech.setMa5(ma5.get(i));
-            tech.setMa10(ma10.get(i));
+            tech.setEma3(ma3.get(i));
+            tech.setEma5(ma5.get(i));
+            tech.setEma10(ma10.get(i));
             tech.setMacdDif(macd.get(i)[0]);
             tech.setMacdDea(macd.get(i)[1]);
             tech.setMacdBar(macd.get(i)[2]);
-            tech.setRsi3(rsi3.get(i));
-            tech.setRsi9(rsi9.get(i));
+            tech.setRsi6(rsi6.get(i));
             tech.setKdjK(kdj.get(i)[0]);
             tech.setKdjD(kdj.get(i)[1]);
             tech.setKdjJ(kdj.get(i)[2]);
@@ -106,8 +105,8 @@ public class StockTechMinuteServiceImpl extends MybatisBaseServiceImpl<StockTech
         // 3. 计算分时共振信号
         StockTechMinute tech = techList.get(1);
         Object[] resonanceResult = judgeMinuteResonance(tech, techList.get(0), prev10MinuteList);
-        tech.setResonanceSignal((Integer) resonanceResult[0]);
-        tech.setResonanceScore((BigDecimal) resonanceResult[1]);
+//        tech.setResonanceSignal((Integer) resonanceResult[0]);
+//        tech.setResonanceScore((BigDecimal) resonanceResult[1]);
 
         saveOrUpdate(tech, new String[]{"stock_code", "trade_date", "trade_time"});
     }

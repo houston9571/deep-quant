@@ -1,5 +1,6 @@
 package com.optimus.thread;
 
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,8 +31,7 @@ public class NamedThreadFactory implements ThreadFactory {
     public NamedThreadFactory(String prefix, boolean daemon) {
         this.prefix = prefix + "-thread-";
         this.daemon = daemon;
-        SecurityManager s = System.getSecurityManager();
-        group = (s == null) ? Thread.currentThread().getThreadGroup() : s.getThreadGroup();
+        group = Thread.currentThread().getThreadGroup();
     }
 
     @Override

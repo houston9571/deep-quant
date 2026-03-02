@@ -1,7 +1,6 @@
 package com.optimus.enums;
 
 import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import static cn.hutool.core.text.StrPool.DASHED;
 import static java.util.Locale.SIMPLIFIED_CHINESE;
 
 @Getter
-@AllArgsConstructor
 public enum LanguageEnum {
 
 
@@ -27,6 +25,11 @@ public enum LanguageEnum {
     private final String language;
 
     private final String country;
+
+    LanguageEnum(String language, String country) {
+        this.language = language;
+        this.country = country;
+    }
 
     public String getLanguageTag() {
         return language + DASHED + country;

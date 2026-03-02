@@ -2,13 +2,11 @@ package com.optimus.enums;
 
 
 import com.optimus.utils.SpringContextUtils;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import static com.optimus.enums.LanguageEnum.ENGLISH;
 
 @Getter
-@AllArgsConstructor
 public enum ErrorCode {
 
     FAIL(-1, "失败", "Fail"),
@@ -43,7 +41,7 @@ public enum ErrorCode {
 
     DATA_UPDATED(1012, "数据已经更新 %s:%s", "Date was updated %s:%s"),
 
-    NETWORK_FAILED(1014,"网络请求失败。url=%s body=%s", "" ),
+    NETWORK_FAILED(1014, "网络请求失败。url=%s body=%s", ""),
     ;
 
     private final int code;
@@ -51,6 +49,12 @@ public enum ErrorCode {
     private final String zh;
 
     private final String en;
+
+    ErrorCode(int code, String zh, String en) {
+        this.code = code;
+        this.zh = zh;
+        this.en = en;
+    }
 
     public String getMsg() {
         if (ENGLISH.getLanguage().equals(SpringContextUtils.getLanguage())) {
