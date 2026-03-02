@@ -1,38 +1,39 @@
 package com.optimus.service.impl;
 
-import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.optimus.constant.Constants;
 import com.optimus.mysql.entity.StockKlineMinute;
 import com.optimus.mysql.entity.StockTechMinute;
+import com.optimus.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.bcel.verifier.statics.DOUBLE_Upper;
 import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.ta4j.core.*;
-import org.ta4j.core.indicators.*;
+import org.ta4j.core.BaseBar;
+import org.ta4j.core.BaseBarSeries;
+import org.ta4j.core.BaseBarSeriesBuilder;
+import org.ta4j.core.indicators.MACDIndicator;
+import org.ta4j.core.indicators.RSIIndicator;
+import org.ta4j.core.indicators.StochasticOscillatorKIndicator;
+import org.ta4j.core.indicators.WilliamsRIndicator;
 import org.ta4j.core.indicators.averages.EMAIndicator;
 import org.ta4j.core.indicators.averages.SMAIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsLowerIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsMiddleIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsUpperIndicator;
-import org.ta4j.core.indicators.helpers.*;
+import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.indicators.helpers.HighPriceIndicator;
+import org.ta4j.core.indicators.helpers.VolumeIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.indicators.volume.OnBalanceVolumeIndicator;
 import org.ta4j.core.num.DecimalNum;
-import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
-import org.ta4j.core.num.NumFactory;
-import org.ta4j.core.rules.CrossedUpIndicatorRule;
-import org.ta4j.core.rules.UnderIndicatorRule;
+
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 import static cn.hutool.core.text.StrPool.COMMA;
 import static com.optimus.constant.Constants.*;
@@ -43,9 +44,8 @@ import static java.math.BigDecimal.ZERO;
 @RequiredArgsConstructor
 public class Ta4jMinuteIndicatorCalculator {
 
-    private static final Num ZERO_NUM = DecimalNum.valueOf(0);
 
-    public StockTechMinute convertToTimeSeries(List<StockKlineMinute> barList) {
+    public StockTechMinute calcMinuteIndicator(List<StockKlineMinute> barList) {
         int size = barList.size();
         StockKlineMinute curr = barList.get(size - 1);
         BigDecimal currClose = curr.getClose();
@@ -241,6 +241,7 @@ public class Ta4jMinuteIndicatorCalculator {
         double prevClose = closePriceIndicator.getValue(lastIndex - 1).doubleValue();
         double prevHigh = new HighPriceIndicator(series).getValue(lastIndex - 1).doubleValue();
         double high10 = barList.stream().mapToDouble(b -> b.getHigh().doubleValue()).max().getAsDouble();
+
         calcVolumePriceRise(tech, prevClose, prevHigh, avgVol, high10, lowestPrice, highestObv);
 
 
@@ -339,7 +340,7 @@ public class Ta4jMinuteIndicatorCalculator {
             tech.setObvGolden(GOLDEN_CROSS);
         }
         tech.setBuyScore(buyScore);
-        tech.setBuyReason(String.join(COMMA, buyReasons));
+        tech.setBuyReason(StringUtil.joinWithIndex(COMMA, buyReasons));
 
         // -------------- 分时多因子共振信号:EMA、MACD、RSI、KDJ、WR、BOLL、VMACD、OBVMA及量价关系（卖出和评分）----------------------
         // 一 趋势类指标 多头基调(EMA + MACD) + 波动爆发 (BOLL)：40分
@@ -429,7 +430,7 @@ public class Ta4jMinuteIndicatorCalculator {
             tech.setObvGolden(DEATH_CROSS);
         }
         tech.setSellScore(sellScore);
-        tech.setSellReason(String.join(COMMA, sellReasons));
+        tech.setSellReason(StringUtil.joinWithIndex(COMMA, sellReasons));
 
         return tech;
     }
@@ -524,7 +525,7 @@ public class Ta4jMinuteIndicatorCalculator {
                         }
                     }
                 }
-                signalResult = "✅量增价升" + tag + String.join(COMMA, reasons);
+                signalResult = "✅量增价升" + tag + StringUtil.joinWithIndex(COMMA, reasons);
             } else {             // ❌量增价跌  卖出/底部分批吸筹
                 // --- 逻辑判断 ---
                 // 基础条件：必须是阴线且放量
@@ -577,7 +578,7 @@ public class Ta4jMinuteIndicatorCalculator {
                         reasons.add("信号不够强，建议观望。");
                     }
                 }
-                signalResult = "❌量增价跌" + tag + String.join(COMMA, reasons);
+                signalResult = "❌量增价跌" + tag + StringUtil.joinWithIndex(COMMA, reasons);
             }
 
         } else if (isVolDown) {
@@ -615,7 +616,7 @@ public class Ta4jMinuteIndicatorCalculator {
                         reasons.add("🔴 检测到顶背离：价格新高，但MACD动能减弱");
                     }
                 }
-                signalResult = "⚠️量缩价升" + tag + (CollectionUtils.isEmpty(reasons) ? "观察，等待放量确认" : String.join(COMMA, reasons));
+                signalResult = "⚠️量缩价升" + tag + (CollectionUtils.isEmpty(reasons) ? "观察，等待放量确认" : StringUtil.joinWithIndex(COMMA, reasons));
             } else {              // ⚪ 量缩价跌 持币/观望 可能是主力洗盘、散户惜售的“黄金坑”（买入机会），也可能是无人问津、阴跌不止的“无底洞”（死亡陷阱）
                 //上升趋势回调中的量缩价跌 = 利好（洗盘，抛压轻，主力未出逃）。
                 //下跌趋势/高位破位后的量缩价跌 = 利空（买盘枯竭，阴跌，深不见底）。
@@ -649,7 +650,7 @@ public class Ta4jMinuteIndicatorCalculator {
                     reasons.add("⚠️ 刚刚跌破关键支撑(EMA10)");                   // 观望：破位初期缩量，可能是下跌中继，勿急于接飞刀
                     reasons.add("⚪ 缩量表明反弹无力，可能继续探底");
                 }
-                signalResult = "⚪ 量缩价跌" + tag + (CollectionUtils.isEmpty(reasons) ? "观察，等待明确信号" : String.join(COMMA, reasons));
+                signalResult = "⚪ 量缩价跌" + tag + (CollectionUtils.isEmpty(reasons) ? "观察，等待明确信号" : StringUtil.joinWithIndex(COMMA, reasons));
             }
 
         }

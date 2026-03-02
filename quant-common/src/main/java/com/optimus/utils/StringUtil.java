@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -215,6 +217,17 @@ public class StringUtil extends StringUtils {
                     .replaceAll("/\\*.*?\\*/", "")  // 移除多行注释
                     .replaceAll("^\\s*#.*$", "");  // 移除YAML注释
         }
+    }
+
+    public static String joinWithIndex(CharSequence delimiter, Iterable<? extends CharSequence> elements) {
+        Objects.requireNonNull(delimiter);
+        Objects.requireNonNull(elements);
+        StringJoiner joiner = new StringJoiner(delimiter);
+        int i = 0;
+        for (CharSequence cs : elements) {
+            joiner.add(++i + "." + cs);
+        }
+        return joiner.toString();
     }
 
     public static void main(String[] args) throws Exception {
